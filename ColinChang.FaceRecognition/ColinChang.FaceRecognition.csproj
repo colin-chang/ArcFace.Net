@@ -1,0 +1,66 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="libarcsoft_fsdk_face_detection.dll" />
+    <None Remove="libarcsoft_fsdk_face_recognition.dll" />
+    <None Remove="libs\AForge.Controls.dll" />
+    <None Remove="libs\AForge.Controls.xml" />
+    <None Remove="libs\AForge.dll" />
+    <None Remove="libs\AForge.Imaging.dll" />
+    <None Remove="libs\AForge.Imaging.xml" />
+    <None Remove="libs\AForge.Math.dll" />
+    <None Remove="libs\AForge.Math.xml" />
+    <None Remove="libs\AForge.Video.DirectShow.dll" />
+    <None Remove="libs\AForge.Video.DirectShow.xml" />
+    <None Remove="libs\AForge.Video.dll" />
+    <None Remove="libs\AForge.Video.xml" />
+    <None Remove="libs\AForge.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="libarcsoft_fsdk_face_detection.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libarcsoft_fsdk_face_recognition.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libs\AForge.Controls.dll" />
+    <Content Include="libs\AForge.Controls.xml" />
+    <Content Include="libs\AForge.dll" />
+    <Content Include="libs\AForge.Imaging.dll" />
+    <Content Include="libs\AForge.Imaging.xml" />
+    <Content Include="libs\AForge.Math.dll" />
+    <Content Include="libs\AForge.Math.xml" />
+    <Content Include="libs\AForge.Video.DirectShow.dll" />
+    <Content Include="libs\AForge.Video.DirectShow.xml" />
+    <Content Include="libs\AForge.Video.dll" />
+    <Content Include="libs\AForge.Video.xml" />
+    <Content Include="libs\AForge.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="AForge">
+      <HintPath>libs\AForge.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Controls">
+      <HintPath>libs\AForge.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Imaging">
+      <HintPath>libs\AForge.Imaging.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Math">
+      <HintPath>libs\AForge.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Video">
+      <HintPath>libs\AForge.Video.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Video.DirectShow">
+      <HintPath>libs\AForge.Video.DirectShow.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
