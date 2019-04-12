@@ -1,11 +1,20 @@
 # FaceRecognition
-A face recognition utility based on ArcSoft SDK 1.x for Windows platform.It can support multiple faces comparison.
+This is a face recognition utility based on ArcSoft SDK 1.x for Windows platform.It can support multiple faces comparison.
 
-Fill your `AppId`,`FRkey` and `FDKey` in appsettings.json under [sample project](https://github.com/colin-chang/FaceRecognition/tree/master/ColinChang.FaceRecognition.Sample),before you run it.you can get the key from [Arcsoft](https://ai.arcsoft.com.cn/product/arcface.html) freely.
+## Nuget
+* [ColinChang.FaceRecognition](https://www.nuget.org/packages/ColinChang.FaceRecognition/) for Windows x64
+* []
 
-This package is a wrapper of Arcsoft FaceRecognition SDK in C/C++.you can use it on .NET.It's developed on under .Net Standard 2.0,but you can use it on Windows platform,because of the limitation of Arcsoft SDK.
 
+## How to Run
+
+Fill your `AppId`,`FRkey` and `FDKey` in appsettings.json under [sample project](https://github.com/colin-chang/FaceRecognition/tree/master/ColinChang.FaceRecognition.Sample),before running it.you can get the key from [Arcsoft](https://ai.arcsoft.com.cn/product/arcface.html) freely.
+
+## Limitation
+This package is a wrapper of Arcsoft FaceRecognition SDK in C/C++.you can use it on .NET platform.It's developed on under .Net Standard 2.0,however **it can only be used on Windows platform**,because of the limitation of Arcsoft SDK.
+
+## x86/x64
 The Arcsoft SDK has different versions for x86 and x64.The `libarcsoft_fsdk_face_detection.dll` and `libarcsoft_fsdk_face_recognition.dll` under [FaceRecognition](https://github.com/colin-chang/FaceRecognition/tree/master/ColinChang.FaceRecognition) are x64 version by default.You can switch it to x86 version by 2 steps.
 
-* copy dlls under x86 directory to FaceRecognition project and set their "Copy to output directory" to "Copy always"
+* copy dlls under [x86 directory](https://github.com/colin-chang/FaceRecognition/tree/master/ColinChang.FaceRecognition/Sdk/x86) to FaceRecognition project and set their "Copy to output directory" to "Copy always"
 * Set `Project target` to `x86`
