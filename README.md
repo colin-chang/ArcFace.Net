@@ -3,7 +3,7 @@ This is a face recognition utility based on ArcSoft SDK 1.x for Windows platform
 
 ## Nuget
 * [ColinChang.FaceRecognition](https://www.nuget.org/packages/ColinChang.FaceRecognition/) for Windows x64
-* []
+* [ColinChang.FaceRecognition.x86](https://www.nuget.org/packages/ColinChang.FaceRecognition.x86/) for Windows x86
 
 
 ## How to Run
