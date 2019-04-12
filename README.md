@@ -1,2 +1,2 @@
 # FaceRecognition
-A face recognition based on ArcSoft SDK 1.2.It can support multiple face compare.
+A face recognition utility based on ArcSoft SDK 1.x for Windows platform.It can support multiple faces comparison.
