@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -13,7 +12,7 @@ namespace ColinChang.FaceRecognition.Sample
             var fdKeY = ConfigurationManager.Core.ConfigurationManager.Configuration["FdKeY"];
             var frKeY = ConfigurationManager.Core.ConfigurationManager.Configuration["FrKeY"];
             var image = "test.jpg";
-            using (var fr = new Recognizer(appId, fdKeY, frKeY))
+            using (var fr = new FaceRecognizer(appId, fdKeY, frKeY))
             {
                 fr.Register("FaceLibrary");
 
