@@ -1,7 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Colin Chang</Authors>
+    <Version>1.0.0</Version>
+    <Description>A face recognition utility based on ArcSoft SDK 1.x for Windows platform.It can support multiple faces comparison.</Description>
+    <Copyright>https://colin-chang.site/</Copyright>
+    <PackageProjectUrl>https://github.com/colin-chang/FaceRecognition</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/colin-chang/FaceRecognition</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>FaceRecognition AI ArcSoft</PackageTags>
+    <Owners>Colin Chang</Owners>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/colin-chang/FaceRecognition/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -61,6 +71,10 @@
     <Reference Include="AForge.Video.DirectShow">
       <HintPath>libs\AForge.Video.DirectShow.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ZKWeb.System.Drawing" Version="4.0.1" />
   </ItemGroup>
 
 </Project>

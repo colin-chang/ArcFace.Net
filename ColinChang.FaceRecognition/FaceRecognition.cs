@@ -10,7 +10,7 @@ using ColinChang.FaceRecognition.AFR;
 
 namespace ColinChang.FaceRecognition
 {
-    public class FaceRecognition : IDisposable
+    public class Recognizer : IDisposable
     {
         private readonly IntPtr _detectEngine = IntPtr.Zero;
         private readonly IntPtr _recognizeEngine = IntPtr.Zero;
@@ -18,7 +18,7 @@ namespace ColinChang.FaceRecognition
         private readonly List<string> _ffds = new List<string>();
         private string _faceLibrary;
 
-        public FaceRecognition(string appId, string fdKey, string frKey)
+        public Recognizer(string appId, string fdKey, string frKey)
         {
             const int detectSize = 100 * 1024 * 1024;
             const int nScale = 16;
@@ -47,25 +47,31 @@ namespace ColinChang.FaceRecognition
                 if (File.Exists($"{img}.ffd"))
                     continue;
 
-                CheckAndMarkFace(img, true);
+                DetectFace(img, true);
             }
 
             LoadFfds();
         }
 
-        public void Compare(string image, float similarity)
+        public Dictionary<Feature, IEnumerable<KeyValuePair<string, float>>> Compare(string image, float similarity)
         {
             if (string.IsNullOrWhiteSpace(image) || !File.Exists(image))
-                return;
+                return null;
 
-            var features = CheckAndMarkFace(image).Values;
+            //key: FaceFeature
+            //value: [source.jpg_$2.ffd]=0.7 意为 image与source.jpg中第2张脸匹配度为0.7
+            var dict = new Dictionary<Feature, IEnumerable<KeyValuePair<string, float>>>();
+            var features = DetectFace(image);
             foreach (var feature in features)
             {
-                //[source.jpg_$2.ffd]=0.7 意为 image与source.jpg中第2张脸匹配度为0.7
-                var results = Compare(feature).Where(kv => kv.Value >= similarity);
+                var res = Compare(feature.Content).Where(kv => kv.Value >= similarity);
+                if (res.Any())
+                    dict[feature] = res;
             }
+
+            return dict;
         }
-        
+
         public void Dispose()
         {
             AFDFunction.AFD_FSDK_UninitialFaceEngine(_detectEngine);
@@ -75,7 +81,7 @@ namespace ColinChang.FaceRecognition
         private void LoadImages()
         {
             _images.Clear();
-            var formats = new[] {".jpg", ".jpeg", ".png", ".bmp"};
+            var formats = new[] { ".jpg", ".jpeg", ".png", ".bmp" };
             var images = Directory.GetFiles(_faceLibrary, "*.*", SearchOption.AllDirectories);
             foreach (var img in images)
             {
@@ -87,31 +93,30 @@ namespace ColinChang.FaceRecognition
         private void LoadFfds()
         {
             _ffds.Clear();
-            var ffds = Directory.GetFiles(_faceLibrary, "*.*", SearchOption.AllDirectories);
+            var ffds = Directory.GetFiles(_faceLibrary, "*.ffd", SearchOption.AllDirectories);
             foreach (var ffd in ffds)
             {
                 var img = Path.GetFileNameWithoutExtension(ffd);
-                img = img != null && img.Contains("$")
-                    ? img.Substring(0, img.IndexOf("_$", StringComparison.Ordinal))
-                    : img;
+                img = img?.Substring(0, img.IndexOf("_$", StringComparison.Ordinal));
 
-                if (!File.Exists(img))
+                if (!File.Exists(Path.Combine(Path.GetDirectoryName(ffd), img)))
                     continue;
 
                 _ffds.Add(ffd);
             }
         }
 
-        private Dictionary<string, byte[]> CheckAndMarkFace(string source, bool register = false)
+        private IEnumerable<Feature> DetectFace(string source, bool register = false)
         {
-            var img = Image.FromFile(source);
-            //var feature = new byte[1];
-            var imageData = ReadImage(img, out var width, out var height, out var pitch);
-            img.Dispose();
+            byte[] imageData;
+            int width, height, pitch;
+            using (var img = Image.FromFile(source))
+                imageData = ReadImage(img, out width, out height, out pitch);
+
             var imageDataPtr = Marshal.AllocHGlobal(imageData.Length);
             Marshal.Copy(imageData, 0, imageDataPtr, imageData.Length);
 
-            var offInput = new ASVLOFFSCREEN {u32PixelArrayFormat = 513, ppu8Plane = new IntPtr[4]};
+            var offInput = new ASVLOFFSCREEN { u32PixelArrayFormat = 513, ppu8Plane = new IntPtr[4] };
             offInput.ppu8Plane[0] = imageDataPtr;
             offInput.i32Width = width;
             offInput.i32Height = height;
@@ -125,55 +130,49 @@ namespace ColinChang.FaceRecognition
             AFDFunction.AFD_FSDK_StillImageFaceDetection(_detectEngine, offInputPtr, ref faceResPtr);
 
             var obj = Marshal.PtrToStructure(faceResPtr, typeof(AFD_FSDK_FACERES));
-            faceRes = (AFD_FSDK_FACERES) obj;
-            var faces = new Dictionary<string, byte[]>();
+            faceRes = (AFD_FSDK_FACERES)obj;
+            var features = new List<Feature>();
             if (faceRes.nFace > 0)
             {
-                //var faceFeature = string.Empty;
                 var faceInput = new AFR_FSDK_FaceInput
                 {
-                    lOrient = (int) Marshal.PtrToStructure(faceRes.lfaceOrient, typeof(int))
+                    lOrient = (int)Marshal.PtrToStructure(faceRes.lfaceOrient, typeof(int))
                 };
                 for (var i = 0; i < faceRes.nFace; i++)
                 {
-                    var rect = (MRECT) Marshal.PtrToStructure(faceRes.rcFace + Marshal.SizeOf(typeof(MRECT)) * i,
+                    var rect = (MRECT)Marshal.PtrToStructure(faceRes.rcFace + Marshal.SizeOf(typeof(MRECT)) * i,
                         typeof(MRECT));
                     faceInput.rcFace = rect;
 
                     var faceInputPtr = Marshal.AllocHGlobal(Marshal.SizeOf(faceInput));
                     Marshal.StructureToPtr(faceInput, faceInputPtr, false);
-
                     var faceModel = new AFR_FSDK_FaceModel();
                     var faceModelPtr = Marshal.AllocHGlobal(Marshal.SizeOf(faceModel));
-
                     AFRFunction.AFR_FSDK_ExtractFRFeature(_recognizeEngine, offInputPtr, faceInputPtr,
                         faceModelPtr);
-
-                    faceModel = (AFR_FSDK_FaceModel) Marshal.PtrToStructure(faceModelPtr, typeof(AFR_FSDK_FaceModel));
+                    faceModel = (AFR_FSDK_FaceModel)Marshal.PtrToStructure(faceModelPtr, typeof(AFR_FSDK_FaceModel));
 
                     var featureContent = new byte[faceModel.lFeatureSize];
                     if (featureContent.Length > 0)
                         Marshal.Copy(faceModel.pbFeature, featureContent, 0, faceModel.lFeatureSize);
-                    //faceFeature += Convert.ToBase64String(featureContent, Base64FormattingOptions.None);
-
-                    var imgName = register ? $"{Path.GetFileName(source)}_${i}" : $"temp_${i}";
-                    var ffd = Path.Combine(_faceLibrary, $"{imgName}.ffd");
-                    faces[ffd] = featureContent;
-                    if (File.Exists(ffd))
-                        File.Delete(ffd);
-                    File.WriteAllBytes(ffd, featureContent);
+                    features.Add(new Feature(source, i, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, featureContent));
+                    if (register)
+                    {
+                        var ffd = Path.Combine(_faceLibrary, $"{Path.GetFileName(source)}_${i}.ffd");
+                        if (File.Exists(ffd))
+                            File.Delete(ffd);
+                        File.WriteAllBytes(ffd, featureContent);
+                    }
 
                     Marshal.FreeHGlobal(faceModelPtr);
                     Marshal.FreeHGlobal(faceInputPtr);
                 }
-
-                //feature = Convert.FromBase64String(faceFeature);
             }
 
             Marshal.FreeHGlobal(offInputPtr);
             Marshal.FreeHGlobal(imageDataPtr);
 
-            return faces;
+            return features;
         }
 
         private static byte[] ReadImage(Image image, out int width, out int height, out int pitch)

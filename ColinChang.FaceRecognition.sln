@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColinChang.FaceRecognition", "ColinChang.FaceRecognition\ColinChang.FaceRecognition.csproj", "{B2D49A47-48CA-4814-9356-E70B8C9716FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColinChang.FaceRecognition.Sample", "ColinChang.FaceRecognition.Sample\ColinChang.FaceRecognition.Sample.csproj", "{D42F7782-62EA-46BB-B954-4EC90C03528C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{B2D49A47-48CA-4814-9356-E70B8C9716FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2D49A47-48CA-4814-9356-E70B8C9716FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2D49A47-48CA-4814-9356-E70B8C9716FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D42F7782-62EA-46BB-B954-4EC90C03528C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D42F7782-62EA-46BB-B954-4EC90C03528C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D42F7782-62EA-46BB-B954-4EC90C03528C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D42F7782-62EA-46BB-B954-4EC90C03528C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
