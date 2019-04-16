@@ -5,6 +5,7 @@ using System.DrawingCore.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using ColinChang.FaceRecognition.AFD;
 using ColinChang.FaceRecognition.AFR;
 
@@ -37,40 +38,63 @@ namespace ColinChang.FaceRecognition
                 throw new ArgumentException($"Initialize FaceRecognizeEngine failed.Error code:{fdCode}");
         }
 
-        public void Register(string faceLibrary)
+        public Task RegisterAsync(string faceLibrary)
         {
-            _faceLibrary = faceLibrary;
-
-            LoadImages();
-            foreach (var img in _images)
+            return Task.Run(() =>
             {
-                if (File.Exists($"{img}.ffd"))
-                    continue;
+                _faceLibrary = faceLibrary;
 
-                DetectFace(img, true);
-            }
+                LoadImages();
+                foreach (var img in _images)
+                {
+                    if (File.Exists($"{img}.ffd"))
+                        continue;
 
-            LoadFfds();
+                    DetectFace(img, true);
+                }
+
+                LoadFfds();
+            });
         }
 
-        public Dictionary<Feature, IEnumerable<KeyValuePair<string, float>>> Compare(string image, float similarity)
+        public async Task<Dictionary<Feature, IEnumerable<KeyValuePair<string, float>>>> RecognizeFaceAsync(string image,
+            float similarity)
         {
             if (string.IsNullOrWhiteSpace(image) || !File.Exists(image))
                 return null;
 
-            //key: FaceFeature
-            //value: [source.jpg_$2.ffd]=0.7 意为 image与source.jpg中第2张脸匹配度为0.7
-            var dict = new Dictionary<Feature, IEnumerable<KeyValuePair<string, float>>>();
-            var features = DetectFace(image);
-            foreach (var feature in features)
-            {
-                var res = Compare(feature.Content).Where(kv => kv.Value >= similarity);
-                if (res.Any())
-                    dict[feature] = res;
-            }
-
-            return dict;
+            return await CompareFaceAsync(image, similarity);
         }
+
+        public async Task<Dictionary<Feature, IEnumerable<KeyValuePair<string, float>>>> RecognizeFaceAsync(Stream image,
+            float similarity)
+        {
+            if (image == null || image.Length <= 0)
+                return null;
+
+            return await CompareFaceAsync(image, similarity);
+        }
+
+        private Task<Dictionary<Feature, IEnumerable<KeyValuePair<string, float>>>> CompareFaceAsync(object image,
+            float similarity)
+        {
+            return Task.Run(() =>
+            {
+                //key: FaceFeature
+                //value: [source.jpg_$2.ffd]=0.7 意为 image与source.jpg中第2张脸匹配度为0.7
+                var dict = new Dictionary<Feature, IEnumerable<KeyValuePair<string, float>>>();
+                var features = DetectFace(image);
+                foreach (var feature in features)
+                {
+                    var res = Compare(feature.Content).Where(kv => kv.Value >= similarity);
+                    if (res.Any())
+                        dict[feature] = res;
+                }
+
+                return dict;
+            });
+        }
+
 
         public void Dispose()
         {
@@ -106,12 +130,25 @@ namespace ColinChang.FaceRecognition
             }
         }
 
-        private IEnumerable<Feature> DetectFace(string source, bool register = false)
+        private IEnumerable<Feature> DetectFace(object source, bool register = false)
         {
             byte[] imageData;
             int width, height, pitch;
-            using (var img = Image.FromFile(source))
-                imageData = ReadImage(img, out width, out height, out pitch);
+
+            if (source is Stream)
+            {
+                using (var stream = (Stream)source)
+                {
+                    using (var img = Image.FromStream(stream))
+                        imageData = ReadImage(img, out width, out height, out pitch);
+                }
+
+            }
+            else
+            {
+                using (var img = Image.FromFile(source.ToString()))
+                    imageData = ReadImage(img, out width, out height, out pitch);
+            }
 
             var imageDataPtr = Marshal.AllocHGlobal(imageData.Length);
             Marshal.Copy(imageData, 0, imageDataPtr, imageData.Length);
@@ -155,10 +192,13 @@ namespace ColinChang.FaceRecognition
                     var featureContent = new byte[faceModel.lFeatureSize];
                     if (featureContent.Length > 0)
                         Marshal.Copy(faceModel.pbFeature, featureContent, 0, faceModel.lFeatureSize);
-                    features.Add(new Feature(source, i, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, featureContent));
+                    features.Add(new Feature(register ? source.ToString() : null, i, rect.left, rect.top,
+                        rect.right - rect.left,
+                        rect.bottom - rect.top, featureContent));
+
                     if (register)
                     {
-                        var ffd = Path.Combine(_faceLibrary, $"{Path.GetFileName(source)}_${i}.ffd");
+                        var ffd = Path.Combine(_faceLibrary, $"{Path.GetFileName(source.ToString())}_${i}.ffd");
                         if (File.Exists(ffd))
                             File.Delete(ffd);
                         File.WriteAllBytes(ffd, featureContent);
@@ -174,6 +214,7 @@ namespace ColinChang.FaceRecognition
 
             return features;
         }
+
 
         private static byte[] ReadImage(Image image, out int width, out int height, out int pitch)
         {

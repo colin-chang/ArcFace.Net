@@ -14,9 +14,9 @@ namespace ColinChang.FaceRecognition.Sample
             var image = "test.jpg";
             using (var fr = new FaceRecognizer(appId, fdKeY, frKeY))
             {
-                fr.Register("FaceLibrary");
+                fr.RegisterAsync("FaceLibrary").Wait();
 
-                var results = fr.Compare(image, 0.5f);
+                var results = fr.RecognizeFaceAsync(image, 0.5f).Result;
                 if (results != null && results.Any())
                 {
                     Console.WriteLine($"Image:{image}");
