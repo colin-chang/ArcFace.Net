@@ -3,18 +3,20 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Colin Chang</Authors>
-    <Version>1.1.0</Version>
-    <Description>A face recognition utility based on ArcSoft SDK 1.x for Windows platform.It can support multiple faces comparison.</Description>
+    <Version>1.1.2</Version>
+    <Description>This is a face recognition utility based on ArcSoft SDK 1.x for Windows platform.It can support multiple faces comparison.</Description>
     <Copyright>https://colin-chang.site/</Copyright>
     <PackageProjectUrl>https://github.com/colin-chang/FaceRecognition</PackageProjectUrl>
     <RepositoryUrl>https://github.com/colin-chang/FaceRecognition</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>FaceRecognition AI ArcSoft</PackageTags>
     <Owners>Colin Chang</Owners>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/colin-chang/FaceRecognition/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageId>ColinChang.FaceRecognition</PackageId>
-    <PackageReleaseNotes>1.Switch methods to async version
-2.Support face recognization by a stream</PackageReleaseNotes>
+    <PackageReleaseNotes>1.Support face recognization by a Image Type
+2.We will not dispose objects transfered inside anymore
+3.Replace broken dlls</PackageReleaseNotes>
+    <Product>ColinChang.FaceRecognition</Product>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

@@ -57,7 +57,8 @@ namespace ColinChang.FaceRecognition
             });
         }
 
-        public async Task<Dictionary<Feature, IEnumerable<KeyValuePair<string, float>>>> RecognizeFaceAsync(string image,
+        public async Task<Dictionary<Feature, IEnumerable<KeyValuePair<string, float>>>> RecognizeFaceAsync(
+            string image,
             float similarity)
         {
             if (string.IsNullOrWhiteSpace(image) || !File.Exists(image))
@@ -66,10 +67,20 @@ namespace ColinChang.FaceRecognition
             return await CompareFaceAsync(image, similarity);
         }
 
-        public async Task<Dictionary<Feature, IEnumerable<KeyValuePair<string, float>>>> RecognizeFaceAsync(Stream image,
+        public async Task<Dictionary<Feature, IEnumerable<KeyValuePair<string, float>>>> RecognizeFaceAsync(
+            Stream image,
             float similarity)
         {
             if (image == null || image.Length <= 0)
+                return null;
+
+            return await CompareFaceAsync(image, similarity);
+        }
+
+        public async Task<Dictionary<Feature, IEnumerable<KeyValuePair<string, float>>>> RecognizeFaceAsync(Image image,
+            float similarity)
+        {
+            if (image == null)
                 return null;
 
             return await CompareFaceAsync(image, similarity);
@@ -105,7 +116,7 @@ namespace ColinChang.FaceRecognition
         private void LoadImages()
         {
             _images.Clear();
-            var formats = new[] { ".jpg", ".jpeg", ".png", ".bmp" };
+            var formats = new[] {".jpg", ".jpeg", ".png", ".bmp"};
             var images = Directory.GetFiles(_faceLibrary, "*.*", SearchOption.AllDirectories);
             foreach (var img in images)
             {
@@ -135,25 +146,25 @@ namespace ColinChang.FaceRecognition
             byte[] imageData;
             int width, height, pitch;
 
-            if (source is Stream)
+            if (source is Stream stream)
             {
-                using (var stream = (Stream)source)
-                {
-                    using (var img = Image.FromStream(stream))
-                        imageData = ReadImage(img, out width, out height, out pitch);
-                }
-
+                using (var img = Image.FromStream(stream))
+                    imageData = ReadImage(img, out width, out height, out pitch);
+            }
+            else if (source is Image img)
+            {
+                imageData = ReadImage(img, out width, out height, out pitch);
             }
             else
             {
-                using (var img = Image.FromFile(source.ToString()))
-                    imageData = ReadImage(img, out width, out height, out pitch);
+                using (var img0 = Image.FromFile(source.ToString()))
+                    imageData = ReadImage(img0, out width, out height, out pitch);
             }
 
             var imageDataPtr = Marshal.AllocHGlobal(imageData.Length);
             Marshal.Copy(imageData, 0, imageDataPtr, imageData.Length);
 
-            var offInput = new ASVLOFFSCREEN { u32PixelArrayFormat = 513, ppu8Plane = new IntPtr[4] };
+            var offInput = new ASVLOFFSCREEN {u32PixelArrayFormat = 513, ppu8Plane = new IntPtr[4]};
             offInput.ppu8Plane[0] = imageDataPtr;
             offInput.i32Width = width;
             offInput.i32Height = height;
@@ -167,17 +178,17 @@ namespace ColinChang.FaceRecognition
             AFDFunction.AFD_FSDK_StillImageFaceDetection(_detectEngine, offInputPtr, ref faceResPtr);
 
             var obj = Marshal.PtrToStructure(faceResPtr, typeof(AFD_FSDK_FACERES));
-            faceRes = (AFD_FSDK_FACERES)obj;
+            faceRes = (AFD_FSDK_FACERES) obj;
             var features = new List<Feature>();
             if (faceRes.nFace > 0)
             {
                 var faceInput = new AFR_FSDK_FaceInput
                 {
-                    lOrient = (int)Marshal.PtrToStructure(faceRes.lfaceOrient, typeof(int))
+                    lOrient = (int) Marshal.PtrToStructure(faceRes.lfaceOrient, typeof(int))
                 };
                 for (var i = 0; i < faceRes.nFace; i++)
                 {
-                    var rect = (MRECT)Marshal.PtrToStructure(faceRes.rcFace + Marshal.SizeOf(typeof(MRECT)) * i,
+                    var rect = (MRECT) Marshal.PtrToStructure(faceRes.rcFace + Marshal.SizeOf(typeof(MRECT)) * i,
                         typeof(MRECT));
                     faceInput.rcFace = rect;
 
@@ -187,7 +198,7 @@ namespace ColinChang.FaceRecognition
                     var faceModelPtr = Marshal.AllocHGlobal(Marshal.SizeOf(faceModel));
                     AFRFunction.AFR_FSDK_ExtractFRFeature(_recognizeEngine, offInputPtr, faceInputPtr,
                         faceModelPtr);
-                    faceModel = (AFR_FSDK_FaceModel)Marshal.PtrToStructure(faceModelPtr, typeof(AFR_FSDK_FaceModel));
+                    faceModel = (AFR_FSDK_FaceModel) Marshal.PtrToStructure(faceModelPtr, typeof(AFR_FSDK_FaceModel));
 
                     var featureContent = new byte[faceModel.lFeatureSize];
                     if (featureContent.Length > 0)
