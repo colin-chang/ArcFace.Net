@@ -18,3 +18,15 @@ The Arcsoft SDK has different versions for x86 and x64.The `libarcsoft_fsdk_face
 
 * copy dlls under [x86 directory](https://github.com/colin-chang/FaceRecognition/tree/master/ColinChang.FaceRecognition/Sdk/x86) to FaceRecognition project and set their "Copy to output directory" to "Copy always"
 * Set `Project target` to `x86`
+
+
+# Enviroment
+## 1. Dependencies
+```bash
+# for Ubuntu 20.04
+sudo apt install libgdiplus/focal
+```
+
+## Tips
+× 人脸检测和特性提取目前进识别到的人脸角度不准确，目前识别到的角度均为0度。
+* 视频模式人脸追踪未开发

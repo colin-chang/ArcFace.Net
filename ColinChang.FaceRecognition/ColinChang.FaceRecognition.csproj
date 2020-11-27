@@ -1,102 +1,93 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Authors>Colin Chang</Authors>
-    <Version>1.1.2</Version>
-    <Description>This is a face recognition utility based on ArcSoft SDK 1.x for Windows platform.It can support multiple faces comparison.</Description>
-    <Copyright>https://colin-chang.site/</Copyright>
-    <PackageProjectUrl>https://github.com/colin-chang/FaceRecognition</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/colin-chang/FaceRecognition</RepositoryUrl>
-    <RepositoryType>Git</RepositoryType>
-    <PackageTags>FaceRecognition AI ArcSoft</PackageTags>
-    <Owners>Colin Chang</Owners>
-    <PackageLicenseUrl></PackageLicenseUrl>
-    <PackageId>ColinChang.FaceRecognition</PackageId>
-    <PackageReleaseNotes>1.Support face recognization by a Image Type
-2.We will not dispose objects transfered inside anymore
-3.Replace broken dlls</PackageReleaseNotes>
-    <Product>ColinChang.FaceRecognition</Product>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <Authors>Colin Chang</Authors>
+        <Version>1.1.2</Version>
+        <Description>This is a face recognition utility based on ArcSoft SDK 1.x for Windows platform.It can support multiple faces comparison.</Description>
+        <Copyright>https://colin-chang.site/</Copyright>
+        <PackageProjectUrl>https://github.com/colin-chang/FaceRecognition</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/colin-chang/FaceRecognition</RepositoryUrl>
+        <RepositoryType>Git</RepositoryType>
+        <PackageTags>FaceRecognition AI ArcSoft</PackageTags>
+        <Owners>Colin Chang</Owners>
+        <PackageLicenseUrl></PackageLicenseUrl>
+        <PackageId>ColinChang.FaceRecognition</PackageId>
+        <PackageReleaseNotes>1.Support face recognization by a Image Type
+            2.We will not dispose objects transfered inside anymore
+            3.Replace broken dlls
+        </PackageReleaseNotes>
+        <Product>ColinChang.FaceRecognition</Product>
+        <LangVersion>default</LangVersion>
+    </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <PlatformTarget>x64</PlatformTarget>
+    </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <PlatformTarget>x64</PlatformTarget>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="libarcsoft_fsdk_face_detection.dll" />
-    <None Remove="libarcsoft_fsdk_face_recognition.dll" />
-    <None Remove="libs\AForge.Controls.dll" />
-    <None Remove="libs\AForge.Controls.xml" />
-    <None Remove="libs\AForge.dll" />
-    <None Remove="libs\AForge.Imaging.dll" />
-    <None Remove="libs\AForge.Imaging.xml" />
-    <None Remove="libs\AForge.Math.dll" />
-    <None Remove="libs\AForge.Math.xml" />
-    <None Remove="libs\AForge.Video.DirectShow.dll" />
-    <None Remove="libs\AForge.Video.DirectShow.xml" />
-    <None Remove="libs\AForge.Video.dll" />
-    <None Remove="libs\AForge.Video.xml" />
-    <None Remove="libs\AForge.xml" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="5.0.0" />
+        <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="libarcsoft_fsdk_face_detection.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="libarcsoft_fsdk_face_recognition.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="libs\AForge.Controls.dll" />
-    <Content Include="libs\AForge.Controls.xml" />
-    <Content Include="libs\AForge.dll" />
-    <Content Include="libs\AForge.Imaging.dll" />
-    <Content Include="libs\AForge.Imaging.xml" />
-    <Content Include="libs\AForge.Math.dll" />
-    <Content Include="libs\AForge.Math.xml" />
-    <Content Include="libs\AForge.Video.DirectShow.dll" />
-    <Content Include="libs\AForge.Video.DirectShow.xml" />
-    <Content Include="libs\AForge.Video.dll" />
-    <Content Include="libs\AForge.Video.xml" />
-    <Content Include="libs\AForge.xml" />
-  </ItemGroup>
+    <ItemGroup>
+        <Folder Include="sdks\linuxx64" />
+        <Folder Include="sdks\winx64" />
+        <Folder Include="sdks\winx86" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="AForge">
-      <HintPath>libs\AForge.dll</HintPath>
-    </Reference>
-    <Reference Include="AForge.Controls">
-      <HintPath>libs\AForge.Controls.dll</HintPath>
-    </Reference>
-    <Reference Include="AForge.Imaging">
-      <HintPath>libs\AForge.Imaging.dll</HintPath>
-    </Reference>
-    <Reference Include="AForge.Math">
-      <HintPath>libs\AForge.Math.dll</HintPath>
-    </Reference>
-    <Reference Include="AForge.Video">
-      <HintPath>libs\AForge.Video.dll</HintPath>
-    </Reference>
-    <Reference Include="AForge.Video.DirectShow">
-      <HintPath>libs\AForge.Video.DirectShow.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+    <ItemGroup>
+        <Content Include="libs\AForge.Controls.dll">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="libs\AForge.dll">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="libs\AForge.Imaging.dll">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="libs\AForge.Imaging.Formats.dll">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="libs\AForge.Math.dll">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="libs\AForge.Video.DirectShow.dll">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="libs\AForge.Video.dll">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="ZKWeb.System.Drawing" Version="4.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Sdk\x64\libarcsoft_fsdk_face_detection.dll">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-    <None Update="Sdk\x64\libarcsoft_fsdk_face_recognition.dll">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
+    <ItemGroup>
+        <Reference Include="AForge, Version=2.2.5.0, Culture=neutral, PublicKeyToken=c1db6ff4eaa06aeb">
+            <HintPath>libs\AForge.dll</HintPath>
+        </Reference>
+        <Reference Include="AForge.Controls, Version=2.2.5.0, Culture=neutral, PublicKeyToken=a8ac264d1dc6b9d9">
+            <HintPath>libs\AForge.Controls.dll</HintPath>
+        </Reference>
+        <Reference Include="AForge.Imaging, Version=2.2.5.0, Culture=neutral, PublicKeyToken=ba8ddea9676ca48b">
+            <HintPath>libs\AForge.Imaging.dll</HintPath>
+        </Reference>
+        <Reference Include="AForge.Imaging.Formats, Version=2.2.4.0, Culture=neutral, PublicKeyToken=8065ed5a639199a0">
+            <HintPath>libs\AForge.Imaging.Formats.dll</HintPath>
+        </Reference>
+        <Reference Include="AForge.Math, Version=2.2.5.0, Culture=neutral, PublicKeyToken=abba2e25397ee8c9">
+            <HintPath>libs\AForge.Math.dll</HintPath>
+        </Reference>
+        <Reference Include="AForge.Video, Version=2.2.5.0, Culture=neutral, PublicKeyToken=cbfb6e07d173c401">
+            <HintPath>libs\AForge.Video.dll</HintPath>
+        </Reference>
+        <Reference Include="AForge.Video.DirectShow, Version=2.2.5.0, Culture=neutral, PublicKeyToken=61ea4348d43881b7">
+            <HintPath>libs\AForge.Video.DirectShow.dll</HintPath>
+        </Reference>
+    </ItemGroup>
 </Project>

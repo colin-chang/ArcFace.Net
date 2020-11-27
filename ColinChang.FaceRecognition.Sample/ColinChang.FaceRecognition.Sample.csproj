@@ -2,15 +2,12 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <LangVersion>default</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\ColinChang.FaceRecognition\ColinChang.FaceRecognition.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="ColinChang.ConfigurationManager.Core" Version="1.0.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -26,6 +23,36 @@
       <None Update="test.jpg">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="AForge, Version=2.2.5.0, Culture=neutral, PublicKeyToken=c1db6ff4eaa06aeb">
+        <HintPath>..\ColinChang.FaceRecognition\libs\AForge.dll</HintPath>
+      </Reference>
+      <Reference Include="AForge.Controls, Version=2.2.5.0, Culture=neutral, PublicKeyToken=a8ac264d1dc6b9d9">
+        <HintPath>..\ColinChang.FaceRecognition\libs\AForge.Controls.dll</HintPath>
+      </Reference>
+      <Reference Include="AForge.Imaging, Version=2.2.5.0, Culture=neutral, PublicKeyToken=ba8ddea9676ca48b">
+        <HintPath>..\ColinChang.FaceRecognition\libs\AForge.Imaging.dll</HintPath>
+      </Reference>
+      <Reference Include="AForge.Imaging.Formats, Version=2.2.4.0, Culture=neutral, PublicKeyToken=8065ed5a639199a0">
+        <HintPath>..\ColinChang.FaceRecognition\libs\AForge.Imaging.Formats.dll</HintPath>
+      </Reference>
+      <Reference Include="AForge.Math, Version=2.2.5.0, Culture=neutral, PublicKeyToken=abba2e25397ee8c9">
+        <HintPath>..\ColinChang.FaceRecognition\libs\AForge.Math.dll</HintPath>
+      </Reference>
+      <Reference Include="AForge.Video, Version=2.2.5.0, Culture=neutral, PublicKeyToken=cbfb6e07d173c401">
+        <HintPath>..\ColinChang.FaceRecognition\libs\AForge.Video.dll</HintPath>
+      </Reference>
+      <Reference Include="AForge.Video.DirectShow, Version=2.2.5.0, Culture=neutral, PublicKeyToken=61ea4348d43881b7">
+        <HintPath>..\ColinChang.FaceRecognition\libs\AForge.Video.DirectShow.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>
