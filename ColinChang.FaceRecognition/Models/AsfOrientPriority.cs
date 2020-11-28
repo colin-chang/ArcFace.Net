@@ -1,9 +1,9 @@
-﻿﻿ namespace ColinChang.FaceRecognition.Models
+﻿namespace ColinChang.FaceRecognition.Models
 {
     /// <summary>
     /// 人脸检测优先角度结构体，推荐ASF_OP_0_HIGHER_EXT
     /// </summary>
-    public struct ASF_OrientPriority
+    public struct AsfOrientPriority
     {
         public const int ASF_OP_0_ONLY = 0x1;
         public const int ASF_OP_90_ONLY = 0x2;

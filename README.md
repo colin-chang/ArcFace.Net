@@ -26,7 +26,16 @@ The Arcsoft SDK has different versions for x86 and x64.The `libarcsoft_fsdk_face
 # for Ubuntu 20.04
 sudo apt install libgdiplus/focal
 ```
+**务必将so文件拷贝到/lib目录下**
+
+
+人脸3D角度：俯仰角（pitch）， 横滚角（roll）， 偏航角（yaw）
+
+![](3DAngle.png)
 
 ## Tips
 × 人脸检测和特性提取目前进识别到的人脸角度不准确，目前识别到的角度均为0度。
 * 视频模式人脸追踪未开发
+* 活体检测未开发
+
+PUT the 3D Angle model picture here

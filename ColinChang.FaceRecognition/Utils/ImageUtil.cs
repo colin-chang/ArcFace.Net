@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.IO;
 using System.Runtime.InteropServices;
 using ColinChang.FaceRecognition.Models;
-
 
 namespace ColinChang.FaceRecognition.Utils
 {
@@ -33,9 +32,9 @@ namespace ColinChang.FaceRecognition.Utils
             g.Clear(Color.Transparent);
 
             //设置画布的描绘质量         
-            g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            g.CompositingQuality = CompositingQuality.HighQuality;
+            g.SmoothingMode = SmoothingMode.HighQuality;
+            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
             g.DrawImage(image, new Rectangle((width - width) / 2, (height - height) / 2, width, height), 0, 0,
                 image.Width, image.Height, GraphicsUnit.Pixel);
 
@@ -62,9 +61,13 @@ namespace ColinChang.FaceRecognition.Utils
                 scaleRate = widthDis > heightDis ? newWidth * 1f / oldWidth : newHeight * 1f / oldHeight;
             }
             else if (oldWidth >= newWidth && oldHeight < newHeight)
+            {
                 scaleRate = newWidth * 1f / oldWidth;
+            }
             else if (oldWidth < newWidth && oldHeight >= newHeight)
+            {
                 scaleRate = newHeight * 1f / oldHeight;
+            }
             else
             {
                 var widthDis = newWidth - oldWidth;
@@ -106,12 +109,11 @@ namespace ColinChang.FaceRecognition.Utils
                 {
                     Width = data.Width,
                     Height = data.Height,
-                    Format = ASF_ImagePixelFormat.ASVL_PAF_RGB24_B8G8R8,
+                    Format = AsfImagePixelFormat.ASVL_PAF_RGB24_B8G8R8,
                     ImgData = Marshal.AllocHGlobal(sourceBitArray.Length)
                 };
 
                 Marshal.Copy(sourceBitArray, 0, imageInfo.ImgData, sourceBitArray.Length);
-
                 return imageInfo;
             }
             finally
@@ -147,7 +149,7 @@ namespace ColinChang.FaceRecognition.Utils
                 //填充引用对象字段值
                 imageInfo.Width = data.Width;
                 imageInfo.Height = data.Height;
-                imageInfo.Format = (int) ASF_ImagePixelFormat.ASVL_PAF_GRAY;
+                imageInfo.Format = AsfImagePixelFormat.ASVL_PAF_GRAY;
 
                 //获取去除对齐位后度图像数据
                 var line = imageInfo.Width;
@@ -168,10 +170,6 @@ namespace ColinChang.FaceRecognition.Utils
                 Marshal.Copy(destBitArray, 0, imageInfo.ImgData, destBitArray.Length);
 
                 return imageInfo;
-            }
-            catch (Exception e)
-            {
-                throw e;
             }
             finally
             {
@@ -200,9 +198,9 @@ namespace ColinChang.FaceRecognition.Utils
                 g.Clear(Color.Transparent);
 
                 //设置画布的描绘质量         
-                g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.CompositingQuality = CompositingQuality.HighQuality;
+                g.SmoothingMode = SmoothingMode.HighQuality;
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 g.DrawImage(srcBitmap, new Rectangle(0, 0, width, height), left, top, width, height,
                     GraphicsUnit.Pixel);
 

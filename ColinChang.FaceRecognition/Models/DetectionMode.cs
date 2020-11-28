@@ -3,7 +3,7 @@
     /// <summary>
     /// 检测模式
     /// </summary>
-    public struct ASF_DetectionMode
+    public struct AsfDetectionMode
     {
         /// <summary>
         /// Video模式，一般用于多帧连续检测
@@ -18,8 +18,8 @@
 
     public enum DetectionModeEnum
     {
-        IMAGE,
-        VIDEO,
+        Image,
+        Video,
         RGB,
         IR
     }

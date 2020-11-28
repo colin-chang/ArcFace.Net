@@ -2,7 +2,7 @@ using System;
 
 namespace ColinChang.FaceRecognition.Models
 {
-    struct AsfActiveFileInfo
+    internal struct AsfActiveFileInfo : ICast<ActiveFileInfo>
     {
         public string StartTime { get; set; }
         public string EndTime { get; set; }
@@ -13,11 +13,13 @@ namespace ColinChang.FaceRecognition.Models
         public string SdkVersion { get; set; }
         public string FileVersion { get; set; }
 
-        public ActiveFileInfo Cast() =>
-            new ActiveFileInfo(
+        public ActiveFileInfo Cast()
+        {
+            return new ActiveFileInfo(
                 DateTimeOffset.FromUnixTimeSeconds(long.Parse(StartTime)).LocalDateTime,
                 DateTimeOffset.FromUnixTimeSeconds(long.Parse(EndTime)).LocalDateTime,
                 Platform, SdkType, AppId, SdkKey, SdkVersion, FileVersion);
+        }
     }
 
     public struct ActiveFileInfo

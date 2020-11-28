@@ -9,6 +9,6 @@ namespace ColinChang.FaceRecognition.Models
     {
         public Rect Rect { get; set; }
         public IntPtr Feature { get; set; }
-        public string message = string.Empty;
+        public string Message { get; set; }
     }
 }

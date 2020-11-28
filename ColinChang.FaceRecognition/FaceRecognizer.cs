@@ -1,26 +1,35 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Drawing.Imaging;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-using AForge.Imaging;
 using ColinChang.FaceRecognition.Models;
 using ColinChang.FaceRecognition.Utils;
 using Microsoft.Extensions.Options;
-using Image = System.Drawing.Image;
 
 namespace ColinChang.FaceRecognition
 {
-    public class FaceRecognizer : IFaceRecognizer, IDisposable
+    public class FaceRecognizer : IFaceRecognizer
     {
+        private readonly ConcurrentDictionary<string, IntPtr> _faceLibrary = new ConcurrentDictionary<string, IntPtr>();
+        private readonly float _minSimilarity = 0.7f;
         private readonly FaceRecognitionOptions _options;
 
-        #region 引擎控制
+        public FaceRecognizer(IOptions<FaceRecognitionOptions> options) : this(options.Value)
+        {
+        }
+
+        public FaceRecognizer(FaceRecognitionOptions options)
+        {
+            _options = options;
+            OnlineActive();
+        }
+
+        #region 引擎池
 
         private readonly ConcurrentQueue<IntPtr> _imageEngines = new ConcurrentQueue<IntPtr>();
         private readonly int _imageEnginesCount = 0;
@@ -57,98 +66,281 @@ namespace ColinChang.FaceRecognition
 
         #endregion
 
-        public FaceRecognizer(IOptions<FaceRecognitionOptions> options) : this(options.Value)
-        {
-        }
+        #region SDK信息 激活信息/版本信息
 
-        public FaceRecognizer(FaceRecognitionOptions options)
-        {
-            _options = options;
-            OnlineActive();
-        }
-
-        /// <summary>
-        /// 获取激活文件信息
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public async Task<ActiveFileInfo> GetActiveFileInfoAsync()
+        public async Task<OperationResult<ActiveFileInfo>> GetActiveFileInfoAsync()
         {
             return await Task.Run(() =>
             {
-                var pointer = Marshal.AllocHGlobal(Marshal.SizeOf<AsfActiveFileInfo>());
-                var code = ASFFunctions.ASFGetActiveFileInfo(pointer);
-                if (code != 0)
+                var pointer = IntPtr.Zero;
+                try
                 {
-                    Marshal.FreeHGlobal(pointer);
-                    throw new Exception($"failed to get active file info. error code {code}");
-                }
+                    pointer = Marshal.AllocHGlobal(Marshal.SizeOf<AsfActiveFileInfo>());
+                    var code = AsfUtil.ASFGetActiveFileInfo(pointer);
+                    if (code != 0)
+                        return new OperationResult<ActiveFileInfo>(code);
 
-                var info = Marshal.PtrToStructure<AsfActiveFileInfo>(pointer);
-                Marshal.FreeHGlobal(pointer);
-                return info.Cast();
+                    var info = Marshal.PtrToStructure<AsfActiveFileInfo>(pointer);
+                    return new OperationResult<ActiveFileInfo>(info.Cast());
+                }
+                finally
+                {
+                    if (pointer != IntPtr.Zero)
+                        Marshal.FreeHGlobal(pointer);
+                }
             });
         }
 
-        /// <summary>
-        /// 获取SDK版本信息
-        /// </summary>
-        /// <returns></returns>
         public async Task<VersionInfo> GetSdkVersionAsync()
         {
             return await Task.Run(() =>
             {
-                var pointer = Marshal.AllocHGlobal(Marshal.SizeOf<AsfVersionInfo>());
-                ASFFunctions.ASFGetVersion(pointer);
-                var version = Marshal.PtrToStructure<AsfVersionInfo>(pointer);
-                Marshal.FreeHGlobal(pointer);
-                return version.Cast();
+                var pointer = IntPtr.Zero;
+                try
+                {
+                    pointer = Marshal.AllocHGlobal(Marshal.SizeOf<AsfVersionInfo>());
+                    AsfUtil.ASFGetVersion(pointer);
+                    var version = Marshal.PtrToStructure<AsfVersionInfo>(pointer);
+                    return version.Cast();
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(pointer);
+                }
             });
         }
 
-        /// <summary>
-        /// 人脸检测
-        /// </summary>
-        public async Task<MultiFaceInfo> DetectFaceAsync(string image)
+        #endregion
+
+        #region 人脸属性 3D角度/年龄/性别
+
+        public async Task<OperationResult<Face3DAngle>> GetFace3DAngleAsync(string image)
         {
-            VerifyImage(image);
+            return await ProcessImageAsync<AsfFace3DAngle, Face3DAngle>(image, FaceUtil.GetFace3DAngleAsync);
+        }
+
+        public async Task<OperationResult<AgeInfo>> GetAgeAsync(string image)
+        {
+            return await ProcessImageAsync<AsfAgeInfo, AgeInfo>(image, FaceUtil.GetAgeAsync);
+        }
+
+        public async Task<OperationResult<GenderInfo>> GetGenderAsync(string image)
+        {
+            return await ProcessImageAsync<AsfGenderInfo, GenderInfo>(image, FaceUtil.GetGenderAsync);
+        }
+
+        #endregion
+
+        #region 核心功能 人脸检测/特征提取/人脸比对
+
+        public async Task<OperationResult<MultiFaceInfo>> DetectFaceAsync(string image) =>
+            await ProcessImageAsync<AsfMultiFaceInfo, MultiFaceInfo>(image, FaceUtil.DetectFaceAsync);
+
+        public async Task<OperationResult<IEnumerable<byte[]>>> ExtractFaceFeatureAsync(string image)
+        {
+            return await ProcessImageAsync<IEnumerable<byte[]>, IEnumerable<byte[]>>(image,
+                FaceUtil.ExtractFeatureAsync);
+        }
+
+        public async Task<OperationResult<float>> CompareFaceFeatureAsync(byte[] feature1, byte[] feature2)
+        {
+            return await Task.Run(() =>
+            {
+                var engine = IntPtr.Zero;
+                var featureA = IntPtr.Zero;
+                var featureB = IntPtr.Zero;
+                try
+                {
+                    engine = GetEngine(DetectionModeEnum.Image);
+                    featureA = feature1.ToFaceFeature();
+                    featureB = feature2.ToFaceFeature();
+
+                    var similarity = 0f;
+                    var code = AsfUtil.ASFFaceFeatureCompare(engine, featureA, featureB, ref similarity);
+                    return new OperationResult<float>(similarity, code);
+                }
+                finally
+                {
+                    RecycleEngine(engine, DetectionModeEnum.Image);
+                    if (featureA != IntPtr.Zero)
+                        Marshal.FreeHGlobal(featureA);
+                    if (featureB != IntPtr.Zero)
+                        Marshal.FreeHGlobal(featureB);
+                }
+            });
+        }
+
+        #endregion
+
+        #region 人脸库管理 初始化/新增人脸/删除人脸/搜索人脸
+
+        public async Task InitFaceLibraryAsync(IEnumerable<string> images)
+        {
+            if (images == null || !images.Any())
+                return;
+
+            var engine = IntPtr.Zero;
+            try
+            {
+                engine = GetEngine(DetectionModeEnum.Image);
+                foreach (var image in images)
+                    try
+                    {
+                        using var img = VerifyImage(image);
+                        var faceId = Path.GetFileNameWithoutExtension(image);
+                        var feature = await FaceUtil.ExtractSingleFeatureAsync(engine, img);
+                        if (feature.Code != 0)
+                            continue;
+
+                        _faceLibrary[faceId] = feature.Data;
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+            }
+            finally
+            {
+                RecycleEngine(engine, DetectionModeEnum.Image);
+            }
+        }
+
+        public async Task InitFaceLibraryAsync(Dictionary<string, byte[]> faceFeatures)
+        {
+            await Task.Run(() =>
+            {
+                if (faceFeatures == null || !faceFeatures.Any())
+                    return;
+
+                foreach (var (faceId, feature) in faceFeatures)
+                    _faceLibrary[faceId] = feature.ToFaceFeature();
+            });
+        }
+
+        public async Task<long> AddFaceAsync(string image)
+        {
             Image img = null;
             var engine = IntPtr.Zero;
             try
             {
-                img = Image.FromFile(image);
-                if (img == null)
-                    return default;
+                img = VerifyImage(image);
+                engine = GetEngine(DetectionModeEnum.Image);
+                var faceId = Path.GetFileNameWithoutExtension(image);
+                var feature = await FaceUtil.ExtractSingleFeatureAsync(engine, img);
+                if (feature.Code == 0)
+                    _faceLibrary[faceId] = feature.Data;
 
-                //缩放
-                if (img.Width > 1536 || img.Height > 1536)
-                    img = ImageUtil.ScaleImage(img, 1536, 1536);
-                if (img.Width % 4 != 0)
-                    img = ImageUtil.ScaleImage(img, img.Width - (img.Width % 4), img.Height);
-
-                //人脸检测
-                engine = GetEngine(DetectionModeEnum.IMAGE);
-                var multiFaceInfo = await FaceUtil.DetectFaceAsync(engine, img);
-                return multiFaceInfo.Cast();
+                return feature.Code;
             }
             finally
             {
                 img?.Dispose();
-                RecycleEngine(engine, DetectionModeEnum.IMAGE);
+                RecycleEngine(engine, DetectionModeEnum.Image);
             }
         }
 
-        /// <summary>
-        /// 人脸特征提取
-        /// </summary>
-        /// <param name="picture"></param>
-        /// <returns></returns>
-        public async Task FaceFeatureExtractAsync(string image)
+        public async Task AddFaceAsync(string faceId, byte[] feature)
         {
-            var engine = GetEngine(DetectionModeEnum.IMAGE);
-            var img = Image.FromFile(image);
-            var feature = await FaceUtil.ExtractFeatureAsync(engine, img);
+            await Task.Run(() =>
+            {
+                if (string.IsNullOrWhiteSpace(faceId) || feature == null || !feature.Any())
+                    return;
+
+                _faceLibrary[faceId] = feature.ToFaceFeature();
+            });
         }
+
+        public async Task RemoveFaceAsync(string faceId)
+        {
+            await Task.Run(() =>
+            {
+                if (string.IsNullOrWhiteSpace(faceId) || !_faceLibrary.ContainsKey(faceId))
+                    return;
+
+                _faceLibrary.Remove(faceId, out var feature);
+                Marshal.FreeHGlobal(feature);
+            });
+        }
+
+        public async Task<OperationResult<Recognition>> SearchFaceAsync(string image)
+        {
+            Image img = null;
+            var engine = IntPtr.Zero;
+            var featureInfo = IntPtr.Zero;
+            try
+            {
+                img = VerifyImage(image);
+                engine = GetEngine(DetectionModeEnum.Image);
+                var faceFeature = await FaceUtil.ExtractSingleFeatureAsync(engine, img);
+                featureInfo = faceFeature.Data;
+                if (faceFeature.Code != 0)
+                    return new OperationResult<Recognition>(faceFeature.Code);
+
+                var recognition = new Recognition();
+                foreach (var (faceId, feature) in _faceLibrary)
+                {
+                    var similarity = 0f;
+                    var code = AsfUtil.ASFFaceFeatureCompare(engine, featureInfo, feature, ref similarity);
+                    if (code != 0)
+                        continue;
+                    if (similarity <= recognition.Similarity)
+                        continue;
+
+                    recognition.Similarity = similarity;
+                    recognition.FaceId = faceId;
+                }
+
+                return recognition.Similarity < _minSimilarity ? null : new OperationResult<Recognition>(recognition);
+            }
+            finally
+            {
+                img?.Dispose();
+                if (featureInfo != IntPtr.Zero)
+                    Marshal.FreeHGlobal(featureInfo);
+                RecycleEngine(engine, DetectionModeEnum.Image);
+            }
+        }
+
+        public async Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature)
+        {
+            return await Task.Run(() =>
+            {
+                var engine = IntPtr.Zero;
+                var featureInfo = IntPtr.Zero;
+                try
+                {
+                    featureInfo = feature.ToFaceFeature();
+                    var recognition = new Recognition();
+                    engine = GetEngine(DetectionModeEnum.Image);
+                    foreach (var (faceId, faceFeature) in _faceLibrary)
+                    {
+                        var similarity = 0f;
+                        var code = AsfUtil.ASFFaceFeatureCompare(engine, featureInfo, faceFeature, ref similarity);
+                        if (code != 0)
+                            continue;
+                        if (similarity <= recognition.Similarity)
+                            continue;
+
+                        recognition.Similarity = similarity;
+                        recognition.FaceId = faceId;
+                    }
+
+                    return recognition.Similarity < _minSimilarity
+                        ? null
+                        : new OperationResult<Recognition>(recognition);
+                }
+                finally
+                {
+                    if (featureInfo != IntPtr.Zero)
+                        Marshal.FreeHGlobal(featureInfo);
+                    RecycleEngine(engine, DetectionModeEnum.Image);
+                }
+            });
+        }
+
+        #endregion
+
+        #region 资源管理 激活/引擎池管理/资源回收
 
         /// <summary>
         /// 在线激活
@@ -156,7 +348,7 @@ namespace ColinChang.FaceRecognition
         /// <exception cref="Exception"></exception>
         private void OnlineActive()
         {
-            var code = ASFFunctions.ASFOnlineActivation(_options.AppId, _options.SdkKey);
+            var code = AsfUtil.ASFOnlineActivation(_options.AppId, _options.SdkKey);
             if (code != 90114)
                 throw new Exception($"failed to active. error code:{code}");
         }
@@ -199,22 +391,22 @@ namespace ColinChang.FaceRecognition
             var engine = IntPtr.Zero;
             var code = mode switch
             {
-                DetectionModeEnum.IMAGE => ASFFunctions.ASFInitEngine(
-                    ASF_DetectionMode.ASF_DETECT_MODE_IMAGE, _options.ImageDetectFaceOrientPriority,
+                DetectionModeEnum.Image => AsfUtil.ASFInitEngine(
+                    AsfDetectionMode.ASF_DETECT_MODE_IMAGE, _options.ImageDetectFaceOrientPriority,
                     _options.ImageDetectFaceScaleVal, _options.DetectFaceMaxNum,
                     FaceEngineMask.ASF_FACE_DETECT | FaceEngineMask.ASF_FACERECOGNITION | FaceEngineMask.ASF_AGE |
                     FaceEngineMask.ASF_GENDER | FaceEngineMask.ASF_FACE3DANGLE, ref engine),
-                DetectionModeEnum.VIDEO => ASFFunctions.ASFInitEngine(
-                    ASF_DetectionMode.ASF_DETECT_MODE_VIDEO, _options.VideoDetectFaceOrientPriority,
+                DetectionModeEnum.Video => AsfUtil.ASFInitEngine(
+                    AsfDetectionMode.ASF_DETECT_MODE_VIDEO, _options.VideoDetectFaceOrientPriority,
                     _options.VideoDetectFaceScaleVal, _options.DetectFaceMaxNum,
                     FaceEngineMask.ASF_FACE_DETECT | FaceEngineMask.ASF_FACERECOGNITION, ref engine),
-                DetectionModeEnum.RGB => ASFFunctions.ASFInitEngine(
-                    ASF_DetectionMode.ASF_DETECT_MODE_IMAGE, _options.ImageDetectFaceOrientPriority,
+                DetectionModeEnum.RGB => AsfUtil.ASFInitEngine(
+                    AsfDetectionMode.ASF_DETECT_MODE_IMAGE, _options.ImageDetectFaceOrientPriority,
                     _options.VideoDetectFaceScaleVal, 1,
                     FaceEngineMask.ASF_FACE_DETECT | FaceEngineMask.ASF_FACERECOGNITION | FaceEngineMask.ASF_LIVENESS,
                     ref engine),
-                DetectionModeEnum.IR => ASFFunctions.ASFInitEngine(
-                    ASF_DetectionMode.ASF_DETECT_MODE_IMAGE, _options.ImageDetectFaceOrientPriority,
+                DetectionModeEnum.IR => AsfUtil.ASFInitEngine(
+                    AsfDetectionMode.ASF_DETECT_MODE_IMAGE, _options.ImageDetectFaceOrientPriority,
                     _options.VideoDetectFaceScaleVal, 1,
                     FaceEngineMask.ASF_FACE_DETECT | FaceEngineMask.ASF_FACERECOGNITION |
                     FaceEngineMask.ASF_IR_LIVENESS, ref engine),
@@ -256,7 +448,7 @@ namespace ColinChang.FaceRecognition
                     if (!engines.TryDequeue(out var engine))
                         Thread.Sleep(1000);
 
-                    var code = ASFFunctions.ASFUninitEngine(engine);
+                    var code = AsfUtil.ASFUninitEngine(engine);
                     if (code != 0)
                         engines.Enqueue(engine);
                 }
@@ -276,25 +468,51 @@ namespace ColinChang.FaceRecognition
             UninitEngine(_videoEngines);
             UninitEngine(_rgbEngines);
             UninitEngine(_irEngines);
+
+            //释放 人脸库资源
+            foreach (var feature in _faceLibrary.Values)
+                Marshal.FreeHGlobal(feature);
         }
+
+        #endregion
 
         #region 工具方法
 
         private (ConcurrentQueue<IntPtr> Engines, int EnginesCount, EventWaitHandle EnginesWaitHandle) GetEngineStuff(
-            DetectionModeEnum mode) =>
-            mode switch
+            DetectionModeEnum mode)
+        {
+            return mode switch
             {
-                DetectionModeEnum.IMAGE => (_imageEngines, _imageEnginesCount, _imageWaitHandle),
-                DetectionModeEnum.VIDEO => (_videoEngines, _videoEnginesCount, _videoWaitHandle),
+                DetectionModeEnum.Image => (_imageEngines, _imageEnginesCount, _imageWaitHandle),
+                DetectionModeEnum.Video => (_videoEngines, _videoEnginesCount, _videoWaitHandle),
                 DetectionModeEnum.RGB => (_rgbEngines, _rgbEnginesCount, _rgbWaitHandle),
                 DetectionModeEnum.IR => (_irEngines, _irEnginesCount, _irWaitHandle),
                 _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, "invalid detection mode")
             };
+        }
 
-        private void VerifyImage(string image)
+        private async Task<OperationResult<TK>> ProcessImageAsync<T, TK>(string image,
+            Func<IntPtr, Image, Task<OperationResult<T>>> process)
+        {
+            Image img = null;
+            var engine = IntPtr.Zero;
+            try
+            {
+                img = VerifyImage(image);
+                engine = GetEngine(DetectionModeEnum.Image);
+                return (await process(engine, img)).Cast<TK>();
+            }
+            finally
+            {
+                img?.Dispose();
+                RecycleEngine(engine, DetectionModeEnum.Image);
+            }
+        }
+
+        private Image VerifyImage(string image)
         {
             if (!File.Exists(image))
-                throw new FileNotFoundException();
+                throw new FileNotFoundException($"{image} doesn't exist.");
 
             var size = new FileInfo(image).Length;
             if (size > _maxImageSize)
@@ -303,281 +521,28 @@ namespace ColinChang.FaceRecognition
                 throw new Exception($"image is too small than {_minImageSize}B");
 
             if (!_supportedImageExtensions.Contains(Path.GetExtension(image).ToLower()))
-                throw new UnsupportedImageFormatException("unsupported image type.");
+                throw new Exception("unsupported image type.");
 
-            Image img = null;
+
             try
             {
-                img = Image.FromFile(image);
+                var img = Image.FromFile(image);
+                if (img == null)
+                    throw new InvalidDataException($"invalid image {image}");
+
+                //缩放
+                if (img.Width > 1536 || img.Height > 1536)
+                    img = ImageUtil.ScaleImage(img, 1536, 1536);
+                if (img.Width % 4 != 0)
+                    img = ImageUtil.ScaleImage(img, img.Width - img.Width % 4, img.Height);
+                return img;
             }
             catch
             {
-                throw new UnsupportedImageFormatException("unsupported image type.");
-            }
-            finally
-            {
-                img?.Dispose();
+                throw new Exception("unsupported image type.");
             }
         }
 
         #endregion
-
-
-        // public Task RegisterAsync(string faceLibrary)
-        // {
-        //     return Task.Run(() =>
-        //     {
-        //         _faceLibrary = faceLibrary;
-        //
-        //         LoadImages();
-        //         foreach (var img in _images)
-        //         {
-        //             if (File.Exists($"{img}.ffd"))
-        //                 continue;
-        //
-        //             DetectFace(img, true);
-        //         }
-        //
-        //         LoadFfds();
-        //     });
-        // }
-        //
-        // public async Task<Dictionary<Feature, IEnumerable<KeyValuePair<string, float>>>> RecognizeFaceAsync(
-        //     string image,
-        //     float similarity)
-        // {
-        //     if (string.IsNullOrWhiteSpace(image) || !File.Exists(image))
-        //         return null;
-        //
-        //     return await CompareFaceAsync(image, similarity);
-        // }
-        //
-        // public async Task<Dictionary<Feature, IEnumerable<KeyValuePair<string, float>>>> RecognizeFaceAsync(
-        //     Stream image,
-        //     float similarity)
-        // {
-        //     if (image == null || image.Length <= 0)
-        //         return null;
-        //
-        //     return await CompareFaceAsync(image, similarity);
-        // }
-        //
-        // public async Task<Dictionary<Feature, IEnumerable<KeyValuePair<string, float>>>> RecognizeFaceAsync(Image image,
-        //     float similarity)
-        // {
-        //     if (image == null)
-        //         return null;
-        //
-        //     return await CompareFaceAsync(image, similarity);
-        // }
-        //
-        // private Task<Dictionary<Feature, IEnumerable<KeyValuePair<string, float>>>> CompareFaceAsync(object image,
-        //     float similarity)
-        // {
-        //     return Task.Run(() =>
-        //     {
-        //         //key: FaceFeature
-        //         //value: [source.jpg_$2.ffd]=0.7 意为 image与source.jpg中第2张脸匹配度为0.7
-        //         var dict = new Dictionary<Feature, IEnumerable<KeyValuePair<string, float>>>();
-        //         var features = DetectFace(image);
-        //         foreach (var feature in features)
-        //         {
-        //             var res = Compare(feature.Content).Where(kv => kv.Value >= similarity);
-        //             if (res.Any())
-        //                 dict[feature] = res;
-        //         }
-        //
-        //         return dict;
-        //     });
-        // }
-        //
-        //
-        // public void Dispose()
-        // {
-        //     AFDFunction.AFD_FSDK_UninitialFaceEngine(_detectEngine);
-        //     AFRFunction.AFR_FSDK_UninitialEngine(_recognizeEngine);
-        // }
-        //
-        // private void LoadImages()
-        // {
-        //     _images.Clear();
-        //     var formats = new[] {".jpg", ".jpeg", ".png", ".bmp"};
-        //     var images = Directory.GetFiles(_faceLibrary, "*.*", SearchOption.AllDirectories);
-        //     foreach (var img in images)
-        //     {
-        //         if (formats.Contains(Path.GetExtension(img)))
-        //             _images.Add(img);
-        //     }
-        // }
-        //
-        // private void LoadFfds()
-        // {
-        //     _ffds.Clear();
-        //     var ffds = Directory.GetFiles(_faceLibrary, "*.ffd", SearchOption.AllDirectories);
-        //     foreach (var ffd in ffds)
-        //     {
-        //         var img = Path.GetFileNameWithoutExtension(ffd);
-        //         img = img?.Substring(0, img.IndexOf("_$", StringComparison.Ordinal));
-        //
-        //         if (!File.Exists(Path.Combine(Path.GetDirectoryName(ffd), img)))
-        //             continue;
-        //
-        //         _ffds.Add(ffd);
-        //     }
-        // }
-        //
-        // private IEnumerable<Feature> DetectFace(object source, bool register = false)
-        // {
-        //     byte[] imageData;
-        //     int width, height, pitch;
-        //
-        //     if (source is Stream stream)
-        //     {
-        //         using (var img = Image.FromStream(stream))
-        //             imageData = ReadImage(img, out width, out height, out pitch);
-        //     }
-        //     else if (source is Image img)
-        //     {
-        //         imageData = ReadImage(img, out width, out height, out pitch);
-        //     }
-        //     else
-        //     {
-        //         using (var img0 = Image.FromFile(source.ToString()))
-        //             imageData = ReadImage(img0, out width, out height, out pitch);
-        //     }
-        //
-        //     var imageDataPtr = Marshal.AllocHGlobal(imageData.Length);
-        //     Marshal.Copy(imageData, 0, imageDataPtr, imageData.Length);
-        //
-        //     var offInput = new ASVLOFFSCREEN {u32PixelArrayFormat = 513, ppu8Plane = new IntPtr[4]};
-        //     offInput.ppu8Plane[0] = imageDataPtr;
-        //     offInput.i32Width = width;
-        //     offInput.i32Height = height;
-        //     offInput.pi32Pitch = new int[4];
-        //     offInput.pi32Pitch[0] = pitch;
-        //
-        //     var faceRes = new AFD_FSDK_FACERES();
-        //     var offInputPtr = Marshal.AllocHGlobal(Marshal.SizeOf(offInput));
-        //     Marshal.StructureToPtr(offInput, offInputPtr, false);
-        //     var faceResPtr = Marshal.AllocHGlobal(Marshal.SizeOf(faceRes));
-        //     AFDFunction.AFD_FSDK_StillImageFaceDetection(_detectEngine, offInputPtr, ref faceResPtr);
-        //
-        //     var obj = Marshal.PtrToStructure(faceResPtr, typeof(AFD_FSDK_FACERES));
-        //     faceRes = (AFD_FSDK_FACERES) obj;
-        //     var features = new List<Feature>();
-        //     if (faceRes.nFace > 0)
-        //     {
-        //         var faceInput = new AFR_FSDK_FaceInput
-        //         {
-        //             lOrient = (int) Marshal.PtrToStructure(faceRes.lfaceOrient, typeof(int))
-        //         };
-        //         for (var i = 0; i < faceRes.nFace; i++)
-        //         {
-        //             var rect = (MRECT) Marshal.PtrToStructure(faceRes.rcFace + Marshal.SizeOf(typeof(MRECT)) * i,
-        //                 typeof(MRECT));
-        //             faceInput.rcFace = rect;
-        //
-        //             var faceInputPtr = Marshal.AllocHGlobal(Marshal.SizeOf(faceInput));
-        //             Marshal.StructureToPtr(faceInput, faceInputPtr, false);
-        //             var faceModel = new AFR_FSDK_FaceModel();
-        //             var faceModelPtr = Marshal.AllocHGlobal(Marshal.SizeOf(faceModel));
-        //             AFRFunction.AFR_FSDK_ExtractFRFeature(_recognizeEngine, offInputPtr, faceInputPtr,
-        //                 faceModelPtr);
-        //             faceModel = (AFR_FSDK_FaceModel) Marshal.PtrToStructure(faceModelPtr, typeof(AFR_FSDK_FaceModel));
-        //
-        //             var featureContent = new byte[faceModel.lFeatureSize];
-        //             if (featureContent.Length > 0)
-        //                 Marshal.Copy(faceModel.pbFeature, featureContent, 0, faceModel.lFeatureSize);
-        //             features.Add(new Feature(register ? source.ToString() : null, i, rect.left, rect.top,
-        //                 rect.right - rect.left,
-        //                 rect.bottom - rect.top, featureContent));
-        //
-        //             if (register)
-        //             {
-        //                 var ffd = Path.Combine(_faceLibrary, $"{Path.GetFileName(source.ToString())}_${i}.ffd");
-        //                 if (File.Exists(ffd))
-        //                     File.Delete(ffd);
-        //                 File.WriteAllBytes(ffd, featureContent);
-        //             }
-        //
-        //             Marshal.FreeHGlobal(faceModelPtr);
-        //             Marshal.FreeHGlobal(faceInputPtr);
-        //         }
-        //     }
-        //
-        //     Marshal.FreeHGlobal(offInputPtr);
-        //     Marshal.FreeHGlobal(imageDataPtr);
-        //
-        //     return features;
-        // }
-        //
-        //
-        // private static byte[] ReadImage(Image image, out int width, out int height, out int pitch)
-        // {
-        //     var bitmap = new Bitmap(image);
-        //     //将Bitmap锁定到系统内存中,获得BitmapData
-        //     var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly,
-        //         PixelFormat.Format24bppRgb);
-        //     //位图中第一个像素数据的地址。它也可以看成是位图中的第一个扫描行
-        //     var ptr = data.Scan0;
-        //     //定义数组长度
-        //     var sourceBitArrayLength = data.Height * Math.Abs(data.Stride);
-        //     var sourceBitArray = new byte[sourceBitArrayLength];
-        //     //将bitmap中的内容拷贝到ptr_bgr数组中
-        //     Marshal.Copy(ptr, sourceBitArray, 0, sourceBitArrayLength);
-        //
-        //     width = data.Width;
-        //     height = data.Height;
-        //
-        //     pitch = Math.Abs(data.Stride);
-        //
-        //     var line = width * 3;
-        //     var bgrLen = line * height;
-        //     var destBitArray = new byte[bgrLen];
-        //
-        //     for (var i = 0; i < height; ++i)
-        //         Array.Copy(sourceBitArray, i * pitch, destBitArray, i * line, line);
-        //
-        //     pitch = line;
-        //     bitmap.UnlockBits(data);
-        //     return destBitArray;
-        // }
-        //
-        // private Dictionary<string, float> Compare(byte[] feature)
-        // {
-        //     var localFaceModels = new AFR_FSDK_FaceModel();
-        //     var sourceFeaturePtr = Marshal.AllocHGlobal(feature.Length);
-        //     Marshal.Copy(feature, 0, sourceFeaturePtr, feature.Length);
-        //     localFaceModels.lFeatureSize = feature.Length;
-        //     localFaceModels.pbFeature = sourceFeaturePtr;
-        //     var firstPtr = Marshal.AllocHGlobal(Marshal.SizeOf(localFaceModels));
-        //     Marshal.StructureToPtr(localFaceModels, firstPtr, false);
-        //
-        //     var dict = new Dictionary<string, float>();
-        //     foreach (var ffd in _ffds)
-        //     {
-        //         if (!File.Exists(ffd))
-        //             continue;
-        //
-        //         var libraryFeature = File.ReadAllBytes(ffd);
-        //         var localFaceModels2 = new AFR_FSDK_FaceModel();
-        //         var libraryFeaturePtr = Marshal.AllocHGlobal(libraryFeature.Length);
-        //         Marshal.Copy(libraryFeature, 0, libraryFeaturePtr, libraryFeature.Length);
-        //         localFaceModels2.lFeatureSize = libraryFeature.Length;
-        //         localFaceModels2.pbFeature = libraryFeaturePtr;
-        //         var secondPtr = Marshal.AllocHGlobal(Marshal.SizeOf(localFaceModels2));
-        //         Marshal.StructureToPtr(localFaceModels2, secondPtr, false);
-        //         var result = 0f;
-        //         AFRFunction.AFR_FSDK_FacePairMatching(_recognizeEngine, firstPtr, secondPtr, ref result);
-        //         dict[ffd] = result;
-        //
-        //         Marshal.FreeHGlobal(libraryFeaturePtr);
-        //         Marshal.FreeHGlobal(secondPtr);
-        //     }
-        //
-        //     Marshal.FreeHGlobal(sourceFeaturePtr);
-        //     Marshal.FreeHGlobal(firstPtr);
-        //     return dict;
-        // }
     }
 }

@@ -2,15 +2,16 @@
 
 namespace ColinChang.FaceRecognition.Models
 {
-
-    struct AsfVersionInfo
+    internal struct AsfVersionInfo : ICast<VersionInfo>
     {
         public string Version { get; set; }
         public string BuildDate { get; set; }
         public string CopyRight { get; set; }
 
-        public VersionInfo Cast() =>
-            new VersionInfo(Version, DateTime.Parse(BuildDate), CopyRight);
+        public VersionInfo Cast()
+        {
+            return new VersionInfo(Version, DateTime.Parse(BuildDate), CopyRight);
+        }
     }
 
     /// <summary>

@@ -1,6 +1,6 @@
 ﻿namespace ColinChang.FaceRecognition.Models
 {
-    public struct ASF_ImagePixelFormat
+    public struct AsfImagePixelFormat
     {
         /// <summary>
         /// RGB24图片格式

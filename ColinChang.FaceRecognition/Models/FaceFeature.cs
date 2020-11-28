@@ -2,6 +2,14 @@
 {
     public class Feature
     {
+        public Feature(string source, int serialNo, int x, int y, int width, int height, byte[] content)
+        {
+            Source = source;
+            SerialNo = serialNo;
+            Position = new FeaturePosition(x, y, width, height);
+            Content = content;
+        }
+
         /// <summary>
         /// Source picture of current feature
         /// </summary>
@@ -12,14 +20,6 @@
         public FeaturePosition Position { get; set; }
 
         public byte[] Content { get; set; }
-
-        public Feature(string source, int serialNo, int x, int y, int width, int height, byte[] content)
-        {
-            Source = source;
-            SerialNo = serialNo;
-            Position = new FeaturePosition(x, y, width, height);
-            Content = content;
-        }
     }
 
     public struct FeaturePosition

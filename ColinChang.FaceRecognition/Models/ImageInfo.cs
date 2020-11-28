@@ -1,6 +1,6 @@
-﻿﻿using System;
+﻿using System;
 
- namespace ColinChang.FaceRecognition.Models
+namespace ColinChang.FaceRecognition.Models
 {
     public class ImageInfo
     {

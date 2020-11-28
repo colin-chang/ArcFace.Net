@@ -1,27 +1,24 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using ColinChang.FaceRecognition.Models;
 
 namespace ColinChang.FaceRecognition.Utils
 {
     /// <summary>
     /// SDK中与人脸识别相关函数封装类
     /// </summary>
-    public class ASFFunctions
+    public class AsfUtil
     {
         /// <summary>
         /// SDK动态链接库路径
         /// </summary>
         private const string Dll_PATH = "libarcsoft_face_engine.so";
-        
+
         /// <summary>
         /// 获取激活文件信息
         /// </summary>
         /// <returns></returns>
         [DllImport(Dll_PATH, CallingConvention = CallingConvention.Cdecl)]
         public static extern long ASFGetActiveFileInfo(IntPtr activeFileInfo);
-        
-
 
         /// <summary>
         /// 激活人脸识别SDK引擎函数
@@ -70,7 +67,10 @@ namespace ColinChang.FaceRecognition.Utils
         /// <param name="format">图像颜色空间</param>
         /// <param name="imgData">图像数据</param>
         /// <param name="detectedFaces">人脸信息，用户根据待检测的功能裁减选择需要使用的人脸</param>
-        /// <param name="combinedMask">只支持初始化时候指定需要检测的功能，在process时进一步在这个已经指定的功能集中继续筛选例如初始化的时候指定检测年龄和性别， 在process的时候可以只检测年龄， 但是不能检测除年龄和性别之外的功能</param>
+        /// <param name="combinedMask">
+        /// 只支持初始化时候指定需要检测的功能，在process时进一步在这个已经指定的功能集中继续筛选例如初始化的时候指定检测年龄和性别， 在process的时候可以只检测年龄，
+        /// 但是不能检测除年龄和性别之外的功能
+        /// </param>
         /// <returns>调用结果</returns>
         [DllImport(Dll_PATH, CallingConvention = CallingConvention.Cdecl)]
         public static extern int ASFProcess(IntPtr pEngine, int width, int height, int format, IntPtr imgData,
@@ -179,6 +179,5 @@ namespace ColinChang.FaceRecognition.Utils
         /// <returns>调用结果</returns>
         [DllImport(Dll_PATH, CallingConvention = CallingConvention.Cdecl)]
         public static extern void ASFGetVersion(IntPtr version);
-
     }
 }

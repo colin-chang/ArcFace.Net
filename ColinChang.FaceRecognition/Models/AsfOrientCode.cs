@@ -1,9 +1,9 @@
-﻿﻿ namespace ColinChang.FaceRecognition.Models
+﻿namespace ColinChang.FaceRecognition.Models
 {
     /// <summary>
     /// 人脸角度结构体
     /// </summary>
-    public struct ASF_OrientCode
+    public struct AsfOrientCode
     {
         public const int ASF_OC_0 = 0x1;
         public const int ASF_OC_90 = 0x2;

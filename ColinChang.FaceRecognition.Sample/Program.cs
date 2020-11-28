@@ -1,66 +1,52 @@
 ﻿using System;
-using System.Drawing;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace ColinChang.FaceRecognition.Sample
 {
-    class Program
+    internal class Program
     {
-        static async Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
-            // var appId = ConfigurationManager.Core.ConfigurationManager.Configuration["AppId"];
-            // var fdKeY = ConfigurationManager.Core.ConfigurationManager.Configuration["FdKeY"];
-            // var frKeY = ConfigurationManager.Core.ConfigurationManager.Configuration["FrKeY"];
-            // var image = "test.jpg";
-            // using (var fr = new FaceRecognizer(appId, fdKeY, frKeY))
-            // {
-            //     fr.RegisterAsync("FaceLibrary").Wait();
-            //
-            //     var results = fr.RecognizeFaceAsync(image, 0.5f).Result;
-            //     if (results != null && results.Any())
-            //     {
-            //         Console.WriteLine($"Image:{image}");
-            //         foreach (var feature in results.Keys)
-            //         {
-            //             Console.WriteLine($"SerialNo:{feature.SerialNo}\tX:{feature.Position.X}\tY:{feature.Position.Y}\tWidth:{feature.Position.Width}\tHeight:{feature.Position.Height}");
-            //             var res = results[feature];
-            //             var cr = res.FirstOrDefault(kv => kv.Value >= res.Max(kva => kva.Value));
-            //             var img = Path.GetFileNameWithoutExtension(cr.Key);
-            //             var key = Path.GetFileNameWithoutExtension(img);
-            //             Console.WriteLine($"To:{key}\tSimilarity:{cr.Value}\r\n");
-            //         }
-            //     }
-            // }
-
             //读取配置
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-            var options=new FaceRecognitionOptions();
-            config.Bind(nameof(FaceRecognitionOptions),options);
-            
-            
-            //using var faceRecognizer=new FaceRecognizer(options);
-            // var info= await faceRecognizer.GetActiveFileInfoAsync();
-            // var version= await faceRecognizer.GetSdkVersionAsync();
-            //var faces= await faceRecognizer.DetectFaceAsync("test.jpg");
+            var options = new FaceRecognitionOptions();
+            config.Bind(nameof(FaceRecognitionOptions), options);
 
-            Image img = null;
-            try
-            {
-                img = Image.FromFile("test.jpg");
-                Console.WriteLine(img.Height);
-            }
-            catch
-            {
-                // ignored
-            }
-            finally
-            {
-                img?.Dispose();
-            }
-            
+
+            //测试图片
+            const string test = "Images/test.jpg";
+            const string zys = "Images/zys.jpg";
+            const string xy = "Images/xy.jpg";
+            const string xy1 = "Images/xy1.jpg";
+
+
+            using IFaceRecognizer faceRecognizer = new FaceRecognizer(options);
+            /*
+            //获取激活消息
+            var info = await faceRecognizer.GetActiveFileInfoAsync();
+            // 获取SDK信息
+            var version = await faceRecognizer.GetSdkVersionAsync();
+            // 人脸检测
+            var faces = await faceRecognizer.DetectFaceAsync(test);
+            // 获取年龄
+            var ages = await faceRecognizer.GetAgeAsync(test);
+            // 获取性别
+            var genders = await faceRecognizer.GetGenderAsync(test);
+            // 获取3D角度
+            var face3DAngleInfo = await faceRecognizer.GetFace3DAngleAsync(test);
+
+            // 提取人脸特征
+            var features0 = await faceRecognizer.ExtractFaceFeatureAsync(zys);
+            var features1 = await faceRecognizer.ExtractFaceFeatureAsync(xy);
+            // 人脸比对
+            var result = await faceRecognizer.CompareFaceFeatureAsync(features0.Data.Single(), features1.Data.Single());
+            */
+
+            // 初始化人脸库
+            await faceRecognizer.InitFaceLibraryAsync(new[] {zys, xy});
+            // 搜索人脸库
+            var res = await faceRecognizer.SearchFaceAsync(xy1);
 
             Console.ReadKey();
         }

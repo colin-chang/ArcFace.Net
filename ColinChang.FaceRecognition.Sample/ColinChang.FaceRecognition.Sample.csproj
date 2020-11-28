@@ -14,14 +14,17 @@
       <None Update="appsettings.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-      <None Update="FaceLibrary\penny.jpeg">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <None Update="Images\test.jpg">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="FaceLibrary\sheldon.jpg">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <None Update="Images\xy.jpg">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="test.jpg">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <None Update="Images\xy1.jpg">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Images\zys.jpg">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>
 
@@ -33,25 +36,25 @@
 
     <ItemGroup>
       <Reference Include="AForge, Version=2.2.5.0, Culture=neutral, PublicKeyToken=c1db6ff4eaa06aeb">
-        <HintPath>..\ColinChang.FaceRecognition\libs\AForge.dll</HintPath>
+        <HintPath>..\ColinChang.FaceRecognition\Libs\AForge.dll</HintPath>
       </Reference>
       <Reference Include="AForge.Controls, Version=2.2.5.0, Culture=neutral, PublicKeyToken=a8ac264d1dc6b9d9">
-        <HintPath>..\ColinChang.FaceRecognition\libs\AForge.Controls.dll</HintPath>
+        <HintPath>..\ColinChang.FaceRecognition\Libs\AForge.Controls.dll</HintPath>
       </Reference>
       <Reference Include="AForge.Imaging, Version=2.2.5.0, Culture=neutral, PublicKeyToken=ba8ddea9676ca48b">
-        <HintPath>..\ColinChang.FaceRecognition\libs\AForge.Imaging.dll</HintPath>
+        <HintPath>..\ColinChang.FaceRecognition\Libs\AForge.Imaging.dll</HintPath>
       </Reference>
       <Reference Include="AForge.Imaging.Formats, Version=2.2.4.0, Culture=neutral, PublicKeyToken=8065ed5a639199a0">
-        <HintPath>..\ColinChang.FaceRecognition\libs\AForge.Imaging.Formats.dll</HintPath>
+        <HintPath>..\ColinChang.FaceRecognition\Libs\AForge.Imaging.Formats.dll</HintPath>
       </Reference>
       <Reference Include="AForge.Math, Version=2.2.5.0, Culture=neutral, PublicKeyToken=abba2e25397ee8c9">
-        <HintPath>..\ColinChang.FaceRecognition\libs\AForge.Math.dll</HintPath>
+        <HintPath>..\ColinChang.FaceRecognition\Libs\AForge.Math.dll</HintPath>
       </Reference>
       <Reference Include="AForge.Video, Version=2.2.5.0, Culture=neutral, PublicKeyToken=cbfb6e07d173c401">
-        <HintPath>..\ColinChang.FaceRecognition\libs\AForge.Video.dll</HintPath>
+        <HintPath>..\ColinChang.FaceRecognition\Libs\AForge.Video.dll</HintPath>
       </Reference>
       <Reference Include="AForge.Video.DirectShow, Version=2.2.5.0, Culture=neutral, PublicKeyToken=61ea4348d43881b7">
-        <HintPath>..\ColinChang.FaceRecognition\libs\AForge.Video.DirectShow.dll</HintPath>
+        <HintPath>..\ColinChang.FaceRecognition\Libs\AForge.Video.DirectShow.dll</HintPath>
       </Reference>
     </ItemGroup>
 

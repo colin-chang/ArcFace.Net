@@ -3,10 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace ColinChang.FaceRecognition.Models
 {
-    /// <summary>
-    /// 多人脸检测结构体
-    /// </summary>
-    public struct AsfMultiFaceInfo
+    public struct AsfMultiFaceInfo : ICast<MultiFaceInfo>
     {
         public IntPtr FaceRects { get; set; }
 
@@ -18,6 +15,7 @@ namespace ColinChang.FaceRecognition.Models
 
         public MultiFaceInfo Cast()
         {
+            var faces = new SingleFaceInfo[FaceNum];
             var rects = new Rect[FaceNum];
             var rectSize = Marshal.SizeOf<Rect>();
             var orients = new int[FaceNum];
@@ -26,11 +24,33 @@ namespace ColinChang.FaceRecognition.Models
             {
                 var pointer = FaceRects + i * rectSize;
                 rects[i] = Marshal.PtrToStructure<Rect>(pointer);
-                pointer = FaceOrients + i * intSize;
-                orients[i] = Marshal.PtrToStructure<int>(pointer);
+                orients[i] = Marshal.ReadInt32(FaceOrients, i * intSize);
+                faces[i] = new SingleFaceInfo(rects[i], orients[i]);
             }
 
-            return new MultiFaceInfo(rects, orients, FaceNum, FaceId);
+            return new MultiFaceInfo(rects, orients, FaceNum, FaceId, faces);
+        }
+    }
+
+    /// <summary>
+    /// 单人脸检测结构体
+    /// </summary>
+    public struct SingleFaceInfo
+    {
+        /// <summary>
+        /// 人脸坐标Rect结果
+        /// </summary>
+        public Rect FaceRect { get; set; }
+
+        /// <summary>
+        /// 人脸角度
+        /// </summary>
+        public int FaceOrient { get; set; }
+
+        public SingleFaceInfo(Rect faceRect, int faceOrient)
+        {
+            FaceRect = faceRect;
+            FaceOrient = faceOrient;
         }
     }
 
@@ -59,12 +79,15 @@ namespace ColinChang.FaceRecognition.Models
         /// </summary>
         public IntPtr FaceId { get; set; }
 
-        public MultiFaceInfo(Rect[] faceRects, int[] faceOrients, int faceNum, IntPtr faceId)
+        public SingleFaceInfo[] Faces { get; set; }
+
+        public MultiFaceInfo(Rect[] faceRects, int[] faceOrients, int faceNum, IntPtr faceId, SingleFaceInfo[] faces)
         {
             FaceRects = faceRects;
             FaceOrients = faceOrients;
             FaceNum = faceNum;
             FaceId = faceId;
+            Faces = faces;
         }
     }
 }
