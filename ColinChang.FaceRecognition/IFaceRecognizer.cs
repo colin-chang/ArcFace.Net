@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Threading.Tasks;
 using ColinChang.FaceRecognition.Models;
 
@@ -44,6 +45,14 @@ namespace ColinChang.FaceRecognition
         /// 人脸检测
         /// </summary>
         Task<OperationResult<MultiFaceInfo>> DetectFaceAsync(string image);
+
+        /// <summary>
+        /// 活体检测
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="mode">检测模式,支持RGB、IR活体</param>
+        /// <returns></returns>
+        Task<OperationResult<LivenessInfo>> GetLivenessInfoAsync(Image image, LivenessMode mode);
 
         /// <summary>
         /// 人脸特征提取

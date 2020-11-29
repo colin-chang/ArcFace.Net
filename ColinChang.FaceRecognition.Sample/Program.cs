@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Drawing;
+using System.Linq;
 using System.Threading.Tasks;
+using ColinChang.FaceRecognition.Models;
 using Microsoft.Extensions.Configuration;
 
 namespace ColinChang.FaceRecognition.Sample
@@ -22,6 +25,7 @@ namespace ColinChang.FaceRecognition.Sample
 
 
             using IFaceRecognizer faceRecognizer = new FaceRecognizer(options);
+
             /*
             //获取激活消息
             var info = await faceRecognizer.GetActiveFileInfoAsync();
@@ -39,14 +43,21 @@ namespace ColinChang.FaceRecognition.Sample
             // 提取人脸特征
             var features0 = await faceRecognizer.ExtractFaceFeatureAsync(zys);
             var features1 = await faceRecognizer.ExtractFaceFeatureAsync(xy);
+            
             // 人脸比对
             var result = await faceRecognizer.CompareFaceFeatureAsync(features0.Data.Single(), features1.Data.Single());
+            
+            //RGB活体检测
+            var liveness= await faceRecognizer.GetLivenessInfoAsync(Image.FromFile(zys), LivenessMode.RGB);
+            //IR活体检测
+            liveness= await faceRecognizer.GetLivenessInfoAsync(Image.FromFile(zys), LivenessMode.IR);
             */
 
             // 初始化人脸库
             await faceRecognizer.InitFaceLibraryAsync(new[] {zys, xy});
             // 搜索人脸库
             var res = await faceRecognizer.SearchFaceAsync(xy1);
+
 
             Console.ReadKey();
         }

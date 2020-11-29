@@ -68,9 +68,8 @@ namespace ColinChang.FaceRecognition
 
         #region SDK信息 激活信息/版本信息
 
-        public async Task<OperationResult<ActiveFileInfo>> GetActiveFileInfoAsync()
-        {
-            return await Task.Run(() =>
+        public async Task<OperationResult<ActiveFileInfo>> GetActiveFileInfoAsync() =>
+            await Task.Run(() =>
             {
                 var pointer = IntPtr.Zero;
                 try
@@ -89,11 +88,9 @@ namespace ColinChang.FaceRecognition
                         Marshal.FreeHGlobal(pointer);
                 }
             });
-        }
 
-        public async Task<VersionInfo> GetSdkVersionAsync()
-        {
-            return await Task.Run(() =>
+        public async Task<VersionInfo> GetSdkVersionAsync() =>
+            await Task.Run(() =>
             {
                 var pointer = IntPtr.Zero;
                 try
@@ -108,26 +105,19 @@ namespace ColinChang.FaceRecognition
                     Marshal.FreeHGlobal(pointer);
                 }
             });
-        }
 
         #endregion
 
         #region 人脸属性 3D角度/年龄/性别
 
-        public async Task<OperationResult<Face3DAngle>> GetFace3DAngleAsync(string image)
-        {
-            return await ProcessImageAsync<AsfFace3DAngle, Face3DAngle>(image, FaceUtil.GetFace3DAngleAsync);
-        }
+        public async Task<OperationResult<Face3DAngle>> GetFace3DAngleAsync(string image) =>
+            await ProcessImageAsync<AsfFace3DAngle, Face3DAngle>(image, FaceUtil.GetFace3DAngleAsync);
 
-        public async Task<OperationResult<AgeInfo>> GetAgeAsync(string image)
-        {
-            return await ProcessImageAsync<AsfAgeInfo, AgeInfo>(image, FaceUtil.GetAgeAsync);
-        }
+        public async Task<OperationResult<AgeInfo>> GetAgeAsync(string image) =>
+            await ProcessImageAsync<AsfAgeInfo, AgeInfo>(image, FaceUtil.GetAgeAsync);
 
-        public async Task<OperationResult<GenderInfo>> GetGenderAsync(string image)
-        {
-            return await ProcessImageAsync<AsfGenderInfo, GenderInfo>(image, FaceUtil.GetGenderAsync);
-        }
+        public async Task<OperationResult<GenderInfo>> GetGenderAsync(string image) =>
+            await ProcessImageAsync<AsfGenderInfo, GenderInfo>(image, FaceUtil.GetGenderAsync);
 
         #endregion
 
@@ -136,15 +126,22 @@ namespace ColinChang.FaceRecognition
         public async Task<OperationResult<MultiFaceInfo>> DetectFaceAsync(string image) =>
             await ProcessImageAsync<AsfMultiFaceInfo, MultiFaceInfo>(image, FaceUtil.DetectFaceAsync);
 
-        public async Task<OperationResult<IEnumerable<byte[]>>> ExtractFaceFeatureAsync(string image)
+        public async Task<OperationResult<LivenessInfo>> GetLivenessInfoAsync(Image image, LivenessMode mode)
         {
-            return await ProcessImageAsync<IEnumerable<byte[]>, IEnumerable<byte[]>>(image,
-                FaceUtil.ExtractFeatureAsync);
+            if (mode == LivenessMode.RGB)
+                return await ProcessImageAsync<AsfLivenessInfo, LivenessInfo>(image, FaceUtil.GetRgbLivenessInfoAsync,
+                    DetectionModeEnum.RGB);
+
+            return await ProcessImageAsync<AsfLivenessInfo, LivenessInfo>(image, FaceUtil.GetIrLivenessInfoAsync,
+                DetectionModeEnum.IR);
         }
 
-        public async Task<OperationResult<float>> CompareFaceFeatureAsync(byte[] feature1, byte[] feature2)
-        {
-            return await Task.Run(() =>
+        public async Task<OperationResult<IEnumerable<byte[]>>> ExtractFaceFeatureAsync(string image) =>
+            await ProcessImageAsync<IEnumerable<byte[]>, IEnumerable<byte[]>>(image,
+                FaceUtil.ExtractFeatureAsync);
+
+        public async Task<OperationResult<float>> CompareFaceFeatureAsync(byte[] feature1, byte[] feature2) =>
+            await Task.Run(() =>
             {
                 var engine = IntPtr.Zero;
                 var featureA = IntPtr.Zero;
@@ -168,7 +165,6 @@ namespace ColinChang.FaceRecognition
                         Marshal.FreeHGlobal(featureB);
                 }
             });
-        }
 
         #endregion
 
@@ -205,8 +201,7 @@ namespace ColinChang.FaceRecognition
             }
         }
 
-        public async Task InitFaceLibraryAsync(Dictionary<string, byte[]> faceFeatures)
-        {
+        public async Task InitFaceLibraryAsync(Dictionary<string, byte[]> faceFeatures) =>
             await Task.Run(() =>
             {
                 if (faceFeatures == null || !faceFeatures.Any())
@@ -215,7 +210,6 @@ namespace ColinChang.FaceRecognition
                 foreach (var (faceId, feature) in faceFeatures)
                     _faceLibrary[faceId] = feature.ToFaceFeature();
             });
-        }
 
         public async Task<long> AddFaceAsync(string image)
         {
@@ -239,8 +233,7 @@ namespace ColinChang.FaceRecognition
             }
         }
 
-        public async Task AddFaceAsync(string faceId, byte[] feature)
-        {
+        public async Task AddFaceAsync(string faceId, byte[] feature) =>
             await Task.Run(() =>
             {
                 if (string.IsNullOrWhiteSpace(faceId) || feature == null || !feature.Any())
@@ -248,10 +241,8 @@ namespace ColinChang.FaceRecognition
 
                 _faceLibrary[faceId] = feature.ToFaceFeature();
             });
-        }
 
-        public async Task RemoveFaceAsync(string faceId)
-        {
+        public async Task RemoveFaceAsync(string faceId) =>
             await Task.Run(() =>
             {
                 if (string.IsNullOrWhiteSpace(faceId) || !_faceLibrary.ContainsKey(faceId))
@@ -260,7 +251,6 @@ namespace ColinChang.FaceRecognition
                 _faceLibrary.Remove(faceId, out var feature);
                 Marshal.FreeHGlobal(feature);
             });
-        }
 
         public async Task<OperationResult<Recognition>> SearchFaceAsync(string image)
         {
@@ -301,9 +291,8 @@ namespace ColinChang.FaceRecognition
             }
         }
 
-        public async Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature)
-        {
-            return await Task.Run(() =>
+        public async Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature) =>
+            await Task.Run(() =>
             {
                 var engine = IntPtr.Zero;
                 var featureInfo = IntPtr.Zero;
@@ -336,7 +325,6 @@ namespace ColinChang.FaceRecognition
                     RecycleEngine(engine, DetectionModeEnum.Image);
                 }
             });
-        }
 
         #endregion
 
@@ -439,8 +427,7 @@ namespace ColinChang.FaceRecognition
         /// 销毁引擎
         /// </summary>
         /// <param name="engines"></param>
-        private void UninitEngine(ConcurrentQueue<IntPtr> engines)
-        {
+        private void UninitEngine(ConcurrentQueue<IntPtr> engines) =>
             ThreadPool.QueueUserWorkItem(state =>
             {
                 while (!engines.IsEmpty)
@@ -453,7 +440,6 @@ namespace ColinChang.FaceRecognition
                         engines.Enqueue(engine);
                 }
             });
-        }
 
         public void Dispose()
         {
@@ -479,9 +465,8 @@ namespace ColinChang.FaceRecognition
         #region 工具方法
 
         private (ConcurrentQueue<IntPtr> Engines, int EnginesCount, EventWaitHandle EnginesWaitHandle) GetEngineStuff(
-            DetectionModeEnum mode)
-        {
-            return mode switch
+            DetectionModeEnum mode) =>
+            mode switch
             {
                 DetectionModeEnum.Image => (_imageEngines, _imageEnginesCount, _imageWaitHandle),
                 DetectionModeEnum.Video => (_videoEngines, _videoEnginesCount, _videoWaitHandle),
@@ -489,23 +474,27 @@ namespace ColinChang.FaceRecognition
                 DetectionModeEnum.IR => (_irEngines, _irEnginesCount, _irWaitHandle),
                 _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, "invalid detection mode")
             };
-        }
 
         private async Task<OperationResult<TK>> ProcessImageAsync<T, TK>(string image,
-            Func<IntPtr, Image, Task<OperationResult<T>>> process)
+            Func<IntPtr, Image, Task<OperationResult<T>>> process, DetectionModeEnum mode = DetectionModeEnum.Image)
         {
-            Image img = null;
+            var img = VerifyImage(image);
+            return await ProcessImageAsync<T, TK>(img, process, mode);
+        }
+
+        private async Task<OperationResult<TK>> ProcessImageAsync<T, TK>(Image image,
+            Func<IntPtr, Image, Task<OperationResult<T>>> process, DetectionModeEnum mode = DetectionModeEnum.Image)
+        {
             var engine = IntPtr.Zero;
             try
             {
-                img = VerifyImage(image);
-                engine = GetEngine(DetectionModeEnum.Image);
-                return (await process(engine, img)).Cast<TK>();
+                engine = GetEngine(mode);
+                return (await process(engine, image)).Cast<TK>();
             }
             finally
             {
-                img?.Dispose();
-                RecycleEngine(engine, DetectionModeEnum.Image);
+                image?.Dispose();
+                RecycleEngine(engine, mode);
             }
         }
 

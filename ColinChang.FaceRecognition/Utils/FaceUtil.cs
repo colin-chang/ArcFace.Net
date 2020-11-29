@@ -15,9 +15,8 @@ namespace ColinChang.FaceRecognition.Utils
         /// <param name="engine">引擎Handle</param>
         /// <param name="image">图像数据</param>
         /// <returns>人脸检测结果</returns>
-        public static async Task<OperationResult<AsfMultiFaceInfo>> DetectFaceAsync(IntPtr engine, Image image)
-        {
-            return await Task.Run(() =>
+        public static async Task<OperationResult<AsfMultiFaceInfo>> DetectFaceAsync(IntPtr engine, Image image) =>
+            await Task.Run(() =>
             {
                 ImageInfo imageInfo = null;
                 var pointer = IntPtr.Zero;
@@ -40,7 +39,6 @@ namespace ColinChang.FaceRecognition.Utils
                         Marshal.FreeHGlobal(pointer);
                 }
             });
-        }
 
         /// <summary>
         /// 提取人脸特征
@@ -48,9 +46,9 @@ namespace ColinChang.FaceRecognition.Utils
         /// <param name="engine">引擎Handle</param>
         /// <param name="image"></param>
         /// <returns>保存人脸特征结构体指针</returns>
-        public static async Task<OperationResult<IEnumerable<byte[]>>> ExtractFeatureAsync(IntPtr engine, Image image)
-        {
-            return await Task.Run(async () =>
+        public static async Task<OperationResult<IEnumerable<byte[]>>>
+            ExtractFeatureAsync(IntPtr engine, Image image) =>
+            await Task.Run(async () =>
             {
                 ImageInfo imageInfo = null;
                 var pSingleFaceInfo = IntPtr.Zero;
@@ -97,7 +95,6 @@ namespace ColinChang.FaceRecognition.Utils
                         Marshal.FreeHGlobal(pFaceFeature);
                 }
             });
-        }
 
         /// <summary>
         /// 提取最大人脸特征
@@ -105,9 +102,8 @@ namespace ColinChang.FaceRecognition.Utils
         /// <param name="engine">引擎Handle</param>
         /// <param name="image"></param>
         /// <returns>保存人脸特征结构体指针</returns>
-        public static async Task<OperationResult<IntPtr>> ExtractSingleFeatureAsync(IntPtr engine, Image image)
-        {
-            return await Task.Run(async () =>
+        public static async Task<OperationResult<IntPtr>> ExtractSingleFeatureAsync(IntPtr engine, Image image) =>
+            await Task.Run(async () =>
             {
                 ImageInfo imageInfo = null;
                 var pSingleFaceInfo = IntPtr.Zero;
@@ -161,7 +157,7 @@ namespace ColinChang.FaceRecognition.Utils
                         Marshal.FreeHGlobal(pFaceFeature);
                 }
             });
-        }
+
 
         /// <summary>
         /// 年龄检测
@@ -169,9 +165,8 @@ namespace ColinChang.FaceRecognition.Utils
         /// <param name="engine">引擎Handle</param>
         /// <param name="image"></param>
         /// <returns>年龄检测结构体</returns>
-        public static async Task<OperationResult<AsfAgeInfo>> GetAgeAsync(IntPtr engine, Image image)
-        {
-            return await Task.Run(async () =>
+        public static async Task<OperationResult<AsfAgeInfo>> GetAgeAsync(IntPtr engine, Image image) =>
+            await Task.Run(async () =>
             {
                 ImageInfo imageInfo = null;
                 var pMultiFaceInfo = IntPtr.Zero;
@@ -213,7 +208,6 @@ namespace ColinChang.FaceRecognition.Utils
                         Marshal.FreeHGlobal(pAgeInfo);
                 }
             });
-        }
 
         /// <summary>
         /// 性别检测
@@ -221,9 +215,8 @@ namespace ColinChang.FaceRecognition.Utils
         /// <param name="engine">引擎Handle</param>
         /// <param name="image"></param>
         /// <returns>保存性别检测结果结构体</returns>
-        public static async Task<OperationResult<AsfGenderInfo>> GetGenderAsync(IntPtr engine, Image image)
-        {
-            return await Task.Run(async () =>
+        public static async Task<OperationResult<AsfGenderInfo>> GetGenderAsync(IntPtr engine, Image image) =>
+            await Task.Run(async () =>
             {
                 ImageInfo imageInfo = null;
                 var pMultiFaceInfo = IntPtr.Zero;
@@ -265,7 +258,6 @@ namespace ColinChang.FaceRecognition.Utils
                         Marshal.FreeHGlobal(pGenderInfo);
                 }
             });
-        }
 
         /// <summary>
         /// 人脸3D角度检测
@@ -273,9 +265,8 @@ namespace ColinChang.FaceRecognition.Utils
         /// <param name="engine">引擎Handle</param>
         /// <param name="image"></param>
         /// <returns>保存人脸3D角度检测结果结构体</returns>
-        public static async Task<OperationResult<AsfFace3DAngle>> GetFace3DAngleAsync(IntPtr engine, Image image)
-        {
-            return await Task.Run(async () =>
+        public static async Task<OperationResult<AsfFace3DAngle>> GetFace3DAngleAsync(IntPtr engine, Image image) =>
+            await Task.Run(async () =>
             {
                 ImageInfo imageInfo = null;
                 var pMultiFaceInfo = IntPtr.Zero;
@@ -317,124 +308,100 @@ namespace ColinChang.FaceRecognition.Utils
                         Marshal.FreeHGlobal(pFace3DAngleInfo);
                 }
             });
-        }
+
 
         /// <summary>
-        /// RGB活体检测
+        /// RGB可见光活体检测
         /// </summary>
-        /// <param name="engine">引擎Handle</param>
-        /// <param name="imageInfo">图像数据</param>
-        /// <param name="multiFaceInfo">活体检测结果</param>
-        /// <param name="retCode"></param>
-        /// <returns>保存活体检测结果结构体</returns>
-        public static AsfLivenessInfo LivenessInfoRGB(IntPtr engine, ImageInfo imageInfo,
-            AsfMultiFaceInfo multiFaceInfo, out int retCode)
-        {
-            var pMultiFaceInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfMultiFaceInfo>());
-            Marshal.StructureToPtr(multiFaceInfo, pMultiFaceInfo, false);
-
-            if (multiFaceInfo.FaceNum == 0)
-            {
-                retCode = -1;
-                //释放内存
-                Marshal.FreeHGlobal(pMultiFaceInfo);
-                return new AsfLivenessInfo();
-            }
-
-            try
-            {
-                //人脸信息处理
-                retCode = AsfUtil.ASFProcess(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
-                    imageInfo.ImgData, pMultiFaceInfo, FaceEngineMask.ASF_LIVENESS);
-                if (retCode == 0)
-                {
-                    //获取活体检测结果
-                    var pLivenessInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfLivenessInfo>());
-                    retCode = AsfUtil.ASFGetLivenessScore(engine, pLivenessInfo);
-                    Console.WriteLine("Get Liveness Result:" + retCode);
-                    var livenessInfo = Marshal.PtrToStructure<AsfLivenessInfo>(pLivenessInfo);
-
-                    //释放内存
-                    Marshal.FreeHGlobal(pMultiFaceInfo);
-                    Marshal.FreeHGlobal(pLivenessInfo);
-                    return livenessInfo;
-                }
-
-                //释放内存
-                Marshal.FreeHGlobal(pMultiFaceInfo);
-                return new AsfLivenessInfo();
-            }
-            catch
-            {
-                retCode = -1;
-                //释放内存
-                Marshal.FreeHGlobal(pMultiFaceInfo);
-                return new AsfLivenessInfo();
-            }
-        }
+        /// <param name="engine"></param>
+        /// <param name="image"></param>
+        /// <returns></returns>
+        public static Task<OperationResult<AsfLivenessInfo>> GetRgbLivenessInfoAsync(IntPtr engine, Image image)
+            => GetLivenessInfoAsync(engine, image, LivenessMode.RGB);
 
         /// <summary>
-        /// 红外活体检测
+        /// IR红外活体检测
+        /// </summary>
+        /// <param name="engine"></param>
+        /// <param name="image"></param>
+        /// <returns></returns>
+        public static Task<OperationResult<AsfLivenessInfo>> GetIrLivenessInfoAsync(IntPtr engine, Image image)
+            => GetLivenessInfoAsync(engine, image, LivenessMode.IR);
+
+
+        /// <summary>
+        /// 活体检测
         /// </summary>
         /// <param name="engine">引擎Handle</param>
-        /// <param name="imageInfo">图像数据</param>
-        /// <param name="multiFaceInfo">活体检测结果</param>
-        /// <param name="retCode"></param>
+        /// <param name="image">图像数据</param>
+        /// <param name="mode"></param>
         /// <returns>保存活体检测结果结构体</returns>
-        public static AsfLivenessInfo LivenessInfoIR(IntPtr engine, ImageInfo imageInfo,
-            AsfMultiFaceInfo multiFaceInfo, out int retCode)
-        {
-            var pMultiFaceInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfMultiFaceInfo>());
-            Marshal.StructureToPtr(multiFaceInfo, pMultiFaceInfo, false);
-
-            if (multiFaceInfo.FaceNum == 0)
+        private static async Task<OperationResult<AsfLivenessInfo>> GetLivenessInfoAsync(IntPtr engine, Image image,
+            LivenessMode mode) =>
+            await Task.Run(async () =>
             {
-                retCode = -1;
-                //释放内存
-                Marshal.FreeHGlobal(pMultiFaceInfo);
-                return new AsfLivenessInfo();
-            }
-
-            try
-            {
-                //人脸信息处理
-                retCode = AsfUtil.ASFProcess_IR(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
-                    imageInfo.ImgData, pMultiFaceInfo, FaceEngineMask.ASF_IR_LIVENESS);
-                if (retCode == 0)
+                ImageInfo imageInfo = null;
+                var pMultiFaceInfo = IntPtr.Zero;
+                var pLivenessInfo = IntPtr.Zero;
+                try
                 {
+                    var asfFaces = await DetectFaceAsync(engine, image);
+                    if (asfFaces.Code != 0)
+                        return new OperationResult<AsfLivenessInfo>(asfFaces.Code);
+
+                    var faces = asfFaces.Data.Cast();
+                    if (faces.FaceNum <= 0)
+                        return new OperationResult<AsfLivenessInfo>(new AsfLivenessInfo());
+
+                    pMultiFaceInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfMultiFaceInfo>());
+                    Marshal.StructureToPtr(asfFaces.Data, pMultiFaceInfo, false);
+
+                    //人脸信息处理
+                    int code;
                     //获取活体检测结果
-                    var pLivenessInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfLivenessInfo>());
-                    retCode = AsfUtil.ASFGetLivenessScore_IR(engine, pLivenessInfo);
-                    Console.WriteLine("Get Liveness Result:" + retCode);
-                    var livenessInfo = Marshal.PtrToStructure<AsfLivenessInfo>(pLivenessInfo);
+                    pLivenessInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfLivenessInfo>());
+                    if (mode == LivenessMode.RGB)
+                    {
+                        imageInfo = ImageUtil.ReadBmp(image);
+                        code = AsfUtil.ASFProcess(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
+                            imageInfo.ImgData, pMultiFaceInfo, FaceEngineMask.ASF_LIVENESS);
+                        if (code != 0)
+                            return new OperationResult<AsfLivenessInfo>(code);
+                        code = AsfUtil.ASFGetLivenessScore(engine, pLivenessInfo);
+                    }
+                    else
+                    {
+                        imageInfo = ImageUtil.ReadBMP_IR(new Bitmap(image));
+                        code = AsfUtil.ASFProcess_IR(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
+                            imageInfo.ImgData, pMultiFaceInfo, FaceEngineMask.ASF_IR_LIVENESS);
+                        if (code != 0)
+                            return new OperationResult<AsfLivenessInfo>(code);
+                        code = AsfUtil.ASFGetLivenessScore_IR(engine, pLivenessInfo);
+                    }
 
-                    //释放内存
-                    Marshal.FreeHGlobal(pMultiFaceInfo);
-                    Marshal.FreeHGlobal(pLivenessInfo);
-                    return livenessInfo;
+                    return code != 0
+                        ? new OperationResult<AsfLivenessInfo>(code)
+                        : new OperationResult<AsfLivenessInfo>(Marshal.PtrToStructure<AsfLivenessInfo>(pLivenessInfo));
                 }
+                finally
+                {
+                    if (imageInfo != null)
+                        Marshal.FreeHGlobal(imageInfo.ImgData);
+                    if (pMultiFaceInfo != IntPtr.Zero)
+                        Marshal.FreeHGlobal(pMultiFaceInfo);
+                    if (pLivenessInfo != IntPtr.Zero)
+                        Marshal.FreeHGlobal(pLivenessInfo);
+                }
+            });
 
-                //释放内存
-                Marshal.FreeHGlobal(pMultiFaceInfo);
-                return new AsfLivenessInfo();
-            }
-            catch
-            {
-                retCode = -1;
-                //释放内存
-                Marshal.FreeHGlobal(pMultiFaceInfo);
-                return new AsfLivenessInfo();
-            }
-        }
 
         /// <summary>
         /// 获取多个人脸检测结果中面积最大的人脸
         /// </summary>
         /// <param name="multiFaceInfo">人脸检测结果</param>
         /// <returns>面积最大的人脸信息</returns>
-        private static async Task<SingleFaceInfo> GetBiggestFaceAsync(MultiFaceInfo multiFaceInfo)
-        {
-            return await Task.Run(() =>
+        private static async Task<SingleFaceInfo> GetBiggestFaceAsync(MultiFaceInfo multiFaceInfo) =>
+            await Task.Run(() =>
             {
                 var singleFaceInfo = new SingleFaceInfo(new Rect(), 1);
                 if (multiFaceInfo.FaceNum <= 0)
@@ -453,6 +420,5 @@ namespace ColinChang.FaceRecognition.Utils
 
                 return singleFaceInfo;
             });
-        }
     }
 }
