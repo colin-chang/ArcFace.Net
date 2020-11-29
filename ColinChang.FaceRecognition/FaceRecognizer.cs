@@ -15,19 +15,24 @@ namespace ColinChang.FaceRecognition
 {
     public class FaceRecognizer : IFaceRecognizer
     {
-        private readonly ConcurrentDictionary<string, IntPtr> _faceLibrary = new ConcurrentDictionary<string, IntPtr>();
-        private readonly float _minSimilarity = 0.7f;
-        private readonly FaceRecognitionOptions _options;
+        #region 图像质量要求
 
-        public FaceRecognizer(IOptions<FaceRecognitionOptions> options) : this(options.Value)
-        {
-        }
+        /// <summary>
+        /// 图像尺寸上限
+        /// </summary>
+        private const long ASF_MAX_IMAGE_SIZE = 10 * 1024 * 1024;
 
-        public FaceRecognizer(FaceRecognitionOptions options)
-        {
-            _options = options;
-            OnlineActive();
-        }
+        /// <summary>
+        /// 图像尺寸下线
+        /// </summary>
+        private const int ASF_MIN_IMAGE_SIZE = 2 * 1024;
+
+        /// <summary>
+        /// 支持的图片格式
+        /// </summary>
+        private readonly string[] _supportedImageExtensions = {".jpg", ".png", ".bmp"};
+
+        #endregion
 
         #region 引擎池
 
@@ -49,22 +54,22 @@ namespace ColinChang.FaceRecognition
 
         #endregion
 
-        #region 图像要求
+        /// <summary>
+        /// 人脸库
+        /// </summary>
+        private readonly ConcurrentDictionary<string, IntPtr> _faceLibrary = new ConcurrentDictionary<string, IntPtr>();
 
-        private readonly string[] _supportedImageExtensions = {".jpg", ".png", ".bmp", ".gif"};
+        private readonly FaceRecognitionOptions _options;
 
-        //图像尺寸上限
-        private readonly long _maxImageSize = 10 * 1024 * 1024;
+        public FaceRecognizer(IOptions<FaceRecognitionOptions> options) : this(options.Value)
+        {
+        }
 
-        private readonly int _minImageSize = 2 * 1024;
-
-        //图像人脸角度上、下、左、右转向小于30度
-        private readonly int _maxRotation = 30;
-
-        //图片中人脸最小尺寸
-        private readonly (int Width, int Height) _minFaceSize = (50, 50);
-
-        #endregion
+        public FaceRecognizer(FaceRecognitionOptions options)
+        {
+            _options = options;
+            OnlineActive();
+        }
 
         #region SDK信息 激活信息/版本信息
 
@@ -75,7 +80,7 @@ namespace ColinChang.FaceRecognition
                 try
                 {
                     pointer = Marshal.AllocHGlobal(Marshal.SizeOf<AsfActiveFileInfo>());
-                    var code = AsfUtil.ASFGetActiveFileInfo(pointer);
+                    var code = AsfHelper.ASFGetActiveFileInfo(pointer);
                     if (code != 0)
                         return new OperationResult<ActiveFileInfo>(code);
 
@@ -96,7 +101,7 @@ namespace ColinChang.FaceRecognition
                 try
                 {
                     pointer = Marshal.AllocHGlobal(Marshal.SizeOf<AsfVersionInfo>());
-                    AsfUtil.ASFGetVersion(pointer);
+                    AsfHelper.ASFGetVersion(pointer);
                     var version = Marshal.PtrToStructure<AsfVersionInfo>(pointer);
                     return version.Cast();
                 }
@@ -111,34 +116,34 @@ namespace ColinChang.FaceRecognition
         #region 人脸属性 3D角度/年龄/性别
 
         public async Task<OperationResult<Face3DAngle>> GetFace3DAngleAsync(string image) =>
-            await ProcessImageAsync<AsfFace3DAngle, Face3DAngle>(image, FaceUtil.GetFace3DAngleAsync);
+            await ProcessImageAsync<AsfFace3DAngle, Face3DAngle>(image, FaceHelper.GetFace3DAngleAsync);
 
         public async Task<OperationResult<AgeInfo>> GetAgeAsync(string image) =>
-            await ProcessImageAsync<AsfAgeInfo, AgeInfo>(image, FaceUtil.GetAgeAsync);
+            await ProcessImageAsync<AsfAgeInfo, AgeInfo>(image, FaceHelper.GetAgeAsync);
 
         public async Task<OperationResult<GenderInfo>> GetGenderAsync(string image) =>
-            await ProcessImageAsync<AsfGenderInfo, GenderInfo>(image, FaceUtil.GetGenderAsync);
+            await ProcessImageAsync<AsfGenderInfo, GenderInfo>(image, FaceHelper.GetGenderAsync);
 
         #endregion
 
         #region 核心功能 人脸检测/特征提取/人脸比对
 
         public async Task<OperationResult<MultiFaceInfo>> DetectFaceAsync(string image) =>
-            await ProcessImageAsync<AsfMultiFaceInfo, MultiFaceInfo>(image, FaceUtil.DetectFaceAsync);
+            await ProcessImageAsync<AsfMultiFaceInfo, MultiFaceInfo>(image, FaceHelper.DetectFaceAsync);
 
         public async Task<OperationResult<LivenessInfo>> GetLivenessInfoAsync(Image image, LivenessMode mode)
         {
             if (mode == LivenessMode.RGB)
-                return await ProcessImageAsync<AsfLivenessInfo, LivenessInfo>(image, FaceUtil.GetRgbLivenessInfoAsync,
+                return await ProcessImageAsync<AsfLivenessInfo, LivenessInfo>(image, FaceHelper.GetRgbLivenessInfoAsync,
                     DetectionModeEnum.RGB);
 
-            return await ProcessImageAsync<AsfLivenessInfo, LivenessInfo>(image, FaceUtil.GetIrLivenessInfoAsync,
+            return await ProcessImageAsync<AsfLivenessInfo, LivenessInfo>(image, FaceHelper.GetIrLivenessInfoAsync,
                 DetectionModeEnum.IR);
         }
 
         public async Task<OperationResult<IEnumerable<byte[]>>> ExtractFaceFeatureAsync(string image) =>
             await ProcessImageAsync<IEnumerable<byte[]>, IEnumerable<byte[]>>(image,
-                FaceUtil.ExtractFeatureAsync);
+                FaceHelper.ExtractFeatureAsync);
 
         public async Task<OperationResult<float>> CompareFaceFeatureAsync(byte[] feature1, byte[] feature2) =>
             await Task.Run(() =>
@@ -153,7 +158,7 @@ namespace ColinChang.FaceRecognition
                     featureB = feature2.ToFaceFeature();
 
                     var similarity = 0f;
-                    var code = AsfUtil.ASFFaceFeatureCompare(engine, featureA, featureB, ref similarity);
+                    var code = AsfHelper.ASFFaceFeatureCompare(engine, featureA, featureB, ref similarity);
                     return new OperationResult<float>(similarity, code);
                 }
                 finally
@@ -184,7 +189,7 @@ namespace ColinChang.FaceRecognition
                     {
                         using var img = VerifyImage(image);
                         var faceId = Path.GetFileNameWithoutExtension(image);
-                        var feature = await FaceUtil.ExtractSingleFeatureAsync(engine, img);
+                        var feature = await FaceHelper.ExtractSingleFeatureAsync(engine, img);
                         if (feature.Code != 0)
                             continue;
 
@@ -220,7 +225,7 @@ namespace ColinChang.FaceRecognition
                 img = VerifyImage(image);
                 engine = GetEngine(DetectionModeEnum.Image);
                 var faceId = Path.GetFileNameWithoutExtension(image);
-                var feature = await FaceUtil.ExtractSingleFeatureAsync(engine, img);
+                var feature = await FaceHelper.ExtractSingleFeatureAsync(engine, img);
                 if (feature.Code == 0)
                     _faceLibrary[faceId] = feature.Data;
 
@@ -261,7 +266,7 @@ namespace ColinChang.FaceRecognition
             {
                 img = VerifyImage(image);
                 engine = GetEngine(DetectionModeEnum.Image);
-                var faceFeature = await FaceUtil.ExtractSingleFeatureAsync(engine, img);
+                var faceFeature = await FaceHelper.ExtractSingleFeatureAsync(engine, img);
                 featureInfo = faceFeature.Data;
                 if (faceFeature.Code != 0)
                     return new OperationResult<Recognition>(faceFeature.Code);
@@ -270,7 +275,7 @@ namespace ColinChang.FaceRecognition
                 foreach (var (faceId, feature) in _faceLibrary)
                 {
                     var similarity = 0f;
-                    var code = AsfUtil.ASFFaceFeatureCompare(engine, featureInfo, feature, ref similarity);
+                    var code = AsfHelper.ASFFaceFeatureCompare(engine, featureInfo, feature, ref similarity);
                     if (code != 0)
                         continue;
                     if (similarity <= recognition.Similarity)
@@ -280,7 +285,9 @@ namespace ColinChang.FaceRecognition
                     recognition.FaceId = faceId;
                 }
 
-                return recognition.Similarity < _minSimilarity ? null : new OperationResult<Recognition>(recognition);
+                return recognition.Similarity < _options.MinSimilarity
+                    ? null
+                    : new OperationResult<Recognition>(recognition);
             }
             finally
             {
@@ -304,7 +311,7 @@ namespace ColinChang.FaceRecognition
                     foreach (var (faceId, faceFeature) in _faceLibrary)
                     {
                         var similarity = 0f;
-                        var code = AsfUtil.ASFFaceFeatureCompare(engine, featureInfo, faceFeature, ref similarity);
+                        var code = AsfHelper.ASFFaceFeatureCompare(engine, featureInfo, faceFeature, ref similarity);
                         if (code != 0)
                             continue;
                         if (similarity <= recognition.Similarity)
@@ -314,7 +321,7 @@ namespace ColinChang.FaceRecognition
                         recognition.FaceId = faceId;
                     }
 
-                    return recognition.Similarity < _minSimilarity
+                    return recognition.Similarity < _options.MinSimilarity
                         ? null
                         : new OperationResult<Recognition>(recognition);
                 }
@@ -336,7 +343,7 @@ namespace ColinChang.FaceRecognition
         /// <exception cref="Exception"></exception>
         private void OnlineActive()
         {
-            var code = AsfUtil.ASFOnlineActivation(_options.AppId, _options.SdkKey);
+            var code = AsfHelper.ASFOnlineActivation(_options.AppId, _options.SdkKey);
             if (code != 90114)
                 throw new Exception($"failed to active. error code:{code}");
         }
@@ -379,21 +386,21 @@ namespace ColinChang.FaceRecognition
             var engine = IntPtr.Zero;
             var code = mode switch
             {
-                DetectionModeEnum.Image => AsfUtil.ASFInitEngine(
+                DetectionModeEnum.Image => AsfHelper.ASFInitEngine(
                     AsfDetectionMode.ASF_DETECT_MODE_IMAGE, _options.ImageDetectFaceOrientPriority,
-                    _options.ImageDetectFaceScaleVal, _options.DetectFaceMaxNum,
+                    _options.ImageDetectFaceScaleVal, _options.MaxDetectFaceNum,
                     FaceEngineMask.ASF_FACE_DETECT | FaceEngineMask.ASF_FACERECOGNITION | FaceEngineMask.ASF_AGE |
                     FaceEngineMask.ASF_GENDER | FaceEngineMask.ASF_FACE3DANGLE, ref engine),
-                DetectionModeEnum.Video => AsfUtil.ASFInitEngine(
+                DetectionModeEnum.Video => AsfHelper.ASFInitEngine(
                     AsfDetectionMode.ASF_DETECT_MODE_VIDEO, _options.VideoDetectFaceOrientPriority,
-                    _options.VideoDetectFaceScaleVal, _options.DetectFaceMaxNum,
+                    _options.VideoDetectFaceScaleVal, _options.MaxDetectFaceNum,
                     FaceEngineMask.ASF_FACE_DETECT | FaceEngineMask.ASF_FACERECOGNITION, ref engine),
-                DetectionModeEnum.RGB => AsfUtil.ASFInitEngine(
+                DetectionModeEnum.RGB => AsfHelper.ASFInitEngine(
                     AsfDetectionMode.ASF_DETECT_MODE_IMAGE, _options.ImageDetectFaceOrientPriority,
                     _options.VideoDetectFaceScaleVal, 1,
                     FaceEngineMask.ASF_FACE_DETECT | FaceEngineMask.ASF_FACERECOGNITION | FaceEngineMask.ASF_LIVENESS,
                     ref engine),
-                DetectionModeEnum.IR => AsfUtil.ASFInitEngine(
+                DetectionModeEnum.IR => AsfHelper.ASFInitEngine(
                     AsfDetectionMode.ASF_DETECT_MODE_IMAGE, _options.ImageDetectFaceOrientPriority,
                     _options.VideoDetectFaceScaleVal, 1,
                     FaceEngineMask.ASF_FACE_DETECT | FaceEngineMask.ASF_FACERECOGNITION |
@@ -435,7 +442,7 @@ namespace ColinChang.FaceRecognition
                     if (!engines.TryDequeue(out var engine))
                         Thread.Sleep(1000);
 
-                    var code = AsfUtil.ASFUninitEngine(engine);
+                    var code = AsfHelper.ASFUninitEngine(engine);
                     if (code != 0)
                         engines.Enqueue(engine);
                 }
@@ -504,10 +511,10 @@ namespace ColinChang.FaceRecognition
                 throw new FileNotFoundException($"{image} doesn't exist.");
 
             var size = new FileInfo(image).Length;
-            if (size > _maxImageSize)
-                throw new Exception($"image is oversize than {_maxImageSize}B.");
-            if (size < _minImageSize)
-                throw new Exception($"image is too small than {_minImageSize}B");
+            if (size > ASF_MAX_IMAGE_SIZE)
+                throw new Exception($"image is oversize than {ASF_MAX_IMAGE_SIZE}B.");
+            if (size < ASF_MIN_IMAGE_SIZE)
+                throw new Exception($"image is too small than {ASF_MIN_IMAGE_SIZE}B");
 
             if (!_supportedImageExtensions.Contains(Path.GetExtension(image).ToLower()))
                 throw new Exception("unsupported image type.");
@@ -521,9 +528,9 @@ namespace ColinChang.FaceRecognition
 
                 //缩放
                 if (img.Width > 1536 || img.Height > 1536)
-                    img = ImageUtil.ScaleImage(img, 1536, 1536);
+                    img = ImageHelper.ScaleImage(img, 1536, 1536);
                 if (img.Width % 4 != 0)
-                    img = ImageUtil.ScaleImage(img, img.Width - img.Width % 4, img.Height);
+                    img = ImageHelper.ScaleImage(img, img.Width - img.Width % 4, img.Height);
                 return img;
             }
             catch

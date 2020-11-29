@@ -83,14 +83,14 @@ namespace ColinChang.FaceRecognition
         Task InitFaceLibraryAsync(Dictionary<string, byte[]> faceFeatures);
 
         /// <summary>
-        /// 新增人脸(约定文件名为FaceId)
+        /// 人脸库新增人脸(约定文件名为FaceId)
         /// </summary>
         /// <param name="image">人脸图片。多人脸图自动选比例最大的人脸</param>
         /// <returns>状态码，0表示成功，非0表示有错误，具体状态码含义参考文档</returns>
         Task<long> AddFaceAsync(string image);
 
         /// <summary>
-        /// 新增人脸
+        /// 人脸库新增人脸
         /// </summary>
         /// <param name="faceId">人脸ID</param>
         /// <param name="feature">人脸特征</param>
@@ -98,7 +98,7 @@ namespace ColinChang.FaceRecognition
         Task AddFaceAsync(string faceId, byte[] feature);
 
         /// <summary>
-        /// 删除人脸
+        /// 人脸库删除人脸
         /// </summary>
         /// <param name="faceId"></param>
         /// <returns></returns>
@@ -112,7 +112,7 @@ namespace ColinChang.FaceRecognition
         Task<OperationResult<Recognition>> SearchFaceAsync(string image);
 
         /// <summary>
-        /// 在人脸库中检索人脸
+        /// 人脸库 检索人脸
         /// </summary>
         /// <param name="feature"></param>
         /// <returns>检索结果</returns>

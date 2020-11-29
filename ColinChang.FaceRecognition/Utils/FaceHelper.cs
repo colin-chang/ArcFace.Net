@@ -7,7 +7,7 @@ using ColinChang.FaceRecognition.Models;
 
 namespace ColinChang.FaceRecognition.Utils
 {
-    public static class FaceUtil
+    public static class FaceHelper
     {
         /// <summary>
         /// 人脸检测(PS:检测RGB图像的人脸时，必须保证图像的宽度能被4整除，否则会失败)
@@ -22,9 +22,9 @@ namespace ColinChang.FaceRecognition.Utils
                 var pointer = IntPtr.Zero;
                 try
                 {
-                    imageInfo = ImageUtil.ReadBmp(image);
+                    imageInfo = ImageHelper.ReadBmp(image);
                     pointer = Marshal.AllocHGlobal(Marshal.SizeOf<AsfMultiFaceInfo>());
-                    var code = AsfUtil.ASFDetectFaces(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
+                    var code = AsfHelper.ASFDetectFaces(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
                         imageInfo.ImgData, pointer);
                     if (code != 0)
                         return new OperationResult<AsfMultiFaceInfo>(code);
@@ -70,9 +70,9 @@ namespace ColinChang.FaceRecognition.Utils
                         pSingleFaceInfo = Marshal.AllocHGlobal(Marshal.SizeOf<SingleFaceInfo>());
                         Marshal.StructureToPtr(singleFaceInfo, pSingleFaceInfo, false);
 
-                        imageInfo = ImageUtil.ReadBmp(image);
+                        imageInfo = ImageHelper.ReadBmp(image);
                         pFaceFeature = Marshal.AllocHGlobal(Marshal.SizeOf<AsfFaceFeature>());
-                        var code = AsfUtil.ASFFaceFeatureExtract(engine, imageInfo.Width, imageInfo.Height,
+                        var code = AsfHelper.ASFFaceFeatureExtract(engine, imageInfo.Width, imageInfo.Height,
                             imageInfo.Format, imageInfo.ImgData, pSingleFaceInfo, pFaceFeature);
                         if (code != 0)
                             return new OperationResult<IEnumerable<byte[]>>(code);
@@ -122,9 +122,9 @@ namespace ColinChang.FaceRecognition.Utils
                     pSingleFaceInfo = Marshal.AllocHGlobal(Marshal.SizeOf<SingleFaceInfo>());
                     Marshal.StructureToPtr(singleFaceInfo, pSingleFaceInfo, false);
 
-                    imageInfo = ImageUtil.ReadBmp(image);
+                    imageInfo = ImageHelper.ReadBmp(image);
                     pFaceFeature = Marshal.AllocHGlobal(Marshal.SizeOf<AsfFaceFeature>());
-                    var code = AsfUtil.ASFFaceFeatureExtract(engine, imageInfo.Width, imageInfo.Height,
+                    var code = AsfHelper.ASFFaceFeatureExtract(engine, imageInfo.Width, imageInfo.Height,
                         imageInfo.Format, imageInfo.ImgData, pSingleFaceInfo, pFaceFeature);
                     if (code != 0)
                     {
@@ -179,19 +179,19 @@ namespace ColinChang.FaceRecognition.Utils
                     if (faces.Data.FaceNum <= 0)
                         return new OperationResult<AsfAgeInfo>(new AsfAgeInfo());
 
-                    imageInfo = ImageUtil.ReadBmp(image);
+                    imageInfo = ImageHelper.ReadBmp(image);
                     pMultiFaceInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfMultiFaceInfo>());
                     Marshal.StructureToPtr(faces.Data, pMultiFaceInfo, false);
 
                     //人脸信息处理
-                    var code = AsfUtil.ASFProcess(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
+                    var code = AsfHelper.ASFProcess(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
                         imageInfo.ImgData, pMultiFaceInfo, FaceEngineMask.ASF_AGE);
                     if (code != 0)
                         return new OperationResult<AsfAgeInfo>(code);
 
                     //获取年龄信息
                     pAgeInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfAgeInfo>());
-                    code = AsfUtil.ASFGetAge(engine, pAgeInfo);
+                    code = AsfHelper.ASFGetAge(engine, pAgeInfo);
                     if (code != 0)
                         return new OperationResult<AsfAgeInfo>(code);
 
@@ -229,19 +229,19 @@ namespace ColinChang.FaceRecognition.Utils
                     if (faces.Data.FaceNum <= 0)
                         return new OperationResult<AsfGenderInfo>(new AsfGenderInfo());
 
-                    imageInfo = ImageUtil.ReadBmp(image);
+                    imageInfo = ImageHelper.ReadBmp(image);
                     pMultiFaceInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfMultiFaceInfo>());
                     Marshal.StructureToPtr(faces.Data, pMultiFaceInfo, false);
 
                     //人脸信息处理
-                    var code = AsfUtil.ASFProcess(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
+                    var code = AsfHelper.ASFProcess(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
                         imageInfo.ImgData, pMultiFaceInfo, FaceEngineMask.ASF_GENDER);
                     if (code != 0)
                         return new OperationResult<AsfGenderInfo>(code);
 
                     //获取性别信息
                     pGenderInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfGenderInfo>());
-                    code = AsfUtil.ASFGetGender(engine, pGenderInfo);
+                    code = AsfHelper.ASFGetGender(engine, pGenderInfo);
                     if (code != 0)
                         return new OperationResult<AsfGenderInfo>(code);
 
@@ -279,19 +279,19 @@ namespace ColinChang.FaceRecognition.Utils
                     if (faces.Data.FaceNum <= 0)
                         return new OperationResult<AsfFace3DAngle>(new AsfFace3DAngle());
 
-                    imageInfo = ImageUtil.ReadBmp(image);
+                    imageInfo = ImageHelper.ReadBmp(image);
                     pMultiFaceInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfMultiFaceInfo>());
                     Marshal.StructureToPtr(faces.Data, pMultiFaceInfo, false);
 
                     //人脸信息处理
-                    var code = AsfUtil.ASFProcess(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
+                    var code = AsfHelper.ASFProcess(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
                         imageInfo.ImgData, pMultiFaceInfo, FaceEngineMask.ASF_FACE3DANGLE);
                     if (code != 0)
                         return new OperationResult<AsfFace3DAngle>(code);
 
                     //获取人脸3D角度
                     pFace3DAngleInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfFace3DAngle>());
-                    code = AsfUtil.ASFGetFace3DAngle(engine, pFace3DAngleInfo);
+                    code = AsfHelper.ASFGetFace3DAngle(engine, pFace3DAngleInfo);
                     if (code != 0)
                         return new OperationResult<AsfFace3DAngle>(code);
 
@@ -362,21 +362,21 @@ namespace ColinChang.FaceRecognition.Utils
                     pLivenessInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfLivenessInfo>());
                     if (mode == LivenessMode.RGB)
                     {
-                        imageInfo = ImageUtil.ReadBmp(image);
-                        code = AsfUtil.ASFProcess(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
+                        imageInfo = ImageHelper.ReadBmp(image);
+                        code = AsfHelper.ASFProcess(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
                             imageInfo.ImgData, pMultiFaceInfo, FaceEngineMask.ASF_LIVENESS);
                         if (code != 0)
                             return new OperationResult<AsfLivenessInfo>(code);
-                        code = AsfUtil.ASFGetLivenessScore(engine, pLivenessInfo);
+                        code = AsfHelper.ASFGetLivenessScore(engine, pLivenessInfo);
                     }
                     else
                     {
-                        imageInfo = ImageUtil.ReadBMP_IR(new Bitmap(image));
-                        code = AsfUtil.ASFProcess_IR(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
+                        imageInfo = ImageHelper.ReadBMP_IR(new Bitmap(image));
+                        code = AsfHelper.ASFProcess_IR(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
                             imageInfo.ImgData, pMultiFaceInfo, FaceEngineMask.ASF_IR_LIVENESS);
                         if (code != 0)
                             return new OperationResult<AsfLivenessInfo>(code);
-                        code = AsfUtil.ASFGetLivenessScore_IR(engine, pLivenessInfo);
+                        code = AsfHelper.ASFGetLivenessScore_IR(engine, pLivenessInfo);
                     }
 
                     return code != 0

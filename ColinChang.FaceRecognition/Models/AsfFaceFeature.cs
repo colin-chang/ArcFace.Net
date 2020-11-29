@@ -18,18 +18,4 @@ namespace ColinChang.FaceRecognition.Models
         /// </summary>
         public int FeatureSize { get; set; }
     }
-
-    public static class FaceFeatureExtension
-    {
-        public static IntPtr ToFaceFeature(this byte[] feature)
-        {
-            var localFeature = new AsfFaceFeature {Feature = Marshal.AllocHGlobal(feature.Length)};
-            Marshal.Copy(feature, 0, localFeature.Feature, feature.Length);
-            localFeature.FeatureSize = feature.Length;
-
-            var pLocalFeature = Marshal.AllocHGlobal(Marshal.SizeOf<AsfFaceFeature>());
-            Marshal.StructureToPtr(localFeature, pLocalFeature, false);
-            return pLocalFeature;
-        }
-    }
 }

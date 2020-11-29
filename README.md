@@ -39,3 +39,9 @@ sudo apt install libgdiplus/focal
 * 活体检测未开发
 
 PUT the 3D Angle model picture here
+
+## 图像质量要求
+* 图片尺寸大于2K且小于10MB
+* 图片格式支持 ".jpg",".png",".bmp"
+* 图片中人脸尺寸不小于50 x 50像素
+* 建议待检测的图像人脸角度上、下、左、右转向小于30度

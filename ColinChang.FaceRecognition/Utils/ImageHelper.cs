@@ -7,7 +7,7 @@ using ColinChang.FaceRecognition.Models;
 
 namespace ColinChang.FaceRecognition.Utils
 {
-    internal static class ImageUtil
+    internal static class ImageHelper
     {
         /// <summary>
         /// 按指定宽高缩放图片

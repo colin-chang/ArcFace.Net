@@ -6,7 +6,7 @@ namespace ColinChang.FaceRecognition.Utils
     /// <summary>
     /// SDK中与人脸识别相关函数封装类
     /// </summary>
-    public class AsfUtil
+    public class AsfHelper
     {
         /// <summary>
         /// SDK动态链接库路径
