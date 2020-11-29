@@ -25,7 +25,7 @@ namespace ColinChang.FaceRecognition.Sample
 
 
             using IFaceRecognizer faceRecognizer = new FaceRecognizer(options);
-
+            
             /*
             //获取激活消息
             var info = await faceRecognizer.GetActiveFileInfoAsync();
@@ -47,10 +47,11 @@ namespace ColinChang.FaceRecognition.Sample
             // 人脸比对
             var result = await faceRecognizer.CompareFaceFeatureAsync(features0.Data.Single(), features1.Data.Single());
             
+            // 活体检测实际应取视频帧图，此处仅作演示
             //RGB活体检测
-            var liveness= await faceRecognizer.GetLivenessInfoAsync(Image.FromFile(zys), LivenessMode.RGB);
+            var livenessRgb= await faceRecognizer.GetLivenessInfoAsync(Image.FromFile(zys), LivenessMode.RGB);
             //IR活体检测
-            liveness= await faceRecognizer.GetLivenessInfoAsync(Image.FromFile(zys), LivenessMode.IR);
+            var livenessIr= await faceRecognizer.GetLivenessInfoAsync(Image.FromFile(zys), LivenessMode.IR);
             */
 
             // 初始化人脸库

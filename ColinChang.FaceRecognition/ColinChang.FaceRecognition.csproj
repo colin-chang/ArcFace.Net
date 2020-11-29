@@ -41,53 +41,5 @@
         <Folder Include="Sdks\Winx64" />
         <Folder Include="Sdks\Winx86" />
     </ItemGroup>
-
-    <ItemGroup>
-        <Content Include="Libs\AForge.Controls.dll">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="Libs\AForge.dll">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="Libs\AForge.Imaging.dll">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="Libs\AForge.Imaging.Formats.dll">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="Libs\AForge.Math.dll">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="Libs\AForge.Video.DirectShow.dll">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="Libs\AForge.Video.dll">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Reference Include="AForge, Version=2.2.5.0, Culture=neutral, PublicKeyToken=c1db6ff4eaa06aeb">
-            <HintPath>Libs\AForge.dll</HintPath>
-        </Reference>
-        <Reference Include="AForge.Controls, Version=2.2.5.0, Culture=neutral, PublicKeyToken=a8ac264d1dc6b9d9">
-            <HintPath>Libs\AForge.Controls.dll</HintPath>
-        </Reference>
-        <Reference Include="AForge.Imaging, Version=2.2.5.0, Culture=neutral, PublicKeyToken=ba8ddea9676ca48b">
-            <HintPath>Libs\AForge.Imaging.dll</HintPath>
-        </Reference>
-        <Reference Include="AForge.Imaging.Formats, Version=2.2.4.0, Culture=neutral, PublicKeyToken=8065ed5a639199a0">
-            <HintPath>Libs\AForge.Imaging.Formats.dll</HintPath>
-        </Reference>
-        <Reference Include="AForge.Math, Version=2.2.5.0, Culture=neutral, PublicKeyToken=abba2e25397ee8c9">
-            <HintPath>Libs\AForge.Math.dll</HintPath>
-        </Reference>
-        <Reference Include="AForge.Video, Version=2.2.5.0, Culture=neutral, PublicKeyToken=cbfb6e07d173c401">
-            <HintPath>Libs\AForge.Video.dll</HintPath>
-        </Reference>
-        <Reference Include="AForge.Video.DirectShow, Version=2.2.5.0, Culture=neutral, PublicKeyToken=61ea4348d43881b7">
-            <HintPath>Libs\AForge.Video.DirectShow.dll</HintPath>
-        </Reference>
-    </ItemGroup>
     
 </Project>
