@@ -35,11 +35,5 @@
         <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="5.0.0" />
         <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
     </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Sdks\Linuxx64" />
-        <Folder Include="Sdks\Winx64" />
-        <Folder Include="Sdks\Winx86" />
-    </ItemGroup>
     
 </Project>
