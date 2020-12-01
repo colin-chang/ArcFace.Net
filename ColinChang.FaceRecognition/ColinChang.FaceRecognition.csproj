@@ -9,7 +9,7 @@
         <PackageProjectUrl>https://github.com/colin-chang/FaceRecognition</PackageProjectUrl>
         <RepositoryUrl>https://github.com/colin-chang/FaceRecognition</RepositoryUrl>
         <RepositoryType>Git</RepositoryType>
-        <PackageTags>FaceRecognition AI ArcSoft</PackageTags>
+        <PackageTags>face recognition compare detect liveness feature AI arcsoft</PackageTags>
         <Owners>Colin Chang</Owners>
         <PackageId>ColinChang.FaceRecognition</PackageId>
         <PackageReleaseNotes>1.Support face recognization by a Image Type
