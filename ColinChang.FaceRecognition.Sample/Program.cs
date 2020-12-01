@@ -25,7 +25,7 @@ namespace ColinChang.FaceRecognition.Sample
 
 
             using IFaceRecognizer faceRecognizer = new FaceRecognizer(options);
-            
+
             /*
             //获取激活消息
             var info = await faceRecognizer.GetActiveFileInfoAsync();
@@ -58,7 +58,8 @@ namespace ColinChang.FaceRecognition.Sample
             await faceRecognizer.InitFaceLibraryAsync(new[] {zys, xy});
             // 搜索人脸库
             var res = await faceRecognizer.SearchFaceAsync(xy1);
-
+            if (res.Code == 0)
+                Console.WriteLine("FaceId:{0}\tSimilarity:{1}", res.Data.FaceId, res.Data.Similarity);
 
             Console.ReadKey();
         }
