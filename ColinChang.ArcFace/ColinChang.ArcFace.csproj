@@ -13,7 +13,8 @@
         <PackageTags>arcface face recognition compare detect liveness feature AI arcsoft</PackageTags>
         <Owners>Colin Chang</Owners>
         <PackageId>ArcFace.Net</PackageId>
-        <PackageIconUrl>https://raw.githubusercontent.com/colin-chang/ArcFace.Net/master/icon.png</PackageIconUrl>
+        <PackageIcon>../icon.png</PackageIcon>
+        <PackageIconUrl>https://github.com/colin-chang/ArcFace.Net/blob/main/icon.png</PackageIconUrl>
         <PackageReleaseNotes>更新SDK到3.0</PackageReleaseNotes>
         <Product>ArcFace.Net</Product>
         <PackageVersion>3.0.0</PackageVersion>
@@ -33,6 +34,6 @@
             <Pack>True</Pack>
             <PackagePath></PackagePath>
         </None>
-        <None Include="icon.png" Pack="true" PackagePath="" />
+        <None Include="../icon.png" Pack="true" PackagePath="" />
     </ItemGroup>
 </Project>

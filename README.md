@@ -19,17 +19,17 @@
         apt install libgdiplus/focal
         ```
 ## SDK
-从 [虹软开发者中心](https://ai.arcsoft.com.cn/ucenter/resource/build/index.html#/application)或[此处](https://github.com/colin-chang/FaceRecognition/tree/master/ColinChang.FaceRecognition/Sdks)下载需要的SDK 3.x文件并放置同特定目录。
+从 [虹软开发者中心](https://ai.arcsoft.com.cn/ucenter/resource/build/index.html#/application)或[此处](https://github.com/colin-chang/ArcFace.Net/tree/main/ColinChang.ArcFace/Sdks)下载需要的SDK 3.x文件并放置同特定目录。
 * Windows 需要将SDK dll文件拷贝到执行程序所在目录，或环境变量配置的目录
 * **Linux 需要将SDK so文件拷贝到`/lib`等系统程序目录，或环境变量配置的目录**
 
-从 [虹软开发者中心](https://ai.arcsoft.com.cn/ucenter/resource/build/index.html#/application) 获取授权信息(AppId/SdkKey)，通过`FaceRecognitionOptions`传入配置。具体用法参见 [示例程序](https://github.com/colin-chang/FaceRecognition/tree/master/ColinChang.FaceRecognition.Sample)。
+从 [虹软开发者中心](https://ai.arcsoft.com.cn/ucenter/resource/build/index.html#/application) 获取授权信息(AppId/SdkKey)，通过`ArcFaceOptions`传入配置。具体用法参见 [示例程序](https://github.com/colin-chang/ArcFace.Net/tree/main/ColinChang.ArcFace.Sample)。
 
 ## 资源回收
 * 工具中自动维护引擎池进行资源回收利用，无需手动管理。
 * 工具支持多并发操作。
 * 推荐使用**单例方式**使用。
-* `FaceRecognition`实现`IDisposable`，使用完毕后需要`Dispose()`以销毁引擎回收其它相关内存。
+* `ArcFace`实现`IDisposable`，使用完毕后需要`Dispose()`以销毁引擎回收其它相关内存。
 
 ## 图像质量要求
 * 图片尺寸大于2K且小于10MB
@@ -95,4 +95,4 @@ MERR_ASF_UNIQUE_IDENTIFIER_ILLEGAL|0x16007|90119|唯一标识不合法
 * 活体检测未开发
 
 ## 参考文档
-https://github.com/colin-chang/FaceRecognition/blob/3.x/sdk_3.0.pdf
+https://github.com/colin-chang/ArcFace.Net/blob/main/sdk_3.0.pdf
