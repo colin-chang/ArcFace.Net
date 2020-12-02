@@ -8,8 +8,8 @@
 1. Windows x86/x64
 2. Linux x64
 
-    * 该程序基于ArcFace 3.x C++ SDK开发，`DllImport`引入C++动态库时依赖于Linux系统库(`libdl.so.2`)，因此并低配Linux环境(如Alpine等)可能存在兼容性问题。
-    经测试一下系统可以正常运行。
+    * 该程序基于ArcFace 3.x C++ SDK开发，`DllImport`引入C++动态库时依赖于Linux系统库(`libdl.so.2`)，因此低配Linux环境(如Alpine等)可能存在兼容性问题。
+    经测试以下可以正常运行。
         * `Debian 10 +`
         * `Ubuntu20.04 +`
         * `CentOS 8 +`
