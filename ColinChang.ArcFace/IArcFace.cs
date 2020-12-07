@@ -47,6 +47,11 @@ namespace ColinChang.ArcFace
         Task<OperationResult<MultiFaceInfo>> DetectFaceAsync(string image);
 
         /// <summary>
+        /// 人脸检测
+        /// </summary>
+        Task<OperationResult<MultiFaceInfo>> DetectFaceAsync(Image image);
+        
+        /// <summary>
         /// 活体检测
         /// </summary>
         /// <param name="image"></param>
@@ -110,6 +115,13 @@ namespace ColinChang.ArcFace
         /// <param name="image"></param>
         /// <returns>搜索结果</returns>
         Task<OperationResult<Recognition>> SearchFaceAsync(string image);
+        
+        /// <summary>
+        /// 人脸库中搜索人脸
+        /// </summary>
+        /// <param name="image"></param>
+        /// <returns>搜索结果</returns>
+        Task<OperationResult<Recognition>> SearchFaceAsync(Image image);
 
         /// <summary>
         /// 人脸库 检索人脸

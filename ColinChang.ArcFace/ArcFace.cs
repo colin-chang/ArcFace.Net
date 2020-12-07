@@ -30,7 +30,7 @@ namespace ColinChang.ArcFace
         /// <summary>
         /// 支持的图片格式
         /// </summary>
-        private readonly string[] _supportedImageExtensions = {".jpg", ".png", ".bmp"};
+        private readonly string[] _supportedImageExtensions = {".jpeg", ".jpg", ".png", ".bmp"};
 
         #endregion
 
@@ -129,6 +129,9 @@ namespace ColinChang.ArcFace
         #region 核心功能 人脸检测/特征提取/人脸比对
 
         public async Task<OperationResult<MultiFaceInfo>> DetectFaceAsync(string image) =>
+            await ProcessImageAsync<AsfMultiFaceInfo, MultiFaceInfo>(image, FaceHelper.DetectFaceAsync);
+
+        public async Task<OperationResult<MultiFaceInfo>> DetectFaceAsync(Image image) =>
             await ProcessImageAsync<AsfMultiFaceInfo, MultiFaceInfo>(image, FaceHelper.DetectFaceAsync);
 
         public async Task<OperationResult<LivenessInfo>> GetLivenessInfoAsync(Image image, LivenessMode mode)
@@ -257,46 +260,51 @@ namespace ColinChang.ArcFace
                 Marshal.FreeHGlobal(feature);
             });
 
-        public async Task<OperationResult<Recognition>> SearchFaceAsync(string image)
+        public async Task<OperationResult<Recognition>> SearchFaceAsync(string image) =>
+            await SearchFaceAsync(VerifyImage(image));
+
+        public async Task<OperationResult<Recognition>> SearchFaceAsync(Image image)
         {
-            Image img = null;
-            var engine = IntPtr.Zero;
-            var featureInfo = IntPtr.Zero;
-            try
             {
-                img = VerifyImage(image);
-                engine = GetEngine(DetectionModeEnum.Image);
-                var faceFeature = await FaceHelper.ExtractSingleFeatureAsync(engine, img);
-                featureInfo = faceFeature.Data;
-                if (faceFeature.Code != 0)
-                    return new OperationResult<Recognition>(faceFeature.Code);
-
-                var recognition = new Recognition();
-                foreach (var (faceId, feature) in _faceLibrary)
+                var engine = IntPtr.Zero;
+                var featureInfo = IntPtr.Zero;
+                try
                 {
-                    var similarity = 0f;
-                    var code = AsfHelper.ASFFaceFeatureCompare(engine, featureInfo, feature, ref similarity);
-                    if (code != 0)
-                        continue;
-                    if (similarity <= recognition.Similarity)
-                        continue;
+                    image = VerifyImage(image);
+                    engine = GetEngine(DetectionModeEnum.Image);
+                    var faceFeature = await FaceHelper.ExtractSingleFeatureAsync(engine, image);
+                    featureInfo = faceFeature.Data;
+                    if (faceFeature.Code != 0)
+                        return new OperationResult<Recognition>(faceFeature.Code);
 
-                    recognition.Similarity = similarity;
-                    recognition.FaceId = faceId;
+                    var recognition = new Recognition();
+                    foreach (var (faceId, feature) in _faceLibrary)
+                    {
+                        var similarity = 0f;
+                        var code = AsfHelper.ASFFaceFeatureCompare(engine, featureInfo, feature, ref similarity);
+                        if (code != 0)
+                            continue;
+                        if (similarity <= recognition.Similarity)
+                            continue;
+
+                        recognition.Similarity = similarity;
+                        recognition.FaceId = faceId;
+                    }
+
+                    return recognition.Similarity < _options.MinSimilarity
+                        ? null
+                        : new OperationResult<Recognition>(recognition);
                 }
-
-                return recognition.Similarity < _options.MinSimilarity
-                    ? null
-                    : new OperationResult<Recognition>(recognition);
-            }
-            finally
-            {
-                img?.Dispose();
-                if (featureInfo != IntPtr.Zero)
-                    Marshal.FreeHGlobal(featureInfo);
-                RecycleEngine(engine, DetectionModeEnum.Image);
+                finally
+                {
+                    image?.Dispose();
+                    if (featureInfo != IntPtr.Zero)
+                        Marshal.FreeHGlobal(featureInfo);
+                    RecycleEngine(engine, DetectionModeEnum.Image);
+                }
             }
         }
+
 
         public async Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature) =>
             await Task.Run(() =>
@@ -365,24 +373,23 @@ namespace ColinChang.ArcFace
         /// <returns></returns>
         private IntPtr GetEngine(DetectionModeEnum mode)
         {
-            IntPtr engine;
-            var (engines, enginesCount, waitHandle) = GetEngineStuff(mode);
+            while (true)
+            {
+                var (engines, enginesCount, waitHandle) = GetEngineStuff(mode);
 
-            //引擎池中有可用引擎则直接返回
-            if (engines.TryDequeue(out engine))
+                //引擎池中有可用引擎则直接返回
+                if (engines.TryDequeue(out var engine)) return engine;
+
+                //无可用引擎时需要等待 
+                waitHandle.WaitOne();
+                if (enginesCount >= _options.MaxSingleTypeEngineCount) continue;
+
+                //引擎池未满则可以直接创建
+                engine = InitEngine(mode);
+                enginesCount++;
+                if (enginesCount < _options.MaxSingleTypeEngineCount) waitHandle.Set();
                 return engine;
-
-            //无可用引擎时需要等待 
-            waitHandle.WaitOne();
-            if (enginesCount >= _options.MaxSingleTypeEngineCount)
-                return GetEngine(mode);
-
-            //引擎池未满则可以直接创建
-            engine = InitEngine(mode);
-            enginesCount++;
-            if (enginesCount < _options.MaxSingleTypeEngineCount)
-                waitHandle.Set();
-            return engine;
+            }
         }
 
         /// <summary>
@@ -493,11 +500,8 @@ namespace ColinChang.ArcFace
             };
 
         private async Task<OperationResult<TK>> ProcessImageAsync<T, TK>(string image,
-            Func<IntPtr, Image, Task<OperationResult<T>>> process, DetectionModeEnum mode = DetectionModeEnum.Image)
-        {
-            var img = VerifyImage(image);
-            return await ProcessImageAsync<T, TK>(img, process, mode);
-        }
+            Func<IntPtr, Image, Task<OperationResult<T>>> process, DetectionModeEnum mode = DetectionModeEnum.Image) =>
+            await ProcessImageAsync<T, TK>(Image.FromFile(image), process, mode);
 
         private async Task<OperationResult<TK>> ProcessImageAsync<T, TK>(Image image,
             Func<IntPtr, Image, Task<OperationResult<T>>> process, DetectionModeEnum mode = DetectionModeEnum.Image)
@@ -505,6 +509,7 @@ namespace ColinChang.ArcFace
             var engine = IntPtr.Zero;
             try
             {
+                image = VerifyImage(image);
                 engine = GetEngine(mode);
                 return (await process(engine, image)).Cast<TK>();
             }
@@ -520,28 +525,38 @@ namespace ColinChang.ArcFace
             if (!File.Exists(image))
                 throw new FileNotFoundException($"{image} doesn't exist.");
 
-            var size = new FileInfo(image).Length;
-            if (size > ASF_MAX_IMAGE_SIZE)
+            return VerifyImage(Image.FromFile(image));
+        }
+
+        private Image VerifyImage(Image image)
+        {
+            if (image == null)
+                throw new FileNotFoundException("image cannot be null.");
+
+            using var stream = new MemoryStream();
+            image.Save(stream, image.RawFormat);
+            var length = stream.Length;
+            if (length > ASF_MAX_IMAGE_SIZE)
                 throw new Exception($"image is oversize than {ASF_MAX_IMAGE_SIZE}B.");
-            if (size < ASF_MIN_IMAGE_SIZE)
+            if (length < ASF_MIN_IMAGE_SIZE)
                 throw new Exception($"image is too small than {ASF_MIN_IMAGE_SIZE}B");
 
-            if (!_supportedImageExtensions.Contains(Path.GetExtension(image).ToLower()))
+            if (!_supportedImageExtensions.Contains($".{image.RawFormat.ToString().ToLower()}"))
                 throw new Exception("unsupported image type.");
 
+            return ScaleImage(image);
+        }
 
+        private static Image ScaleImage(Image image)
+        {
             try
             {
-                var img = Image.FromFile(image);
-                if (img == null)
-                    throw new InvalidDataException($"invalid image {image}");
-
                 //缩放
-                if (img.Width > 1536 || img.Height > 1536)
-                    img = ImageHelper.ScaleImage(img, 1536, 1536);
-                if (img.Width % 4 != 0)
-                    img = ImageHelper.ScaleImage(img, img.Width - img.Width % 4, img.Height);
-                return img;
+                if (image.Width > 1536 || image.Height > 1536)
+                    image = ImageHelper.ScaleImage(image, 1536, 1536);
+                if (image.Width % 4 != 0)
+                    image = ImageHelper.ScaleImage(image, image.Width - image.Width % 4, image.Height);
+                return image;
             }
             catch
             {
