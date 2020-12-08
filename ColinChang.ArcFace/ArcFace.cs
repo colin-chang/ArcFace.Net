@@ -147,6 +147,10 @@ namespace ColinChang.ArcFace
         public async Task<OperationResult<IEnumerable<byte[]>>> ExtractFaceFeatureAsync(string image) =>
             await ProcessImageAsync<IEnumerable<byte[]>, IEnumerable<byte[]>>(image,
                 FaceHelper.ExtractFeatureAsync);
+        
+        public async Task<OperationResult<IEnumerable<byte[]>>> ExtractFaceFeatureAsync(Image image) =>
+            await ProcessImageAsync<IEnumerable<byte[]>, IEnumerable<byte[]>>(image,
+                FaceHelper.ExtractFeatureAsync);
 
         public async Task<OperationResult<float>> CompareFaceFeatureAsync(byte[] feature1, byte[] feature2) =>
             await Task.Run(() =>

@@ -66,6 +66,13 @@ namespace ColinChang.ArcFace
         Task<OperationResult<IEnumerable<byte[]>>> ExtractFaceFeatureAsync(string image);
 
         /// <summary>
+        /// 人脸特征提取
+        /// </summary>
+        /// <param name="image"></param>
+        /// <returns></returns>
+        Task<OperationResult<IEnumerable<byte[]>>> ExtractFaceFeatureAsync(Image image);
+        
+        /// <summary>
         /// 人脸特征比对，输出比对相似度
         /// </summary>
         /// <param name="feature1">人脸特征</param>
