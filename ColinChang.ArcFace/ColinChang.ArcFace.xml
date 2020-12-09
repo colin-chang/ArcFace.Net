@@ -138,6 +138,11 @@
             人脸检测
             </summary>
         </member>
+        <member name="M:ColinChang.ArcFace.IArcFace.DetectFaceAsync(System.Drawing.Image)">
+            <summary>
+            人脸检测
+            </summary>
+        </member>
         <member name="M:ColinChang.ArcFace.IArcFace.GetLivenessInfoAsync(System.Drawing.Image,ColinChang.ArcFace.Models.LivenessMode)">
             <summary>
             活体检测
@@ -150,6 +155,13 @@
             <summary>
             人脸特征提取
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ColinChang.ArcFace.IArcFace.ExtractFaceFeatureAsync(System.Drawing.Image)">
+            <summary>
+            人脸特征提取
+            </summary>
+            <param name="image"></param>
             <returns></returns>
         </member>
         <member name="M:ColinChang.ArcFace.IArcFace.CompareFaceFeatureAsync(System.Byte[],System.Byte[])">
@@ -197,6 +209,13 @@
             <returns></returns>
         </member>
         <member name="M:ColinChang.ArcFace.IArcFace.SearchFaceAsync(System.String)">
+            <summary>
+            人脸库中搜索人脸
+            </summary>
+            <param name="image"></param>
+            <returns>搜索结果</returns>
+        </member>
+        <member name="M:ColinChang.ArcFace.IArcFace.SearchFaceAsync(System.Drawing.Image)">
             <summary>
             人脸库中搜索人脸
             </summary>

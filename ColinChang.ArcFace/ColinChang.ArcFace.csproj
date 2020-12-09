@@ -4,8 +4,8 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>default</LangVersion>
     <Authors>Colin Chang</Authors>
-    <Version>3.0.2</Version>
-    <PackageVersion>3.0.2</PackageVersion>
+    <Version>3.0.3</Version>
+    <PackageVersion>3.0.3</PackageVersion>
     <Description>虹软人脸识别.NET工具库(.Net Standard 2.1)。基于ArcFace 3.x C++ SDK, 支持Windows x86/x64和Linux x64. 支持人脸库属性检测、人脸特征提取、人脸库维护、人脸搜索、活体检测等功能。</Description>
     <Copyright>https://ccstudio.org/</Copyright>
     <PackageProjectUrl>https://github.com/colin-chang/ArcFace.Net</PackageProjectUrl>
@@ -16,14 +16,14 @@
     <PackageId>ArcFace.Net</PackageId>
     <PackageIcon>icon.png</PackageIcon>
     <PackageIconUrl>https://raw.githubusercontent.com/colin-chang/ArcFace.Net/main/icon.png</PackageIconUrl>
-    <PackageReleaseNotes>overload one more ExtractFaceFeatureAsync method</PackageReleaseNotes>
+    <PackageReleaseNotes>retry active the sdk automatically after the failure</PackageReleaseNotes>
     <Product>ArcFace.Net</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Code\FaceRecognition\ColinChang.ArcFace\ColinChang.ArcFace.xml</DocumentationFile>
+    <DocumentationFile>ColinChang.ArcFace.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,6 +31,7 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="5.0.0" />
+    <PackageReference Include="Polly" Version="7.2.1" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
   </ItemGroup>
 

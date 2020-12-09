@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using ColinChang.ArcFace.Models;
 using ColinChang.ArcFace.Utils;
 using Microsoft.Extensions.Options;
+using Polly;
 
 namespace ColinChang.ArcFace
 {
@@ -147,7 +148,7 @@ namespace ColinChang.ArcFace
         public async Task<OperationResult<IEnumerable<byte[]>>> ExtractFaceFeatureAsync(string image) =>
             await ProcessImageAsync<IEnumerable<byte[]>, IEnumerable<byte[]>>(image,
                 FaceHelper.ExtractFeatureAsync);
-        
+
         public async Task<OperationResult<IEnumerable<byte[]>>> ExtractFaceFeatureAsync(Image image) =>
             await ProcessImageAsync<IEnumerable<byte[]>, IEnumerable<byte[]>>(image,
                 FaceHelper.ExtractFeatureAsync);
@@ -364,10 +365,16 @@ namespace ColinChang.ArcFace
                 sdkKey = _options.SdkKeys.Linux64;
             else
                 throw new NotSupportedException("only Windows(x86/x64) and Linux(x64) are supported");
-
-            var code = AsfHelper.ASFOnlineActivation(_options.AppId, sdkKey);
-            if (code != 90114)
-                throw new Exception($"failed to active. error code:{code}");
+            
+            Policy.Handle<Exception>()
+                .RetryAsync(4)
+                .ExecuteAsync(async () =>
+                {
+                    var code = AsfHelper.ASFOnlineActivation(_options.AppId, sdkKey);
+                    if (code != 90114)
+                        throw new Exception($"failed to active. error code:{code}. please try again");
+                    await Task.CompletedTask;
+                });
         }
 
         /// <summary>
