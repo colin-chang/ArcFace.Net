@@ -118,11 +118,20 @@ namespace ColinChang.ArcFace
 
         public async Task<OperationResult<Face3DAngle>> GetFace3DAngleAsync(string image) =>
             await ProcessImageAsync<AsfFace3DAngle, Face3DAngle>(image, FaceHelper.GetFace3DAngleAsync);
+        
+        public async Task<OperationResult<Face3DAngle>> GetFace3DAngleAsync(Image image) =>
+            await ProcessImageAsync<AsfFace3DAngle, Face3DAngle>(image, FaceHelper.GetFace3DAngleAsync);
 
         public async Task<OperationResult<AgeInfo>> GetAgeAsync(string image) =>
             await ProcessImageAsync<AsfAgeInfo, AgeInfo>(image, FaceHelper.GetAgeAsync);
+        
+        public async Task<OperationResult<AgeInfo>> GetAgeAsync(Image image) =>
+            await ProcessImageAsync<AsfAgeInfo, AgeInfo>(image, FaceHelper.GetAgeAsync);
 
         public async Task<OperationResult<GenderInfo>> GetGenderAsync(string image) =>
+            await ProcessImageAsync<AsfGenderInfo, GenderInfo>(image, FaceHelper.GetGenderAsync);
+        
+        public async Task<OperationResult<GenderInfo>> GetGenderAsync(Image image) =>
             await ProcessImageAsync<AsfGenderInfo, GenderInfo>(image, FaceHelper.GetGenderAsync);
 
         #endregion
@@ -193,20 +202,15 @@ namespace ColinChang.ArcFace
             {
                 engine = GetEngine(DetectionModeEnum.Image);
                 foreach (var image in images)
-                    try
-                    {
-                        using var img = VerifyImage(image);
-                        var faceId = Path.GetFileNameWithoutExtension(image);
-                        var feature = await FaceHelper.ExtractSingleFeatureAsync(engine, img);
-                        if (feature.Code != 0)
-                            continue;
+                {
+                    using var img = VerifyImage(image);
+                    var faceId = Path.GetFileNameWithoutExtension(image);
+                    var feature = await FaceHelper.ExtractSingleFeatureAsync(engine, img);
+                    if (feature.Code != 0)
+                        throw new Exception($"{image} failed to extract face feature. code:{feature.Code}");
 
-                        _faceLibrary[faceId] = feature.Data;
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
+                    _faceLibrary[faceId] = feature.Data;
+                }
             }
             finally
             {
@@ -265,48 +269,49 @@ namespace ColinChang.ArcFace
                 Marshal.FreeHGlobal(feature);
             });
 
-        public async Task<OperationResult<Recognition>> SearchFaceAsync(string image) =>
-            await SearchFaceAsync(VerifyImage(image));
+        public async Task<OperationResult<Recognition>> SearchFaceAsync(string image)
+        {
+            var img = Image.FromFile(image);
+            return await SearchFaceAsync(img);
+        }
+
 
         public async Task<OperationResult<Recognition>> SearchFaceAsync(Image image)
         {
+            var engine = IntPtr.Zero;
+            var featureInfo = IntPtr.Zero;
+            try
             {
-                var engine = IntPtr.Zero;
-                var featureInfo = IntPtr.Zero;
-                try
+                image = VerifyImage(image);
+                engine = GetEngine(DetectionModeEnum.Image);
+                var faceFeature = await FaceHelper.ExtractSingleFeatureAsync(engine, image);
+                featureInfo = faceFeature.Data;
+                if (faceFeature.Code != 0)
+                    return new OperationResult<Recognition>(faceFeature.Code);
+
+                var recognition = new Recognition();
+                foreach (var (faceId, feature) in _faceLibrary)
                 {
-                    image = VerifyImage(image);
-                    engine = GetEngine(DetectionModeEnum.Image);
-                    var faceFeature = await FaceHelper.ExtractSingleFeatureAsync(engine, image);
-                    featureInfo = faceFeature.Data;
-                    if (faceFeature.Code != 0)
-                        return new OperationResult<Recognition>(faceFeature.Code);
+                    var similarity = 0f;
+                    var code = AsfHelper.ASFFaceFeatureCompare(engine, featureInfo, feature, ref similarity);
+                    if (code != 0)
+                        continue;
+                    if (similarity <= recognition.Similarity)
+                        continue;
 
-                    var recognition = new Recognition();
-                    foreach (var (faceId, feature) in _faceLibrary)
-                    {
-                        var similarity = 0f;
-                        var code = AsfHelper.ASFFaceFeatureCompare(engine, featureInfo, feature, ref similarity);
-                        if (code != 0)
-                            continue;
-                        if (similarity <= recognition.Similarity)
-                            continue;
-
-                        recognition.Similarity = similarity;
-                        recognition.FaceId = faceId;
-                    }
-
-                    return recognition.Similarity < _options.MinSimilarity
-                        ? null
-                        : new OperationResult<Recognition>(recognition);
+                    recognition.Similarity = similarity;
+                    recognition.FaceId = faceId;
                 }
-                finally
-                {
-                    image?.Dispose();
-                    if (featureInfo != IntPtr.Zero)
-                        Marshal.FreeHGlobal(featureInfo);
-                    RecycleEngine(engine, DetectionModeEnum.Image);
-                }
+
+                return recognition.Similarity < _options.MinSimilarity
+                    ? null
+                    : new OperationResult<Recognition>(recognition);
+            }
+            finally
+            {
+                if (featureInfo != IntPtr.Zero)
+                    Marshal.FreeHGlobal(featureInfo);
+                RecycleEngine(engine, DetectionModeEnum.Image);
             }
         }
 
@@ -365,7 +370,7 @@ namespace ColinChang.ArcFace
                 sdkKey = _options.SdkKeys.Linux64;
             else
                 throw new NotSupportedException("only Windows(x86/x64) and Linux(x64) are supported");
-            
+
             Policy.Handle<Exception>()
                 .RetryAsync(4)
                 .ExecuteAsync(async () =>
@@ -511,8 +516,11 @@ namespace ColinChang.ArcFace
             };
 
         private async Task<OperationResult<TK>> ProcessImageAsync<T, TK>(string image,
-            Func<IntPtr, Image, Task<OperationResult<T>>> process, DetectionModeEnum mode = DetectionModeEnum.Image) =>
-            await ProcessImageAsync<T, TK>(Image.FromFile(image), process, mode);
+            Func<IntPtr, Image, Task<OperationResult<T>>> process, DetectionModeEnum mode = DetectionModeEnum.Image)
+        {
+            using var img = Image.FromFile(image);
+            return await ProcessImageAsync<T, TK>(img, process, mode);
+        }
 
         private async Task<OperationResult<TK>> ProcessImageAsync<T, TK>(Image image,
             Func<IntPtr, Image, Task<OperationResult<T>>> process, DetectionModeEnum mode = DetectionModeEnum.Image)
@@ -526,7 +534,6 @@ namespace ColinChang.ArcFace
             }
             finally
             {
-                image?.Dispose();
                 RecycleEngine(engine, mode);
             }
         }

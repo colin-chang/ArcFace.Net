@@ -127,11 +127,7 @@ namespace ColinChang.ArcFace.Utils
                     var code = AsfHelper.ASFFaceFeatureExtract(engine, imageInfo.Width, imageInfo.Height,
                         imageInfo.Format, imageInfo.ImgData, pSingleFaceInfo, pFaceFeature);
                     if (code != 0)
-                    {
-                        Marshal.FreeHGlobal(pSingleFaceInfo);
-                        Marshal.FreeHGlobal(pFaceFeature);
                         return new OperationResult<IntPtr>(code);
-                    }
 
                     /*使用同一个引擎时，每次特征提取后的临时内存存储地址相同，后面的特征提取会覆盖之前的结果。
                      如要保存每次提取的特征，需要拷贝保存到单独的内存
@@ -157,7 +153,6 @@ namespace ColinChang.ArcFace.Utils
                         Marshal.FreeHGlobal(pFaceFeature);
                 }
             });
-
 
         /// <summary>
         /// 年龄检测
