@@ -13,19 +13,29 @@
         * `Debian 10 +`
         * `Ubuntu20.04 +`
         * `CentOS 8 +`
-    * Linux环境中图像处理依赖`libgdiplus`包，需要手动安装到系统中。
+    * Linux环境中图像处理依赖`libgdiplus`包，需要手动安装到系统中。需要特别注意的是，`libgdiplus`是基于Mono框架开发的，**系统中务必要安装Mono框架，否则可能会导致`Graphics`等对象申请的内存无法被回收最终内存溢出。**
         ```bash
         # Debian 10
-        apt install libgdiplus/stable
+        sudo apt install apt-transport-https dirmngr gnupg ca-certificates
+        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+        echo "deb https://download.mono-project.com/repo/debian stable-buster main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+        sudo apt update
+        sudo apt install mono-devel
+        sudo apt install libgdiplus/stable
         
         # Ubuntu 20.04
-        apt install libgdiplus/focal
+        sudo apt install gnupg ca-certificates
+        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+        echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+        sudo apt update
+        sudo apt install mono-devel
+        sudo apt install libgdiplus/focal
         
         # CentOS 8
         rpmkeys --import "http://pool.sks-keyservers.net/pks/lookup?op=get&search=0x3fa7e0328081bff6a14da29aa6a19b38d3d831ef"
         su -c 'curl https://download.mono-project.com/repo/centos8-stable.repo | tee /etc/yum.repos.d/mono-centos8-stable.repo'
-        yum install mono-devel
-        yum install libgdiplus-devel.x86_64
+        sudo yum install mono-devel
+        sudo yum install libgdiplus-devel.x86_64
         ```
 ## SDK
 从 [虹软开发者中心](https://ai.arcsoft.com.cn/ucenter/resource/build/index.html#/application)或[此处](https://github.com/colin-chang/ArcFace.Net/tree/main/ColinChang.ArcFace/Sdks)下载需要的SDK 3.x文件并放置同特定目录。
