@@ -13,7 +13,7 @@
         * `Debian 10 +`
         * `Ubuntu20.04 +`
         * `CentOS 8 +`
-    * Linux环境中图像处理依赖`libgdiplus`包，需要手动安装到系统中。需要特别注意的是，`libgdiplus`是基于Mono框架开发的，**系统中务必要安装Mono框架，否则可能会导致`Graphics`等对象申请的内存无法被回收最终内存溢出。**
+    * Linux环境中图像处理依赖`libgdiplus`包，需要手动安装到系统中。需要特别注意的是，`libgdiplus`是基于Mono框架开发的，**系统中务必要安装[Mono](https://www.mono-project.com/download/stable/)框架，否则可能会导致`Graphics`等对象申请的内存无法被回收最终导致内存溢出。**
         ```bash
         # Debian 10
         sudo apt install apt-transport-https dirmngr gnupg ca-certificates
