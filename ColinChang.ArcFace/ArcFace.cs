@@ -118,19 +118,19 @@ namespace ColinChang.ArcFace
 
         public async Task<OperationResult<Face3DAngle>> GetFace3DAngleAsync(string image) =>
             await ProcessImageAsync<AsfFace3DAngle, Face3DAngle>(image, FaceHelper.GetFace3DAngleAsync);
-        
+
         public async Task<OperationResult<Face3DAngle>> GetFace3DAngleAsync(Image image) =>
             await ProcessImageAsync<AsfFace3DAngle, Face3DAngle>(image, FaceHelper.GetFace3DAngleAsync);
 
         public async Task<OperationResult<AgeInfo>> GetAgeAsync(string image) =>
             await ProcessImageAsync<AsfAgeInfo, AgeInfo>(image, FaceHelper.GetAgeAsync);
-        
+
         public async Task<OperationResult<AgeInfo>> GetAgeAsync(Image image) =>
             await ProcessImageAsync<AsfAgeInfo, AgeInfo>(image, FaceHelper.GetAgeAsync);
 
         public async Task<OperationResult<GenderInfo>> GetGenderAsync(string image) =>
             await ProcessImageAsync<AsfGenderInfo, GenderInfo>(image, FaceHelper.GetGenderAsync);
-        
+
         public async Task<OperationResult<GenderInfo>> GetGenderAsync(Image image) =>
             await ProcessImageAsync<AsfGenderInfo, GenderInfo>(image, FaceHelper.GetGenderAsync);
 
@@ -230,11 +230,10 @@ namespace ColinChang.ArcFace
 
         public async Task<long> AddFaceAsync(string image)
         {
-            Image img = null;
             var engine = IntPtr.Zero;
             try
             {
-                img = VerifyImage(image);
+                using var img = VerifyImage(image);
                 engine = GetEngine(DetectionModeEnum.Image);
                 var faceId = Path.GetFileNameWithoutExtension(image);
                 var feature = await FaceHelper.ExtractSingleFeatureAsync(engine, img);
@@ -245,7 +244,6 @@ namespace ColinChang.ArcFace
             }
             finally
             {
-                img?.Dispose();
                 RecycleEngine(engine, DetectionModeEnum.Image);
             }
         }
@@ -271,7 +269,7 @@ namespace ColinChang.ArcFace
 
         public async Task<OperationResult<Recognition>> SearchFaceAsync(string image)
         {
-            var img = Image.FromFile(image);
+            using var img = Image.FromFile(image);
             return await SearchFaceAsync(img);
         }
 
@@ -543,7 +541,8 @@ namespace ColinChang.ArcFace
             if (!File.Exists(image))
                 throw new FileNotFoundException($"{image} doesn't exist.");
 
-            return VerifyImage(Image.FromFile(image));
+            using var img = Image.FromFile(image);
+            return VerifyImage(img);
         }
 
         private Image VerifyImage(Image image)
@@ -569,12 +568,20 @@ namespace ColinChang.ArcFace
         {
             try
             {
-                //缩放
-                if (image.Width > 1536 || image.Height > 1536)
-                    image = ImageHelper.ScaleImage(image, 1536, 1536);
-                if (image.Width % 4 != 0)
-                    image = ImageHelper.ScaleImage(image, image.Width - image.Width % 4, image.Height);
-                return image;
+                try
+                {
+                    //缩放
+                    if (image.Width > 1536 || image.Height > 1536)
+                        image = ImageHelper.ScaleImage(image, 1536, 1536);
+                    if (image.Width % 4 != 0)
+                        image = ImageHelper.ScaleImage(image, image.Width - image.Width % 4, image.Height);
+
+                    return ImageHelper.ScaleImage(image, image.Width, image.Height);
+                }
+                catch
+                {
+                    throw new Exception("unsupported image type.");
+                }
             }
             catch
             {

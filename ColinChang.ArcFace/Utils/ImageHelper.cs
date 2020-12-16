@@ -27,8 +27,8 @@ namespace ColinChang.ArcFace.Utils
             if (width % 4 != 0)
                 width -= width % 4;
 
-            var destBitmap = new Bitmap(width, height);
-            using var g = Graphics.FromImage(destBitmap);
+            var bitmap = new Bitmap(width, height);
+            using var g = Graphics.FromImage(bitmap);
             g.Clear(Color.Transparent);
 
             //设置画布的描绘质量         
@@ -38,7 +38,7 @@ namespace ColinChang.ArcFace.Utils
             g.DrawImage(image, new Rectangle((width - width) / 2, (height - height) / 2, width, height), 0, 0,
                 image.Width, image.Height, GraphicsUnit.Pixel);
 
-            return destBitmap;
+            return bitmap;
         }
 
         /// <summary>
