@@ -139,6 +139,7 @@ namespace ColinChang.ArcFace.Utils
                     var localFeature = new AsfFaceFeature {Feature = Marshal.AllocHGlobal(feature.Length)};
                     Marshal.Copy(feature, 0, localFeature.Feature, feature.Length);
                     localFeature.FeatureSize = feature.Length;
+                    
                     var pLocalFeature = Marshal.AllocHGlobal(Marshal.SizeOf<AsfFaceFeature>());
                     Marshal.StructureToPtr(localFeature, pLocalFeature, false);
                     return new OperationResult<IntPtr>(pLocalFeature);

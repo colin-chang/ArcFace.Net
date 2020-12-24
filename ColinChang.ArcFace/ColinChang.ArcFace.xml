@@ -65,6 +65,12 @@
             <param name="feature"></param>
             <returns></returns>
         </member>
+        <member name="M:ColinChang.ArcFace.ArcFaceExtension.DisposeFaceFeature(System.IntPtr)">
+            <summary>
+            释放人脸指针及其指向的对象内存
+            </summary>
+            <param name="faceFeature"></param>
+        </member>
         <member name="P:ColinChang.ArcFace.ArcFaceOptions.MinSimilarity">
             <summary>
             人脸识别成功的最小相似度

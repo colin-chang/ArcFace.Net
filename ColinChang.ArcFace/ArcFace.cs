@@ -181,10 +181,8 @@ namespace ColinChang.ArcFace
                 finally
                 {
                     RecycleEngine(engine, DetectionModeEnum.Image);
-                    if (featureA != IntPtr.Zero)
-                        Marshal.FreeHGlobal(featureA);
-                    if (featureB != IntPtr.Zero)
-                        Marshal.FreeHGlobal(featureB);
+                    featureA.DisposeFaceFeature();
+                    featureB.DisposeFaceFeature();
                 }
             });
 
@@ -269,6 +267,9 @@ namespace ColinChang.ArcFace
 
         public async Task<OperationResult<Recognition>> SearchFaceAsync(string image)
         {
+            if (!File.Exists(image))
+                return new OperationResult<Recognition>(null);
+
             using var img = Image.FromFile(image);
             return await SearchFaceAsync(img);
         }
@@ -307,12 +308,10 @@ namespace ColinChang.ArcFace
             }
             finally
             {
-                if (featureInfo != IntPtr.Zero)
-                    Marshal.FreeHGlobal(featureInfo);
+                featureInfo.DisposeFaceFeature();
                 RecycleEngine(engine, DetectionModeEnum.Image);
             }
         }
-
 
         public async Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature) =>
             await Task.Run(() =>
@@ -343,8 +342,7 @@ namespace ColinChang.ArcFace
                 }
                 finally
                 {
-                    if (featureInfo != IntPtr.Zero)
-                        Marshal.FreeHGlobal(featureInfo);
+                    featureInfo.DisposeFaceFeature();
                     RecycleEngine(engine, DetectionModeEnum.Image);
                 }
             });
@@ -495,7 +493,7 @@ namespace ColinChang.ArcFace
 
             //释放 人脸库资源
             foreach (var feature in _faceLibrary.Values)
-                Marshal.FreeHGlobal(feature);
+                feature.DisposeFaceFeature();
         }
 
         #endregion
@@ -516,6 +514,9 @@ namespace ColinChang.ArcFace
         private async Task<OperationResult<TK>> ProcessImageAsync<T, TK>(string image,
             Func<IntPtr, Image, Task<OperationResult<T>>> process, DetectionModeEnum mode = DetectionModeEnum.Image)
         {
+            if (!File.Exists(image))
+                return new OperationResult<TK>(default);
+
             using var img = Image.FromFile(image);
             return await ProcessImageAsync<T, TK>(img, process, mode);
         }

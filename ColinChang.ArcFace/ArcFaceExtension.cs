@@ -33,5 +33,25 @@ namespace ColinChang.ArcFace
             Marshal.StructureToPtr(localFeature, pLocalFeature, false);
             return pLocalFeature;
         }
+
+        /// <summary>
+        /// 释放人脸指针及其指向的对象内存
+        /// </summary>
+        /// <param name="faceFeature"></param>
+        public static void DisposeFaceFeature(this IntPtr faceFeature)
+        {
+            if (faceFeature == IntPtr.Zero)
+                return;
+
+            try
+            {
+                var memory = Marshal.PtrToStructure<AsfFaceFeature>(faceFeature);
+                Marshal.FreeHGlobal(memory.Feature);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(faceFeature);
+            }
+        }
     }
 }
