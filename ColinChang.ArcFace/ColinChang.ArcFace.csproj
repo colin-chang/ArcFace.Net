@@ -4,10 +4,9 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>default</LangVersion>
     <Authors>Colin Chang</Authors>
-    <Version>3.1.0</Version>
-    <PackageVersion>3.1.0</PackageVersion>
-    <Description>虹软人脸识别.NET工具库(.Net Standard 2.1)。基于ArcFace 3.x C++ SDK, 支持Windows x86/x64和Linux x64. 支持人脸库属性检测、人脸特征提取、人脸库维护、人脸搜索、活体检测等功能。</Description>
-    <Copyright>https://ccstudio.org/</Copyright>
+    <PackageVersion>3.2.1</PackageVersion>
+    <Description>虹软人脸识别.NET工具库(.Net Standard 2.1)。基于ArcFace 3.x C++ SDK, 支持Windows x86/x64和Linux x64. 支持人脸属性检测、人脸特征提取、人脸库维护、人脸搜索、活体检测等功能。</Description>
+    <Copyright>https://ccstudio.com.cn/</Copyright>
     <PackageProjectUrl>https://github.com/colin-chang/ArcFace.Net</PackageProjectUrl>
     <RepositoryUrl>https://github.com/colin-chang/ArcFace.Net</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
@@ -16,7 +15,7 @@
     <PackageId>ArcFace.Net</PackageId>
     <PackageIcon>icon.png</PackageIcon>
     <PackageIconUrl>https://raw.githubusercontent.com/colin-chang/ArcFace.Net/main/icon.png</PackageIconUrl>
-    <PackageReleaseNotes>fix some bugs that can result in memory overflow</PackageReleaseNotes>
+    <PackageReleaseNotes>supporting reload configurations</PackageReleaseNotes>
     <Product>ArcFace.Net</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -32,7 +31,7 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="5.0.0" />
     <PackageReference Include="Polly" Version="7.2.1" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>

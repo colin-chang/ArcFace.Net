@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Drawing;
-using System.Linq;
 using System.Threading.Tasks;
-using ColinChang.ArcFace;
-using ColinChang.ArcFace.Models;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ColinChang.ArcFace.Sample
 {
@@ -12,12 +9,6 @@ namespace ColinChang.ArcFace.Sample
     {
         private static async Task Main(string[] args)
         {
-            //读取配置
-            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-            var options = new ArcFaceOptions();
-            config.Bind(nameof(ArcFaceOptions), options);
-
-
             //测试图片
             const string test = "Images/test.jpg";
             const string zys = "Images/zys.jpg";
@@ -25,7 +16,10 @@ namespace ColinChang.ArcFace.Sample
             const string xy1 = "Images/xy1.jpg";
 
 
-            using IArcFace arcFace = new ArcFace(options);
+            var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            var services = new ServiceCollection().AddArcFace(configuration.GetSection(nameof(ArcFaceOptions)))
+                .BuildServiceProvider();
+            var arcFace = services.GetRequiredService<IArcFace>();
 
             /*
             //获取激活消息

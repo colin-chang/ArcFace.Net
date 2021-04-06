@@ -62,7 +62,7 @@ namespace ColinChang.ArcFace
 
         private readonly ArcFaceOptions _options;
 
-        public ArcFace(IOptions<ArcFaceOptions> options) : this(options.Value)
+        public ArcFace(IOptionsMonitor<ArcFaceOptions> options) : this(options.CurrentValue)
         {
         }
 

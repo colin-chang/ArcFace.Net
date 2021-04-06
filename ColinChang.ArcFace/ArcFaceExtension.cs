@@ -8,10 +8,21 @@ namespace ColinChang.ArcFace
 {
     public static class ArcFaceExtension
     {
-        public static IServiceCollection AddArcFace(this IServiceCollection services, IConfiguration config)
+        public static IServiceCollection AddArcFace(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddOptions<ArcFaceOptions>()
-                .Configure(config.Bind)
+                .Configure(configuration.Bind)
+                .ValidateDataAnnotations();
+
+            services.AddSingleton<IArcFace, ArcFace>();
+            return services;
+        }
+
+        public static IServiceCollection AddArcFace(this IServiceCollection services,
+            Action<ArcFaceOptions> configureOptions)
+        {
+            services.AddOptions<ArcFaceOptions>()
+                .Configure(configureOptions)
                 .ValidateDataAnnotations();
 
             services.AddSingleton<IArcFace, ArcFace>();
