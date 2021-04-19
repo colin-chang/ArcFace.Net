@@ -52,6 +52,12 @@ namespace ColinChang.ArcFace
         Task<OperationResult<MultiFaceInfo>> DetectFaceAsync(Image image);
         
         /// <summary>
+        /// 人脸检测
+        /// </summary>
+        /// <returns></returns>
+        Task<OperationResult<MultiFaceInfo>> DetectFaceFromBase64StringAsync(string base64Image);
+        
+        /// <summary>
         /// 活体检测
         /// </summary>
         /// <param name="image"></param>
