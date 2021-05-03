@@ -149,6 +149,12 @@
             人脸检测
             </summary>
         </member>
+        <member name="M:ColinChang.ArcFace.IArcFace.DetectFaceFromBase64StringAsync(System.String)">
+            <summary>
+            人脸检测
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:ColinChang.ArcFace.IArcFace.GetLivenessInfoAsync(System.Drawing.Image,ColinChang.ArcFace.Models.LivenessMode)">
             <summary>
             活体检测

@@ -144,6 +144,15 @@ namespace ColinChang.ArcFace
         public async Task<OperationResult<MultiFaceInfo>> DetectFaceAsync(Image image) =>
             await ProcessImageAsync<AsfMultiFaceInfo, MultiFaceInfo>(image, FaceHelper.DetectFaceAsync);
 
+        public async Task<OperationResult<MultiFaceInfo>> DetectFaceFromBase64StringAsync(string base64Image)
+        {
+            if (string.IsNullOrWhiteSpace(base64Image))
+                return new OperationResult<MultiFaceInfo>(default);
+
+            using var image = Image.FromStream(new MemoryStream(Convert.FromBase64String(base64Image)));
+            return await ProcessImageAsync<AsfMultiFaceInfo, MultiFaceInfo>(image, FaceHelper.DetectFaceAsync);
+        }
+
         public async Task<OperationResult<LivenessInfo>> GetLivenessInfoAsync(Image image, LivenessMode mode)
         {
             if (mode == LivenessMode.RGB)

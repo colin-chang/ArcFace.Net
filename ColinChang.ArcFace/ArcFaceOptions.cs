@@ -30,7 +30,7 @@ namespace ColinChang.ArcFace
         /// <summary>
         /// 图像模式 检测脸部的角度优先值
         /// </summary>
-        public int ImageDetectFaceOrientPriority { get; set; } = AsfOrientPriority.ASF_OP_0_ONLY;
+        public int ImageDetectFaceOrientPriority { get; set; } = AsfOrientPriority.ASF_OP_0_HIGHER_EXT;
 
         /// <summary>
         /// 视频模式 检测脸部的角度优先值
