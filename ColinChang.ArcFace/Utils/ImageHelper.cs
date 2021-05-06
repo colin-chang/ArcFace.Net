@@ -206,12 +206,10 @@ namespace ColinChang.ArcFace.Utils
 
                 return destBitmap;
             }
-            catch (Exception e)
+            catch
             {
-                Console.WriteLine(e);
+                return null;
             }
-
-            return null;
         }
     }
 }

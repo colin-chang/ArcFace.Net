@@ -12,7 +12,14 @@ namespace ColinChang.ArcFace.Models
         {
         }
 
+        /// <summary>
+        /// 自定义数据结果
+        /// </summary>
         public T Data { get; set; }
+        
+        /// <summary>
+        /// 虹软错误码（参阅：https://github.com/colin-chang/ArcFace.Net）
+        /// </summary>
         public long Code { get; set; }
 
         public OperationResult<TK> Cast<TK>()

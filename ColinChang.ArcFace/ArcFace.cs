@@ -311,9 +311,8 @@ namespace ColinChang.ArcFace
                     recognition.FaceId = faceId;
                 }
 
-                return recognition.Similarity < _options.MinSimilarity
-                    ? null
-                    : new OperationResult<Recognition>(recognition);
+                recognition = recognition.Similarity < _options.MinSimilarity ? null : recognition;
+                return new OperationResult<Recognition>(recognition);
             }
             finally
             {
@@ -345,9 +344,8 @@ namespace ColinChang.ArcFace
                         recognition.FaceId = faceId;
                     }
 
-                    return recognition.Similarity < _options.MinSimilarity
-                        ? null
-                        : new OperationResult<Recognition>(recognition);
+                    recognition = recognition.Similarity < _options.MinSimilarity ? null : recognition;
+                    return new OperationResult<Recognition>(recognition);
                 }
                 finally
                 {

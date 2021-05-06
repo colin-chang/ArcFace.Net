@@ -6,6 +6,9 @@ using ColinChang.ArcFace.Models;
 
 namespace ColinChang.ArcFace
 {
+    /// <summary>
+    /// 虹软人脸SDK工具库
+    /// </summary>
     public interface IArcFace : IDisposable
     {
         /// <summary>
