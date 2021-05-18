@@ -10,8 +10,8 @@ RUN apt update \
 && echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | tee /etc/apt/sources.list.d/mono-official-stable.list \
 && apt update \
 && apt install mono-devel -y \
-&& apt-get install libgdiplus/focal -y \
-&& apt-get clean
+&& apt install libgdiplus/focal -y \
+&& apt clean
 
 # .net 全球化
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
