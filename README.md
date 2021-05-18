@@ -37,6 +37,10 @@
         sudo yum install mono-devel
         sudo yum install libgdiplus-devel.x86_64
         ```
+3. Docker
+
+   我们为本程序库的运行环境打包了Docker镜像，有需要的读者可以[点此获取](https://hub.docker.com/r/colinchang/arcface)，也可以使用[Dockerfiles](Dockerfiles)中的不同版本的Dockerfile文件自行编译。
+
 ## SDK
 从 [虹软开发者中心](https://ai.arcsoft.com.cn/ucenter/resource/build/index.html#/application)或[此处](https://github.com/colin-chang/ArcFace.Net/tree/main/ColinChang.ArcFace/Sdks)下载需要的SDK 3.x文件并放置同特定目录。
 * Windows 需要将SDK dll文件拷贝到执行程序所在目录，或环境变量配置的目录
