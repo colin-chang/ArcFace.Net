@@ -8,12 +8,12 @@
 1. Windows x86/x64
 2. Linux x64
 
-    * 该程序基于ArcFace 3.x C++ SDK开发，`DllImport`引入C++动态库时依赖于Linux系统库(`libdl.so.2`)，因此低配Linux环境(如Alpine等)可能存在兼容性问题。
+    * 该程序基于ArcFace 3.x C++ SDK开发，`DllImport`引入C++动态库时依赖于Linux系统库(`libdl.so.2`)，因此低配Linux环境(如`alpine`等)可能存在兼容性问题。
     经测试以下可以正常运行。
         * `Debian 10 +`
         * `Ubuntu20.04 +`
         * `CentOS 8 +`
-    * Linux环境中图像处理依赖`libgdiplus`包，需要手动安装到系统中。需要特别注意的是，`libgdiplus`是基于Mono框架开发的，**系统中务必要安装[Mono](https://www.mono-project.com/download/stable/)框架，否则可能会导致`Graphics`等对象申请的内存无法被回收最终导致内存溢出。**
+    * Linux环境中图像处理依赖`libgdiplus`包，需要手动安装到系统中。需要特别注意的是，`libgdiplus`是基于Mono框架开发的，**系统中务必要安装 [Mono](https://www.mono-project.com/download/stable/) 框架，否则可能会导致 `Graphics` 等对象申请的内存无法被回收最终导致内存溢出。**
         ```bash
         # Debian 10
         sudo apt install apt-transport-https dirmngr gnupg ca-certificates
@@ -39,12 +39,12 @@
         ```
 3. Docker
 
-   我们为本程序库的运行环境打包了Docker镜像，有需要的读者可以[点此获取](https://hub.docker.com/r/colinchang/arcface)，也可以使用[Dockerfiles](Dockerfiles)中的不同版本的Dockerfile文件自行编译。
+   我们为本程序库的运行环境打包了Docker镜像，有需要的读者可以[点此获取](https://hub.docker.com/r/colinchang/arcface)，也可以使用 [Dockerfiles](https://github.com/colin-chang/ArcFace.Net/tree/main/Dockerfiles) 中的不同版本的 `Dockerfile` 文件自行编译。
 
 ## SDK
 从 [虹软开发者中心](https://ai.arcsoft.com.cn/ucenter/resource/build/index.html#/application)或[此处](https://github.com/colin-chang/ArcFace.Net/tree/main/ColinChang.ArcFace/Sdks)下载需要的SDK 3.x文件并放置同特定目录。
 * Windows 需要将SDK dll文件拷贝到执行程序所在目录，或环境变量配置的目录
-* **Linux 需要将SDK so文件拷贝到`/lib`等系统程序目录，或环境变量配置的目录**
+* **Linux 需要将SDK so文件拷贝到 `/lib` 系统程序目录，或环境变量配置的目录**
 
 从 [虹软开发者中心](https://ai.arcsoft.com.cn/ucenter/resource/build/index.html#/application) 获取授权信息(AppId/SdkKey)，通过`ArcFaceOptions`传入配置。具体用法参见 [示例程序](https://github.com/colin-chang/ArcFace.Net/tree/main/ColinChang.ArcFace.Sample)。
 
@@ -52,11 +52,11 @@
 * 工具中自动维护引擎池进行资源回收利用，无需手动管理。
 * 工具支持多并发操作。
 * 推荐使用**单例方式**使用。
-* `ArcFace`实现`IDisposable`，使用完毕后需要`Dispose()`以销毁引擎回收其它相关内存。
+* `ArcFace` 实现 `IDisposable`，使用完毕后需要 `Dispose()` 以销毁引擎回收其它相关内存。
 
 ## 图像质量要求
 * 图片尺寸大于2K且小于10MB
-* 图片格式支持 ".jpg",".png",".bmp"
+* 图片格式支持 `.jpg`, `.png`, `.bmp`
 * 图片中人脸尺寸不小于50 x 50像素
 * 建议待检测的图像人脸角度上、下、左、右转向小于30度
 
