@@ -106,6 +106,11 @@
             视频模式 可识别最小人脸比例（图片长边与人脸框长边的比值）[2-32]
             </summary>
         </member>
+        <member name="T:ColinChang.ArcFace.IArcFace">
+            <summary>
+            虹软人脸SDK工具库
+            </summary>
+        </member>
         <member name="M:ColinChang.ArcFace.IArcFace.GetActiveFileInfoAsync">
             <summary>
             获取激活文件信息
@@ -125,6 +130,13 @@
             <param name="image"></param>
             <returns></returns>
         </member>
+        <member name="M:ColinChang.ArcFace.IArcFace.GetFace3DAngleAsync(System.Drawing.Image)">
+            <summary>
+            获取3D角度信息
+            </summary>
+            <param name="image"></param>
+            <returns></returns>
+        </member>
         <member name="M:ColinChang.ArcFace.IArcFace.GetAgeAsync(System.String)">
             <summary>
             获取年龄信息
@@ -132,7 +144,21 @@
             <param name="image"></param>
             <returns></returns>
         </member>
+        <member name="M:ColinChang.ArcFace.IArcFace.GetAgeAsync(System.Drawing.Image)">
+            <summary>
+            获取年龄信息
+            </summary>
+            <param name="image"></param>
+            <returns></returns>
+        </member>
         <member name="M:ColinChang.ArcFace.IArcFace.GetGenderAsync(System.String)">
+            <summary>
+            获取性别信息
+            </summary>
+            <param name="image"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ColinChang.ArcFace.IArcFace.GetGenderAsync(System.Drawing.Image)">
             <summary>
             获取性别信息
             </summary>
@@ -456,6 +482,16 @@
         <member name="P:ColinChang.ArcFace.Models.ImageInfo.Format">
             <summary>
             图片格式
+            </summary>
+        </member>
+        <member name="P:ColinChang.ArcFace.Models.OperationResult`1.Data">
+            <summary>
+            自定义数据结果
+            </summary>
+        </member>
+        <member name="P:ColinChang.ArcFace.Models.OperationResult`1.Code">
+            <summary>
+            虹软错误码（参阅：https://github.com/colin-chang/ArcFace.Net）
             </summary>
         </member>
         <member name="P:ColinChang.ArcFace.Models.Recognition.FaceId">
