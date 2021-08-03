@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>default</LangVersion>
     <Authors>Colin Chang</Authors>
-    <PackageVersion>3.2.4</PackageVersion>
+    <PackageVersion>3.2.5</PackageVersion>
     <Description>虹软人脸识别.NET工具库(.Net Standard 2.1)。基于ArcFace 3.x C++ SDK, 支持Windows x86/x64和Linux x64. 支持人脸属性检测、人脸特征提取、人脸库维护、人脸搜索、活体检测等功能。</Description>
     <Copyright>https://ccstudio.com.cn/</Copyright>
     <PackageProjectUrl>https://github.com/colin-chang/ArcFace.Net</PackageProjectUrl>
@@ -15,7 +15,7 @@
     <PackageId>ArcFace.Net</PackageId>
     <PackageIcon>icon.png</PackageIcon>
     <PackageIconUrl>https://raw.githubusercontent.com/colin-chang/ArcFace.Net/main/icon.png</PackageIconUrl>
-    <PackageReleaseNotes>优化人脸搜索返回值</PackageReleaseNotes>
+    <PackageReleaseNotes>重载部分方法</PackageReleaseNotes>
     <Product>ArcFace.Net</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

@@ -29,6 +29,13 @@ namespace ColinChang.ArcFace
         /// <param name="image"></param>
         /// <returns></returns>
         Task<OperationResult<Face3DAngle>> GetFace3DAngleAsync(string image);
+        
+        /// <summary>
+        /// 获取3D角度信息
+        /// </summary>
+        /// <param name="image"></param>
+        /// <returns></returns>
+        Task<OperationResult<Face3DAngle>> GetFace3DAngleAsync(Image image);
 
         /// <summary>
         /// 获取年龄信息
@@ -36,6 +43,13 @@ namespace ColinChang.ArcFace
         /// <param name="image"></param>
         /// <returns></returns>
         Task<OperationResult<AgeInfo>> GetAgeAsync(string image);
+        
+        /// <summary>
+        /// 获取年龄信息
+        /// </summary>
+        /// <param name="image"></param>
+        /// <returns></returns>
+        Task<OperationResult<AgeInfo>> GetAgeAsync(Image image);
 
         /// <summary>
         /// 获取性别信息
@@ -43,6 +57,13 @@ namespace ColinChang.ArcFace
         /// <param name="image"></param>
         /// <returns></returns>
         Task<OperationResult<GenderInfo>> GetGenderAsync(string image);
+        
+        /// <summary>
+        /// 获取性别信息
+        /// </summary>
+        /// <param name="image"></param>
+        /// <returns></returns>
+        Task<OperationResult<GenderInfo>> GetGenderAsync(Image image);
 
         /// <summary>
         /// 人脸检测
