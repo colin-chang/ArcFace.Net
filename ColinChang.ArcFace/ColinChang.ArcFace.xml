@@ -24,7 +24,7 @@
             人脸库
             </summary>
         </member>
-        <member name="M:ColinChang.ArcFace.ArcFace.OnlineActive">
+        <member name="M:ColinChang.ArcFace.ArcFace.OnlineActiveAsync">
             <summary>
             在线激活
             </summary>

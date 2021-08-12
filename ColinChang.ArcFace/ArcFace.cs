@@ -69,7 +69,7 @@ namespace ColinChang.ArcFace
         public ArcFace(ArcFaceOptions options)
         {
             _options = options;
-            OnlineActive();
+            OnlineActiveAsync().Wait();
         }
 
         #region SDK信息 激活信息/版本信息
@@ -362,7 +362,7 @@ namespace ColinChang.ArcFace
         /// 在线激活
         /// </summary>
         /// <exception cref="Exception"></exception>
-        private void OnlineActive()
+        private async Task OnlineActiveAsync()
         {
             string sdkKey;
             var platform = Environment.OSVersion.Platform;
@@ -374,7 +374,7 @@ namespace ColinChang.ArcFace
             else
                 throw new NotSupportedException("only Windows(x86/x64) and Linux(x64) are supported");
 
-            Policy.Handle<Exception>()
+            await Policy.Handle<Exception>()
                 .RetryAsync(4)
                 .ExecuteAsync(async () =>
                 {
