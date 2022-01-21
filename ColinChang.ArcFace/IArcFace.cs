@@ -152,6 +152,14 @@ namespace ColinChang.ArcFace
         /// <param name="image"></param>
         /// <returns>搜索结果</returns>
         Task<OperationResult<Recognition>> SearchFaceAsync(string image);
+
+        /// <summary>
+        /// 人脸库中搜索人脸
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="minSimilarity">最小人脸相似度</param>
+        /// <returns>搜索结果</returns>
+        Task<OperationResult<Recognition>> SearchFaceAsync(string image,float minSimilarity);
         
         /// <summary>
         /// 人脸库中搜索人脸
@@ -159,12 +167,28 @@ namespace ColinChang.ArcFace
         /// <param name="image"></param>
         /// <returns>搜索结果</returns>
         Task<OperationResult<Recognition>> SearchFaceAsync(Image image);
+        
+        /// <summary>
+        /// 人脸库中搜索人脸
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="minSimilarity">最小人脸相似度</param>
+        /// <returns>搜索结果</returns>
+        Task<OperationResult<Recognition>> SearchFaceAsync(Image image,float minSimilarity);
 
         /// <summary>
-        /// 人脸库 检索人脸
+        /// 人脸库中搜索人脸
         /// </summary>
         /// <param name="feature"></param>
-        /// <returns>检索结果</returns>
+        /// <returns>搜索结果</returns>
         Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature);
+        
+        /// <summary>
+        /// 人脸库中搜索人脸
+        /// </summary>
+        /// <param name="feature"></param>
+        /// <param name="minSimilarity">最小人脸相似度</param>
+        /// <returns>搜索结果</returns>
+        Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature,float minSimilarity);
     }
 }

@@ -274,17 +274,21 @@ namespace ColinChang.ArcFace
                 Marshal.FreeHGlobal(feature);
             });
 
-        public async Task<OperationResult<Recognition>> SearchFaceAsync(string image)
+
+        public async Task<OperationResult<Recognition>> SearchFaceAsync(string image) => await SearchFaceAsync(image, _options.MinSimilarity);
+
+        public async Task<OperationResult<Recognition>> SearchFaceAsync(string image, float minSimilarity)
         {
             if (!File.Exists(image))
                 return new OperationResult<Recognition>(null);
 
             using var img = Image.FromFile(image);
-            return await SearchFaceAsync(img);
+            return await SearchFaceAsync(img, minSimilarity);
         }
 
+        public async Task<OperationResult<Recognition>> SearchFaceAsync(Image image) => await SearchFaceAsync(image, _options.MinSimilarity);
 
-        public async Task<OperationResult<Recognition>> SearchFaceAsync(Image image)
+        public async Task<OperationResult<Recognition>> SearchFaceAsync(Image image, float minSimilarity)
         {
             var engine = IntPtr.Zero;
             var featureInfo = IntPtr.Zero;
@@ -311,7 +315,7 @@ namespace ColinChang.ArcFace
                     recognition.FaceId = faceId;
                 }
 
-                recognition = recognition.Similarity < _options.MinSimilarity ? null : recognition;
+                recognition = recognition.Similarity < minSimilarity ? null : recognition;
                 return new OperationResult<Recognition>(recognition);
             }
             finally
@@ -321,7 +325,10 @@ namespace ColinChang.ArcFace
             }
         }
 
-        public async Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature) =>
+        public async Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature) => await SearchFaceAsync(feature, _options.MinSimilarity);
+        
+
+        public async Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature, float minSimilarity) =>
             await Task.Run(() =>
             {
                 var engine = IntPtr.Zero;
@@ -344,7 +351,7 @@ namespace ColinChang.ArcFace
                         recognition.FaceId = faceId;
                     }
 
-                    recognition = recognition.Similarity < _options.MinSimilarity ? null : recognition;
+                    recognition = recognition.Similarity < minSimilarity ? null : recognition;
                     return new OperationResult<Recognition>(recognition);
                 }
                 finally
