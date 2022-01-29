@@ -253,6 +253,14 @@
             <param name="image"></param>
             <returns>搜索结果</returns>
         </member>
+        <member name="M:ColinChang.ArcFace.IArcFace.SearchFaceAsync(System.String,System.Single)">
+            <summary>
+            人脸库中搜索人脸
+            </summary>
+            <param name="image"></param>
+            <param name="minSimilarity">最小人脸相似度</param>
+            <returns>搜索结果</returns>
+        </member>
         <member name="M:ColinChang.ArcFace.IArcFace.SearchFaceAsync(System.Drawing.Image)">
             <summary>
             人脸库中搜索人脸
@@ -260,12 +268,28 @@
             <param name="image"></param>
             <returns>搜索结果</returns>
         </member>
+        <member name="M:ColinChang.ArcFace.IArcFace.SearchFaceAsync(System.Drawing.Image,System.Single)">
+            <summary>
+            人脸库中搜索人脸
+            </summary>
+            <param name="image"></param>
+            <param name="minSimilarity">最小人脸相似度</param>
+            <returns>搜索结果</returns>
+        </member>
         <member name="M:ColinChang.ArcFace.IArcFace.SearchFaceAsync(System.Byte[])">
             <summary>
-            人脸库 检索人脸
+            人脸库中搜索人脸
             </summary>
             <param name="feature"></param>
-            <returns>检索结果</returns>
+            <returns>搜索结果</returns>
+        </member>
+        <member name="M:ColinChang.ArcFace.IArcFace.SearchFaceAsync(System.Byte[],System.Single)">
+            <summary>
+            人脸库中搜索人脸
+            </summary>
+            <param name="feature"></param>
+            <param name="minSimilarity">最小人脸相似度</param>
+            <returns>搜索结果</returns>
         </member>
         <member name="T:ColinChang.ArcFace.Models.AgeInfo">
             <summary>
