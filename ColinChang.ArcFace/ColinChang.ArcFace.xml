@@ -221,7 +221,14 @@
             <summary>
             初始化人脸库
             </summary>
-            <param name="faceFeatures"></param>
+            <param name="faceFeatures">[faceId]=人脸特征</param>
+            <returns></returns>
+        </member>
+        <member name="M:ColinChang.ArcFace.IArcFace.InitFaceLibraryAsync(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            初始化人脸库
+            </summary>
+            <param name="faceFeatures">[faceId]=人脸特征(Base64)</param>
             <returns></returns>
         </member>
         <member name="M:ColinChang.ArcFace.IArcFace.AddFaceAsync(System.String)">

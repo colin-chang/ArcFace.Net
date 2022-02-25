@@ -235,6 +235,17 @@ namespace ColinChang.ArcFace
                     _faceLibrary[faceId] = feature.ToFaceFeature();
             });
 
+        public async Task InitFaceLibraryAsync(Dictionary<string, string> faceFeatures)
+       =>
+            await Task.Run(() =>
+            {
+                if (faceFeatures == null || !faceFeatures.Any())
+                    return;
+
+                foreach (var (faceId, feature) in faceFeatures)
+                    _faceLibrary[faceId] = feature.ToFaceFeature();
+            });
+
         public async Task<long> AddFaceAsync(string image)
         {
             var engine = IntPtr.Zero;
@@ -308,6 +319,11 @@ namespace ColinChang.ArcFace
                     var code = AsfHelper.ASFFaceFeatureCompare(engine, featureInfo, feature, ref similarity);
                     if (code != 0)
                         continue;
+
+                    //if(faceId== "3a023c09-9e48-de53-8bbf-f84b7ff3bea7")
+                    //    Console.WriteLine(similarity);
+
+
                     if (similarity <= recognition.Similarity)
                         continue;
 

@@ -120,9 +120,16 @@ namespace ColinChang.ArcFace
         /// <summary>
         /// 初始化人脸库
         /// </summary>
-        /// <param name="faceFeatures"></param>
+        /// <param name="faceFeatures">[faceId]=人脸特征</param>
         /// <returns></returns>
         Task InitFaceLibraryAsync(Dictionary<string, byte[]> faceFeatures);
+
+        /// <summary>
+        /// 初始化人脸库
+        /// </summary>
+        /// <param name="faceFeatures">[faceId]=人脸特征(Base64)</param>
+        /// <returns></returns>
+        Task InitFaceLibraryAsync(Dictionary<string, string> faceFeatures);
 
         /// <summary>
         /// 人脸库新增人脸(约定文件名为FaceId)
