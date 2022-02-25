@@ -5,6 +5,17 @@
 [https://www.nuget.org/packages/ArcFace.Net/](https://www.nuget.org/packages/ArcFace.Net/)
 
 ## 平台支持
+
+>.NET 6 兼容问题
+>> 从 .NET 6 开始，当为非 Windows 操作系统编译引用代码时，平台分析器会发出编译时警告。 此外，除非设置了配置选项，否则将引发`System.PlatformNotSupportedException`异常，可通过将`runtimeconfig.json` 文件中的 `System.Drawing.EnableUnixSupportSystem.Drawing.EnableUnixSupport`设置为 `true` 来启用对 .NET 6 中非 Windows 平台的支持
+```json
+{
+   "configProperties": {
+      "System.Drawing.EnableUnixSupport": true
+   }
+}
+```
+
 1. Windows x86/x64
 2. Linux x64
 
