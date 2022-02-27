@@ -31,7 +31,7 @@ namespace ColinChang.ArcFace
         /// <summary>
         /// 支持的图片格式
         /// </summary>
-        private readonly string[] _supportedImageExtensions = {".jpeg", ".jpg", ".png", ".bmp"};
+        private readonly string[] _supportedImageExtensions = { ".jpeg", ".jpg", ".png", ".bmp" };
 
         #endregion
 
@@ -58,7 +58,8 @@ namespace ColinChang.ArcFace
         /// <summary>
         /// 人脸库
         /// </summary>
-        private readonly ConcurrentDictionary<string, IntPtr> _faceLibrary = new ConcurrentDictionary<string, IntPtr>();
+        // private readonly ConcurrentDictionary<string, IntPtr> _faceLibrary = new ConcurrentDictionary<string, IntPtr>();
+        private readonly ConcurrentDictionary<string, Face> _faceLibrary = new ConcurrentDictionary<string, Face>();
 
         private readonly ArcFaceOptions _options;
 
@@ -216,7 +217,8 @@ namespace ColinChang.ArcFace
                     if (feature.Code != 0)
                         throw new Exception($"{image} failed to extract face feature. code:{feature.Code}");
 
-                    _faceLibrary[faceId] = feature.Data;
+                    // _faceLibrary[faceId] = feature.Data;
+                    _faceLibrary[faceId] = new Face(faceId, feature.Data);
                 }
             }
             finally
@@ -232,18 +234,30 @@ namespace ColinChang.ArcFace
                     return;
 
                 foreach (var (faceId, feature) in faceFeatures)
-                    _faceLibrary[faceId] = feature.ToFaceFeature();
+                    // _faceLibrary[faceId] = feature.ToFaceFeature();
+                    _faceLibrary[faceId] = new Face(faceId, feature);
             });
 
         public async Task InitFaceLibraryAsync(Dictionary<string, string> faceFeatures)
-       =>
+            =>
+                await Task.Run(() =>
+                {
+                    if (faceFeatures == null || !faceFeatures.Any())
+                        return;
+
+                    foreach (var (faceId, feature) in faceFeatures)
+                        // _faceLibrary[faceId] = feature.ToFaceFeature();
+                        _faceLibrary[faceId] = new Face(faceId, feature);
+                });
+
+        public async Task InitFaceLibraryAsync(IEnumerable<Face> faces) =>
             await Task.Run(() =>
             {
-                if (faceFeatures == null || !faceFeatures.Any())
+                if (faces == null || !faces.Any())
                     return;
 
-                foreach (var (faceId, feature) in faceFeatures)
-                    _faceLibrary[faceId] = feature.ToFaceFeature();
+                foreach (var face in faces)
+                    _faceLibrary[face.Id] = face;
             });
 
         public async Task<long> AddFaceAsync(string image)
@@ -256,9 +270,30 @@ namespace ColinChang.ArcFace
                 var faceId = Path.GetFileNameWithoutExtension(image);
                 var feature = await FaceHelper.ExtractSingleFeatureAsync(engine, img);
                 if (feature.Code == 0)
-                    _faceLibrary[faceId] = feature.Data;
+                    // _faceLibrary[faceId] = feature.Data;
+                    _faceLibrary[faceId] = new Face(faceId, feature.Data);
 
                 return feature.Code;
+            }
+            finally
+            {
+                RecycleEngine(engine, DetectionModeEnum.Image);
+            }
+        }
+
+        public async Task<(bool, long)> TryAddFaceAsync(string image)
+        {
+            var engine = IntPtr.Zero;
+            try
+            {
+                using var img = VerifyImage(image);
+                engine = GetEngine(DetectionModeEnum.Image);
+                var faceId = Path.GetFileNameWithoutExtension(image);
+                var feature = await FaceHelper.ExtractSingleFeatureAsync(engine, img);
+                if (feature.Code == 0 && _faceLibrary.TryAdd(faceId, new Face(faceId, feature.Data)))
+                    return (true, 0);
+
+                return (false, feature.Code);
             }
             finally
             {
@@ -272,7 +307,36 @@ namespace ColinChang.ArcFace
                 if (string.IsNullOrWhiteSpace(faceId) || feature == null || !feature.Any())
                     return;
 
-                _faceLibrary[faceId] = feature.ToFaceFeature();
+                // _faceLibrary[faceId] = feature.ToFaceFeature();
+                _faceLibrary[faceId] = new Face(faceId, feature);
+            });
+
+        public async Task<bool> TryAddFaceAsync(string faceId, byte[] feature) =>
+            await Task.Run(() =>
+            {
+                if (string.IsNullOrWhiteSpace(faceId) || feature == null || !feature.Any())
+                    return false;
+
+                return _faceLibrary.TryAdd(faceId, new Face(faceId, feature));
+            });
+
+
+        public async Task AddFaceAsync(string faceId, string feature) =>
+            await Task.Run(() =>
+            {
+                if (string.IsNullOrWhiteSpace(faceId) || string.IsNullOrWhiteSpace(feature))
+                    return;
+
+                _faceLibrary[faceId] = new Face(faceId, feature);
+            });
+
+        public async Task<bool> TryAddFaceAsync(string faceId, string feature) =>
+            await Task.Run(() =>
+            {
+                if (string.IsNullOrWhiteSpace(faceId) || string.IsNullOrWhiteSpace(feature))
+                    return false;
+
+                return _faceLibrary.TryAdd(faceId, new Face(faceId, feature));
             });
 
         public async Task RemoveFaceAsync(string faceId) =>
@@ -281,25 +345,44 @@ namespace ColinChang.ArcFace
                 if (string.IsNullOrWhiteSpace(faceId) || !_faceLibrary.ContainsKey(faceId))
                     return;
 
-                _faceLibrary.Remove(faceId, out var feature);
-                Marshal.FreeHGlobal(feature);
+                // _faceLibrary.Remove(faceId, out var feature);
+                // Marshal.FreeHGlobal(feature);
+
+                _faceLibrary.Remove(faceId, out var face);
+                face.Dispose();
             });
 
+        public async Task<bool> TryRemoveFaceAsync(string faceId) =>
+            await Task.Run(() =>
+            {
+                if (string.IsNullOrWhiteSpace(faceId) || !_faceLibrary.ContainsKey(faceId))
+                    return false;
 
-        public async Task<OperationResult<Recognition>> SearchFaceAsync(string image) => await SearchFaceAsync(image, _options.MinSimilarity);
+                var success = _faceLibrary.TryRemove(faceId, out var face);
+                face.Dispose();
+                return success;
+            });
 
-        public async Task<OperationResult<Recognition>> SearchFaceAsync(string image, float minSimilarity)
+        public async Task<OperationResult<Recognition>>
+            SearchFaceAsync(string image, Predicate<Face> predicate = null) =>
+            await SearchFaceAsync(image, _options.MinSimilarity, predicate);
+
+        public async Task<OperationResult<Recognition>> SearchFaceAsync(string image, float minSimilarity,
+            Predicate<Face> predicate = null)
         {
             if (!File.Exists(image))
                 return new OperationResult<Recognition>(null);
 
             using var img = Image.FromFile(image);
-            return await SearchFaceAsync(img, minSimilarity);
+            return await SearchFaceAsync(img, minSimilarity, predicate);
         }
 
-        public async Task<OperationResult<Recognition>> SearchFaceAsync(Image image) => await SearchFaceAsync(image, _options.MinSimilarity);
+        public async Task<OperationResult<Recognition>>
+            SearchFaceAsync(Image image, Predicate<Face> predicate = null) =>
+            await SearchFaceAsync(image, _options.MinSimilarity, predicate);
 
-        public async Task<OperationResult<Recognition>> SearchFaceAsync(Image image, float minSimilarity)
+        public async Task<OperationResult<Recognition>> SearchFaceAsync(Image image, float minSimilarity,
+            Predicate<Face> predicate = null)
         {
             var engine = IntPtr.Zero;
             var featureInfo = IntPtr.Zero;
@@ -313,16 +396,13 @@ namespace ColinChang.ArcFace
                     return new OperationResult<Recognition>(faceFeature.Code);
 
                 var recognition = new Recognition();
-                foreach (var (faceId, feature) in _faceLibrary)
+                var library = predicate == null ? _faceLibrary : _faceLibrary.Where(kv => predicate.Invoke(kv.Value));
+                foreach (var (faceId, face) in library)
                 {
                     var similarity = 0f;
-                    var code = AsfHelper.ASFFaceFeatureCompare(engine, featureInfo, feature, ref similarity);
+                    var code = AsfHelper.ASFFaceFeatureCompare(engine, featureInfo, face.Feature, ref similarity);
                     if (code != 0)
                         continue;
-
-                    //if(faceId== "3a023c09-9e48-de53-8bbf-f84b7ff3bea7")
-                    //    Console.WriteLine(similarity);
-
 
                     if (similarity <= recognition.Similarity)
                         continue;
@@ -341,10 +421,13 @@ namespace ColinChang.ArcFace
             }
         }
 
-        public async Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature) => await SearchFaceAsync(feature, _options.MinSimilarity);
-        
+        public async Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature,
+            Predicate<Face> predicate = null) =>
+            await SearchFaceAsync(feature, _options.MinSimilarity, predicate);
 
-        public async Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature, float minSimilarity) =>
+
+        public async Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature, float minSimilarity,
+            Predicate<Face> predicate = null) =>
             await Task.Run(() =>
             {
                 var engine = IntPtr.Zero;
@@ -354,10 +437,13 @@ namespace ColinChang.ArcFace
                     featureInfo = feature.ToFaceFeature();
                     var recognition = new Recognition();
                     engine = GetEngine(DetectionModeEnum.Image);
-                    foreach (var (faceId, faceFeature) in _faceLibrary)
+                    var library = predicate == null
+                        ? _faceLibrary
+                        : _faceLibrary.Where(kv => predicate.Invoke(kv.Value));
+                    foreach (var (faceId, face) in library)
                     {
                         var similarity = 0f;
-                        var code = AsfHelper.ASFFaceFeatureCompare(engine, featureInfo, faceFeature, ref similarity);
+                        var code = AsfHelper.ASFFaceFeatureCompare(engine, featureInfo, face.Feature, ref similarity);
                         if (code != 0)
                             continue;
                         if (similarity <= recognition.Similarity)
@@ -522,8 +608,8 @@ namespace ColinChang.ArcFace
             UninitEngine(_irEngines);
 
             //释放 人脸库资源
-            foreach (var feature in _faceLibrary.Values)
-                feature.DisposeFaceFeature();
+            foreach (var face in _faceLibrary.Values)
+                face.Feature.DisposeFaceFeature();
         }
 
         #endregion
