@@ -102,7 +102,7 @@ namespace ColinChang.ArcFace.Utils
         /// <param name="engine">引擎Handle</param>
         /// <param name="image"></param>
         /// <returns>保存人脸特征结构体指针</returns>
-        public static async Task<OperationResult<IntPtr>> ExtractSingleFeatureAsync(IntPtr engine, Image image) =>
+        public static async Task<OperationResult<byte[]>> ExtractSingleFeatureAsync(IntPtr engine, Image image) =>
             await Task.Run(async () =>
             {
                 ImageInfo imageInfo = null;
@@ -112,11 +112,11 @@ namespace ColinChang.ArcFace.Utils
                 {
                     var asfFaces = await DetectFaceAsync(engine, image);
                     if (asfFaces.Code != 0)
-                        return new OperationResult<IntPtr>(asfFaces.Code);
+                        return new OperationResult<byte[]>(asfFaces.Code);
 
                     var faces = asfFaces.Data.Cast();
                     if (faces.FaceNum <= 0)
-                        return new OperationResult<IntPtr>(IntPtr.Zero);
+                        return new OperationResult<byte[]>(null);
 
                     var singleFaceInfo = await GetBiggestFaceAsync(faces);
                     pSingleFaceInfo = Marshal.AllocHGlobal(Marshal.SizeOf<SingleFaceInfo>());
@@ -127,22 +127,25 @@ namespace ColinChang.ArcFace.Utils
                     var code = AsfHelper.ASFFaceFeatureExtract(engine, imageInfo.Width, imageInfo.Height,
                         imageInfo.Format, imageInfo.ImgData, pSingleFaceInfo, pFaceFeature);
                     if (code != 0)
-                        return new OperationResult<IntPtr>(code);
+                        return new OperationResult<byte[]>(code);
+                    
+                    var faceFeature = Marshal.PtrToStructure<AsfFaceFeature>(pFaceFeature);
+                    var feature = new byte[faceFeature.FeatureSize];
+                    Marshal.Copy(faceFeature.Feature, feature, 0, faceFeature.FeatureSize);
+                    return new OperationResult<byte[]>(feature);
 
                     /*使用同一个引擎时，每次特征提取后的临时内存存储地址相同，后面的特征提取会覆盖之前的结果。
                      如要保存每次提取的特征，需要拷贝保存到单独的内存
                      */
-                    var faceFeature = Marshal.PtrToStructure<AsfFaceFeature>(pFaceFeature);
-                    var feature = new byte[faceFeature.FeatureSize];
-                    Marshal.Copy(faceFeature.Feature, feature, 0, faceFeature.FeatureSize);
 
+                    /*
                     var localFeature = new AsfFaceFeature {Feature = Marshal.AllocHGlobal(feature.Length)};
                     Marshal.Copy(feature, 0, localFeature.Feature, feature.Length);
                     localFeature.FeatureSize = feature.Length;
                     
                     var pLocalFeature = Marshal.AllocHGlobal(Marshal.SizeOf<AsfFaceFeature>());
                     Marshal.StructureToPtr(localFeature, pLocalFeature, false);
-                    return new OperationResult<IntPtr>(pLocalFeature);
+                    return new OperationResult<IntPtr>(pLocalFeature);*/
                 }
                 finally
                 {
