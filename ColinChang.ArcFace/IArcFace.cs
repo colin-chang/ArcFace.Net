@@ -118,19 +118,12 @@ namespace ColinChang.ArcFace
         Task InitFaceLibraryAsync(IEnumerable<string> images);
 
         /// <summary>
-        /// 初始化人脸库
+        /// 尝试初始化人脸库(约定文件名为FaceId)
         /// </summary>
-        /// <param name="faceFeatures">[faceId]=人脸特征</param>
-        /// <returns></returns>
-        Task InitFaceLibraryAsync(Dictionary<string, byte[]> faceFeatures);
+        /// <param name="images">人脸图片。多人脸图自动选比例最大的人脸</param>
+        /// <returns>(是否全部成功,成功记录数)</returns>
+        Task<(bool Success, int SuccessCount)> TryInitFaceLibraryAsync(IEnumerable<string> images);
 
-        /// <summary>
-        /// 初始化人脸库
-        /// </summary>
-        /// <param name="faceFeatures">[faceId]=人脸特征(Base64)</param>
-        /// <returns></returns>
-        Task InitFaceLibraryAsync(Dictionary<string, string> faceFeatures);
-        
         /// <summary>
         /// 初始化人脸库
         /// </summary>
@@ -139,50 +132,38 @@ namespace ColinChang.ArcFace
         Task InitFaceLibraryAsync(IEnumerable<Face> faces);
 
         /// <summary>
+        /// 尝试初始化人脸库
+        /// </summary>
+        /// <param name="faces"></param>
+        /// <returns>(是否全部成功,成功记录数)</returns>
+        Task<(bool Success, int SuccessCount)> TryInitFaceLibraryAsync(IEnumerable<Face> faces);
+
+        /// <summary>
         /// 人脸库新增人脸(约定文件名为FaceId)
         /// </summary>
         /// <param name="image">人脸图片。多人脸图自动选比例最大的人脸</param>
-        /// <returns>状态码，0表示成功，非0表示有错误，具体状态码含义参考文档</returns>
-        Task<long> AddFaceAsync(string image);
+        Task AddFaceAsync(string image);
 
         /// <summary>
         /// 尝试在人脸库中新增人脸(约定文件名为FaceId)
         /// </summary>
         /// <param name="image">人脸图片。多人脸图自动选比例最大的人脸</param>
         /// <returns>(是否新增成功,状态码(0表示成功，非0表示有错误，具体状态码含义参考文档))</returns>
-        Task<(bool, long)> TryAddFaceAsync(string image);
+        Task<bool> TryAddFaceAsync(string image);
 
         /// <summary>
         /// 人脸库新增人脸
         /// </summary>
-        /// <param name="faceId">人脸ID</param>
-        /// <param name="feature">人脸特征</param>
+        /// <param name="face"></param>
         /// <returns></returns>
-        Task AddFaceAsync(string faceId, byte[] feature);
+        Task AddFaceAsync(Face face);
 
         /// <summary>
         /// 尝试在人脸库中新增人脸
         /// </summary>
-        /// <param name="faceId">人脸ID</param>
-        /// <param name="feature">人脸特征</param>
+        /// <param name="face"></param>
         /// <returns>是否新增成功</returns>
-        Task<bool> TryAddFaceAsync(string faceId, byte[] feature);
-
-        /// <summary>
-        /// 人脸库新增人脸(Base64)
-        /// </summary>
-        /// <param name="faceId">人脸ID</param>
-        /// <param name="feature">人脸特征(Base64)</param>
-        /// <returns></returns>
-        Task AddFaceAsync(string faceId, string feature);
-
-        /// <summary>
-        /// 尝试在人脸库中新增人脸(Base64)
-        /// </summary>
-        /// <param name="faceId">人脸ID</param>
-        /// <param name="feature">人脸特征(Base64)</param>
-        /// <returns>是否新增成功</returns>
-        Task<bool> TryAddFaceAsync(string faceId, string feature);
+        Task<bool> TryAddFaceAsync(Face face);
 
         /// <summary>
         /// 人脸库删除人脸
@@ -204,7 +185,7 @@ namespace ColinChang.ArcFace
         /// <param name="image">头像路径</param>
         /// <param name="predicate">人脸筛选条件</param>
         /// <returns>搜索结果</returns>
-        Task<OperationResult<Recognition>> SearchFaceAsync(string image,Predicate<Face> predicate = null);
+        Task<OperationResult<Recognition>> SearchFaceAsync(string image, Predicate<Face> predicate = null);
 
         /// <summary>
         /// 人脸库中搜索人脸
@@ -222,7 +203,7 @@ namespace ColinChang.ArcFace
         /// <param name="image">头像</param>
         /// <param name="predicate">人脸筛选条件</param>
         /// <returns>搜索结果</returns>
-        Task<OperationResult<Recognition>> SearchFaceAsync(Image image,Predicate<Face> predicate = null);
+        Task<OperationResult<Recognition>> SearchFaceAsync(Image image, Predicate<Face> predicate = null);
 
         /// <summary>
         /// 人脸库中搜索人脸
@@ -231,7 +212,8 @@ namespace ColinChang.ArcFace
         /// <param name="minSimilarity">最小人脸相似度</param>
         /// <param name="predicate">人脸筛选条件</param>
         /// <returns>搜索结果</returns>
-        Task<OperationResult<Recognition>> SearchFaceAsync(Image image, float minSimilarity,Predicate<Face> predicate = null);
+        Task<OperationResult<Recognition>> SearchFaceAsync(Image image, float minSimilarity,
+            Predicate<Face> predicate = null);
 
         /// <summary>
         /// 人脸库中搜索人脸
@@ -239,7 +221,7 @@ namespace ColinChang.ArcFace
         /// <param name="feature">人脸特征</param>
         /// <param name="predicate">人脸筛选条件</param>
         /// <returns>搜索结果</returns>
-        Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature,Predicate<Face> predicate = null);
+        Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature, Predicate<Face> predicate = null);
 
         /// <summary>
         /// 人脸库中搜索人脸
@@ -248,6 +230,7 @@ namespace ColinChang.ArcFace
         /// <param name="minSimilarity">最小人脸相似度</param>
         /// <param name="predicate">人脸筛选条件</param>
         /// <returns>搜索结果</returns>
-        Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature, float minSimilarity,Predicate<Face> predicate = null);
+        Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature, float minSimilarity,
+            Predicate<Face> predicate = null);
     }
 }

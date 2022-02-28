@@ -202,151 +202,48 @@ namespace ColinChang.ArcFace
 
         public async Task InitFaceLibraryAsync(IEnumerable<string> images)
         {
-            if (images == null || !images.Any())
-                return;
+            var (faces, exceptions) = await ExtractFaceFeaturesAsync(images.ToArray());
+            if (exceptions.Any())
+                throw new AggregateException(exceptions);
 
-            var engine = IntPtr.Zero;
-            try
-            {
-                engine = GetEngine(DetectionModeEnum.Image);
-                foreach (var image in images)
-                {
-                    using var img = VerifyImage(image);
-                    var faceId = Path.GetFileNameWithoutExtension(image);
-                    var feature = await FaceHelper.ExtractSingleFeatureAsync(engine, img);
-                    if (feature.Code != 0)
-                        throw new Exception($"{image} failed to extract face feature. code:{feature.Code}");
-
-                    // _faceLibrary[faceId] = feature.Data;
-                    _faceLibrary[faceId] = new Face(faceId, feature.Data);
-                }
-            }
-            finally
-            {
-                RecycleEngine(engine, DetectionModeEnum.Image);
-            }
+            await InitFaceLibraryAsync(faces);
         }
 
-        public async Task InitFaceLibraryAsync(Dictionary<string, byte[]> faceFeatures) =>
-            await Task.Run(() =>
-            {
-                if (faceFeatures == null || !faceFeatures.Any())
-                    return;
-
-                foreach (var (faceId, feature) in faceFeatures)
-                    // _faceLibrary[faceId] = feature.ToFaceFeature();
-                    _faceLibrary[faceId] = new Face(faceId, feature);
-            });
-
-        public async Task InitFaceLibraryAsync(Dictionary<string, string> faceFeatures)
-            =>
-                await Task.Run(() =>
-                {
-                    if (faceFeatures == null || !faceFeatures.Any())
-                        return;
-
-                    foreach (var (faceId, feature) in faceFeatures)
-                        // _faceLibrary[faceId] = feature.ToFaceFeature();
-                        _faceLibrary[faceId] = new Face(faceId, feature);
-                });
+        public async Task<(bool Success, int SuccessCount)> TryInitFaceLibraryAsync(IEnumerable<string> images) =>
+            await TryInitFaceLibraryAsync((await ExtractFaceFeaturesAsync(images.ToArray())).Faces);
 
         public async Task InitFaceLibraryAsync(IEnumerable<Face> faces) =>
-            await Task.Run(() =>
-            {
-                if (faces == null || !faces.Any())
-                    return;
+            await Task.Run(() => _faceLibrary.InitFaceLibrary(faces));
 
-                foreach (var face in faces)
-                    _faceLibrary[face.Id] = face;
-            });
 
-        public async Task<long> AddFaceAsync(string image)
+        public async Task<(bool Success, int SuccessCount)> TryInitFaceLibraryAsync(IEnumerable<Face> faces) =>
+            await Task.Run(() => (_faceLibrary.TryInitFaceLibrary(faces), _faceLibrary.Count));
+
+        public async Task AddFaceAsync(string image)
         {
-            var engine = IntPtr.Zero;
-            try
-            {
-                using var img = VerifyImage(image);
-                engine = GetEngine(DetectionModeEnum.Image);
-                var faceId = Path.GetFileNameWithoutExtension(image);
-                var feature = await FaceHelper.ExtractSingleFeatureAsync(engine, img);
-                if (feature.Code == 0)
-                    // _faceLibrary[faceId] = feature.Data;
-                    _faceLibrary[faceId] = new Face(faceId, feature.Data);
-
-                return feature.Code;
-            }
-            finally
-            {
-                RecycleEngine(engine, DetectionModeEnum.Image);
-            }
+            var (faces, exceptions) = await ExtractFaceFeaturesAsync(image);
+            if (exceptions.Any())
+                throw exceptions.FirstOrDefault();
+            _faceLibrary.AddFace(faces.FirstOrDefault());
         }
 
-        public async Task<(bool, long)> TryAddFaceAsync(string image)
+        public async Task<bool> TryAddFaceAsync(string image)
         {
-            var engine = IntPtr.Zero;
-            try
-            {
-                using var img = VerifyImage(image);
-                engine = GetEngine(DetectionModeEnum.Image);
-                var faceId = Path.GetFileNameWithoutExtension(image);
-                var feature = await FaceHelper.ExtractSingleFeatureAsync(engine, img);
-                if (feature.Code == 0 && _faceLibrary.TryAdd(faceId, new Face(faceId, feature.Data)))
-                    return (true, 0);
-
-                return (false, feature.Code);
-            }
-            finally
-            {
-                RecycleEngine(engine, DetectionModeEnum.Image);
-            }
+            var (faces, exceptions) = await ExtractFaceFeaturesAsync(image);
+            return !exceptions.Any() && _faceLibrary.TryAddFace(faces.FirstOrDefault());
         }
 
-        public async Task AddFaceAsync(string faceId, byte[] feature) =>
-            await Task.Run(() =>
-            {
-                if (string.IsNullOrWhiteSpace(faceId) || feature == null || !feature.Any())
-                    return;
+        public async Task AddFaceAsync(Face face) =>
+            await Task.Run(() => _faceLibrary.AddFace(face));
 
-                // _faceLibrary[faceId] = feature.ToFaceFeature();
-                _faceLibrary[faceId] = new Face(faceId, feature);
-            });
-
-        public async Task<bool> TryAddFaceAsync(string faceId, byte[] feature) =>
-            await Task.Run(() =>
-            {
-                if (string.IsNullOrWhiteSpace(faceId) || feature == null || !feature.Any())
-                    return false;
-
-                return _faceLibrary.TryAdd(faceId, new Face(faceId, feature));
-            });
-
-
-        public async Task AddFaceAsync(string faceId, string feature) =>
-            await Task.Run(() =>
-            {
-                if (string.IsNullOrWhiteSpace(faceId) || string.IsNullOrWhiteSpace(feature))
-                    return;
-
-                _faceLibrary[faceId] = new Face(faceId, feature);
-            });
-
-        public async Task<bool> TryAddFaceAsync(string faceId, string feature) =>
-            await Task.Run(() =>
-            {
-                if (string.IsNullOrWhiteSpace(faceId) || string.IsNullOrWhiteSpace(feature))
-                    return false;
-
-                return _faceLibrary.TryAdd(faceId, new Face(faceId, feature));
-            });
+        public async Task<bool> TryAddFaceAsync(Face face) =>
+            await Task.Run(() => _faceLibrary.TryAddFace(face));
 
         public async Task RemoveFaceAsync(string faceId) =>
             await Task.Run(() =>
             {
                 if (string.IsNullOrWhiteSpace(faceId) || !_faceLibrary.ContainsKey(faceId))
                     return;
-
-                // _faceLibrary.Remove(faceId, out var feature);
-                // Marshal.FreeHGlobal(feature);
 
                 _faceLibrary.Remove(faceId, out var face);
                 face.Dispose();
@@ -359,7 +256,8 @@ namespace ColinChang.ArcFace
                     return false;
 
                 var success = _faceLibrary.TryRemove(faceId, out var face);
-                face.Dispose();
+                if (success)
+                    face.Dispose();
                 return success;
             });
 
@@ -384,41 +282,11 @@ namespace ColinChang.ArcFace
         public async Task<OperationResult<Recognition>> SearchFaceAsync(Image image, float minSimilarity,
             Predicate<Face> predicate = null)
         {
-            var engine = IntPtr.Zero;
-            var featureInfo = IntPtr.Zero;
-            try
-            {
-                image = VerifyImage(image);
-                engine = GetEngine(DetectionModeEnum.Image);
-                var faceFeature = await FaceHelper.ExtractSingleFeatureAsync(engine, image);
-                featureInfo = faceFeature.Data;
-                if (faceFeature.Code != 0)
-                    return new OperationResult<Recognition>(faceFeature.Code);
+            var (faces, exceptions) = await ExtractFaceFeaturesAsync(image);
+            if (exceptions.Any())
+                return new OperationResult<Recognition>(exceptions.SingleOrDefault().Code);
 
-                var recognition = new Recognition();
-                var library = predicate == null ? _faceLibrary : _faceLibrary.Where(kv => predicate.Invoke(kv.Value));
-                foreach (var (faceId, face) in library)
-                {
-                    var similarity = 0f;
-                    var code = AsfHelper.ASFFaceFeatureCompare(engine, featureInfo, face.Feature, ref similarity);
-                    if (code != 0)
-                        continue;
-
-                    if (similarity <= recognition.Similarity)
-                        continue;
-
-                    recognition.Similarity = similarity;
-                    recognition.FaceId = faceId;
-                }
-
-                recognition = recognition.Similarity < minSimilarity ? null : recognition;
-                return new OperationResult<Recognition>(recognition);
-            }
-            finally
-            {
-                featureInfo.DisposeFaceFeature();
-                RecycleEngine(engine, DetectionModeEnum.Image);
-            }
+            return await SearchFaceAsync(faces.SingleOrDefault().FeatureBytes, minSimilarity, predicate);
         }
 
         public async Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature,
@@ -703,6 +571,60 @@ namespace ColinChang.ArcFace
             catch
             {
                 throw new Exception("unsupported image type.");
+            }
+        }
+
+        private async Task<(IEnumerable<Face> Faces, IEnumerable<NoFaceImageException> Exceptions)>
+            ExtractFaceFeaturesAsync<T>(
+                params T[] images)
+        {
+            var faces = new List<Face>();
+            var exceptions = new List<NoFaceImageException>();
+            if (images == null || !images.Any())
+                return (faces, exceptions);
+
+            var engine = IntPtr.Zero;
+            try
+            {
+                engine = GetEngine(DetectionModeEnum.Image);
+                foreach (var image in images)
+                {
+                    if (image is not Image && image is not string)
+                        throw new Exception("invalid images type");
+                    if (image is string image0)
+                    {
+                        using var img = VerifyImage(image0);
+                        var feature = await FaceHelper.ExtractSingleFeatureAsync(engine, img);
+                        if (feature.Code != 0)
+                        {
+                            exceptions.Add(
+                                new NoFaceImageException(feature.Code, image0));
+                            continue;
+                        }
+
+                        faces.Add(new Face(
+                            Path.GetFileNameWithoutExtension(image0), feature.Data));
+                    }
+                    else
+                    {
+                        var img = VerifyImage(image as Image);
+                        var feature = await FaceHelper.ExtractSingleFeatureAsync(engine, img);
+                        if (feature.Code != 0)
+                        {
+                            exceptions.Add(
+                                new NoFaceImageException(feature.Code));
+                            continue;
+                        }
+
+                        faces.Add(new Face(null, feature.Data));
+                    }
+                }
+
+                return (faces, exceptions);
+            }
+            finally
+            {
+                RecycleEngine(engine, DetectionModeEnum.Image);
             }
         }
 

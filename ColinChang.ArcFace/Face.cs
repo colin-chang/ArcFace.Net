@@ -24,6 +24,9 @@ public class Face : IDisposable
         FeatureString = feature;
     }
 
+    public Face(string id, string feature, object tag) : this(id, feature) =>
+        Tag = tag;
+
     public string Id { get; set; }
 
     public IntPtr Feature { get; set; }
