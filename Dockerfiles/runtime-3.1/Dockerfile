@@ -1,5 +1,5 @@
 FROM mcr.microsoft.com/dotnet/runtime:3.1-focal
-LABEL version="runtime-5.0" maintainer="colinchang<zhangcheng5468@gmail.com>"
+LABEL version="runtime-3.1" maintainer="colinchang<zhangcheng5468@gmail.com>"
 
 COPY ./ColinChang.ArcFace/Sdks/Linuxx64/*.so /lib/
 

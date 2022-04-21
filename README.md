@@ -32,7 +32,7 @@
         echo "deb https://download.mono-project.com/repo/debian stable-buster main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
         sudo apt update
         sudo apt install mono-devel
-        sudo apt install libgdiplus/stable
+        sudo apt install libgdiplus/stable-buster
         
         # Ubuntu 20.04
         sudo apt install gnupg ca-certificates
