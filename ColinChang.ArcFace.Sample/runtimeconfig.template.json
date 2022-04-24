@@ -1,0 +1,9 @@
+{
+  "runtimeOptions": {
+    "configProperties": {
+      "System.GC.Server": true,
+      "System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization": false,
+      "System.Drawing.EnableUnixSupport": true
+    }
+  }
+}
