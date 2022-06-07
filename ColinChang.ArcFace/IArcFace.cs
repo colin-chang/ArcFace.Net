@@ -185,7 +185,7 @@ namespace ColinChang.ArcFace
         /// <param name="image">头像路径</param>
         /// <param name="predicate">人脸筛选条件</param>
         /// <returns>搜索结果</returns>
-        Task<OperationResult<Recognition>> SearchFaceAsync(string image, Predicate<Face> predicate = null);
+        Task<OperationResult<Recognitions>> SearchFaceAsync(string image, Predicate<Face> predicate = null);
 
         /// <summary>
         /// 人脸库中搜索人脸
@@ -194,7 +194,7 @@ namespace ColinChang.ArcFace
         /// <param name="minSimilarity">最小人脸相似度</param>
         /// <param name="predicate">人脸筛选条件</param>
         /// <returns>搜索结果</returns>
-        Task<OperationResult<Recognition>> SearchFaceAsync(string image, float minSimilarity,
+        Task<OperationResult<Recognitions>> SearchFaceAsync(string image, float minSimilarity,
             Predicate<Face> predicate = null);
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace ColinChang.ArcFace
         /// <param name="image">头像</param>
         /// <param name="predicate">人脸筛选条件</param>
         /// <returns>搜索结果</returns>
-        Task<OperationResult<Recognition>> SearchFaceAsync(Image image, Predicate<Face> predicate = null);
+        Task<OperationResult<Recognitions>> SearchFaceAsync(Image image, Predicate<Face> predicate = null);
 
         /// <summary>
         /// 人脸库中搜索人脸
@@ -212,7 +212,7 @@ namespace ColinChang.ArcFace
         /// <param name="minSimilarity">最小人脸相似度</param>
         /// <param name="predicate">人脸筛选条件</param>
         /// <returns>搜索结果</returns>
-        Task<OperationResult<Recognition>> SearchFaceAsync(Image image, float minSimilarity,
+        Task<OperationResult<Recognitions>> SearchFaceAsync(Image image, float minSimilarity,
             Predicate<Face> predicate = null);
 
         /// <summary>
@@ -221,7 +221,7 @@ namespace ColinChang.ArcFace
         /// <param name="feature">人脸特征</param>
         /// <param name="predicate">人脸筛选条件</param>
         /// <returns>搜索结果</returns>
-        Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature, Predicate<Face> predicate = null);
+        Task<OperationResult<Recognitions>> SearchFaceAsync(byte[] feature, Predicate<Face> predicate = null);
 
         /// <summary>
         /// 人脸库中搜索人脸
@@ -230,7 +230,7 @@ namespace ColinChang.ArcFace
         /// <param name="minSimilarity">最小人脸相似度</param>
         /// <param name="predicate">人脸筛选条件</param>
         /// <returns>搜索结果</returns>
-        Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature, float minSimilarity,
+        Task<OperationResult<Recognitions>> SearchFaceAsync(byte[] feature, float minSimilarity,
             Predicate<Face> predicate = null);
     }
 }

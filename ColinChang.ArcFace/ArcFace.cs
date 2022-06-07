@@ -261,40 +261,40 @@ namespace ColinChang.ArcFace
                 return success;
             });
 
-        public async Task<OperationResult<Recognition>>
+        public async Task<OperationResult<Recognitions>>
             SearchFaceAsync(string image, Predicate<Face> predicate = null) =>
             await SearchFaceAsync(image, _options.MinSimilarity, predicate);
 
-        public async Task<OperationResult<Recognition>> SearchFaceAsync(string image, float minSimilarity,
+        public async Task<OperationResult<Recognitions>> SearchFaceAsync(string image, float minSimilarity,
             Predicate<Face> predicate = null)
         {
             if (!File.Exists(image))
-                return new OperationResult<Recognition>(null);
+                return new OperationResult<Recognitions>(null);
 
             using var img = Image.FromFile(image);
             return await SearchFaceAsync(img, minSimilarity, predicate);
         }
 
-        public async Task<OperationResult<Recognition>>
+        public async Task<OperationResult<Recognitions>>
             SearchFaceAsync(Image image, Predicate<Face> predicate = null) =>
             await SearchFaceAsync(image, _options.MinSimilarity, predicate);
 
-        public async Task<OperationResult<Recognition>> SearchFaceAsync(Image image, float minSimilarity,
+        public async Task<OperationResult<Recognitions>> SearchFaceAsync(Image image, float minSimilarity,
             Predicate<Face> predicate = null)
         {
             var (faces, exceptions) = await ExtractFaceFeaturesAsync(image);
             if (exceptions.Any())
-                return new OperationResult<Recognition>(exceptions.SingleOrDefault().Code);
+                return new OperationResult<Recognitions>(exceptions.SingleOrDefault().Code);
 
             return await SearchFaceAsync(faces.SingleOrDefault().FeatureBytes, minSimilarity, predicate);
         }
 
-        public async Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature,
+        public async Task<OperationResult<Recognitions>> SearchFaceAsync(byte[] feature,
             Predicate<Face> predicate = null) =>
             await SearchFaceAsync(feature, _options.MinSimilarity, predicate);
 
 
-        public async Task<OperationResult<Recognition>> SearchFaceAsync(byte[] feature, float minSimilarity,
+        public async Task<OperationResult<Recognitions>> SearchFaceAsync(byte[] feature, float minSimilarity,
             Predicate<Face> predicate = null) =>
             await Task.Run(() =>
             {
@@ -303,26 +303,25 @@ namespace ColinChang.ArcFace
                 try
                 {
                     featureInfo = feature.ToFaceFeature();
-                    var recognition = new Recognition();
+                    // var recognition = new Recognition();
                     engine = GetEngine(DetectionModeEnum.Image);
                     var library = predicate == null
                         ? _faceLibrary
                         : _faceLibrary.Where(kv => predicate.Invoke(kv.Value));
+                    var recognitions = new List<Recognition>();
                     foreach (var (faceId, face) in library)
                     {
                         var similarity = 0f;
                         var code = AsfHelper.ASFFaceFeatureCompare(engine, featureInfo, face.Feature, ref similarity);
                         if (code != 0)
                             continue;
-                        if (similarity <= recognition.Similarity)
+                        if (similarity <= minSimilarity)
                             continue;
 
-                        recognition.Similarity = similarity;
-                        recognition.FaceId = faceId;
+                        recognitions.Add(new Recognition(faceId, similarity));
                     }
 
-                    recognition = recognition.Similarity < minSimilarity ? null : recognition;
-                    return new OperationResult<Recognition>(recognition);
+                    return new OperationResult<Recognitions>(new Recognitions(recognitions));
                 }
                 finally
                 {
