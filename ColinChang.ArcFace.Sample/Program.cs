@@ -47,7 +47,10 @@ var livenessIr= await arcFace.GetLivenessInfoAsync(Image.FromFile(zys), Liveness
 await arcFace.InitFaceLibraryAsync(new[] { zys, xy });
 // 搜索人脸库
 var res = await arcFace.SearchFaceAsync(xy1);
-if (res.Code == 0)
-    Console.WriteLine("FaceId:{0}\tSimilarity:{1}", res.Data.FaceId, res.Data.Similarity);
+if (res.Code == 0 && res.Data.RecognitionCollection.Any())
+{
+    var recognition = res.Data.Recognition;
+    Console.WriteLine("FaceId:{0}\tSimilarity:{1}", recognition.FaceId, recognition.Similarity);
+}
 
 Console.ReadKey();
