@@ -141,43 +141,43 @@ namespace ColinChang.ArcFace
         /// <summary>
         /// 人脸库新增人脸(约定文件名为FaceId)
         /// </summary>
-        /// <param name="image">人脸图片。多人脸图自动选比例最大的人脸</param>
-        Task AddFaceAsync(string image);
+        /// <param name="images">人脸图片。多人脸图自动选比例最大的人脸</param>
+        Task AddFaceAsync(params string[] images);
 
         /// <summary>
         /// 尝试在人脸库中新增人脸(约定文件名为FaceId)
         /// </summary>
-        /// <param name="image">人脸图片。多人脸图自动选比例最大的人脸</param>
-        /// <returns>(是否新增成功,状态码(0表示成功，非0表示有错误，具体状态码含义参考文档))</returns>
-        Task<bool> TryAddFaceAsync(string image);
+        /// <param name="images">人脸图片。多人脸图自动选比例最大的人脸</param>
+        /// <returns>(是否全部新增成功,新增成功人脸数量)</returns>
+        Task<(bool Success, int SuccessCount)> TryAddFaceAsync(params string[] images);
 
         /// <summary>
         /// 人脸库新增人脸
         /// </summary>
-        /// <param name="face"></param>
+        /// <param name="faces"></param>
         /// <returns></returns>
-        Task AddFaceAsync(Face face);
+        Task AddFaceAsync(params Face[] faces);
 
         /// <summary>
         /// 尝试在人脸库中新增人脸
         /// </summary>
-        /// <param name="face"></param>
-        /// <returns>是否新增成功</returns>
-        Task<bool> TryAddFaceAsync(Face face);
+        /// <param name="faces"></param>
+        /// <returns>(是否全部新增成功,新增成功人脸数量)</returns>
+        Task<(bool Success, int SuccessCount)> TryAddFaceAsync(params Face[] faces);
 
         /// <summary>
         /// 人脸库删除人脸
         /// </summary>
-        /// <param name="faceId"></param>
-        /// <returns></returns>
-        Task RemoveFaceAsync(string faceId);
+        /// <param name="faceIds"></param>
+        /// <returns>成功删除人脸数量</returns>
+        Task<int> RemoveFaceAsync(params string[] faceIds);
 
         /// <summary>
         /// 尝试人脸库删除人脸
         /// </summary>
-        /// <param name="faceId"></param>
-        /// <returns>删除是否成功</returns>
-        Task<bool> TryRemoveFaceAsync(string faceId);
+        /// <param name="faceIds"></param>
+        /// <returns>(人脸是否全部删除成功,成功删除人脸数)</returns>
+        Task<(bool Success, int SuccessCount)> TryRemoveFaceAsync(params string[] faceIds);
 
         /// <summary>
         /// 人脸库中搜索人脸

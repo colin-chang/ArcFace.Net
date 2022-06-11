@@ -248,46 +248,46 @@
             <param name="faces"></param>
             <returns>(是否全部成功,成功记录数)</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.AddFaceAsync(System.String)">
+        <member name="M:ColinChang.ArcFace.IArcFace.AddFaceAsync(System.String[])">
             <summary>
             人脸库新增人脸(约定文件名为FaceId)
             </summary>
-            <param name="image">人脸图片。多人脸图自动选比例最大的人脸</param>
+            <param name="images">人脸图片。多人脸图自动选比例最大的人脸</param>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.TryAddFaceAsync(System.String)">
+        <member name="M:ColinChang.ArcFace.IArcFace.TryAddFaceAsync(System.String[])">
             <summary>
             尝试在人脸库中新增人脸(约定文件名为FaceId)
             </summary>
-            <param name="image">人脸图片。多人脸图自动选比例最大的人脸</param>
-            <returns>(是否新增成功,状态码(0表示成功，非0表示有错误，具体状态码含义参考文档))</returns>
+            <param name="images">人脸图片。多人脸图自动选比例最大的人脸</param>
+            <returns>(是否全部新增成功,新增成功人脸数量)</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.AddFaceAsync(ColinChang.ArcFace.Face)">
+        <member name="M:ColinChang.ArcFace.IArcFace.AddFaceAsync(ColinChang.ArcFace.Face[])">
             <summary>
             人脸库新增人脸
             </summary>
-            <param name="face"></param>
+            <param name="faces"></param>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.TryAddFaceAsync(ColinChang.ArcFace.Face)">
+        <member name="M:ColinChang.ArcFace.IArcFace.TryAddFaceAsync(ColinChang.ArcFace.Face[])">
             <summary>
             尝试在人脸库中新增人脸
             </summary>
-            <param name="face"></param>
-            <returns>是否新增成功</returns>
+            <param name="faces"></param>
+            <returns>(是否全部新增成功,新增成功人脸数量)</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.RemoveFaceAsync(System.String)">
+        <member name="M:ColinChang.ArcFace.IArcFace.RemoveFaceAsync(System.String[])">
             <summary>
             人脸库删除人脸
             </summary>
-            <param name="faceId"></param>
-            <returns></returns>
+            <param name="faceIds"></param>
+            <returns>成功删除人脸数量</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.TryRemoveFaceAsync(System.String)">
+        <member name="M:ColinChang.ArcFace.IArcFace.TryRemoveFaceAsync(System.String[])">
             <summary>
             尝试人脸库删除人脸
             </summary>
-            <param name="faceId"></param>
-            <returns>删除是否成功</returns>
+            <param name="faceIds"></param>
+            <returns>(人脸是否全部删除成功,成功删除人脸数)</returns>
         </member>
         <member name="M:ColinChang.ArcFace.IArcFace.SearchFaceAsync(System.String,System.Predicate{ColinChang.ArcFace.Face})">
             <summary>

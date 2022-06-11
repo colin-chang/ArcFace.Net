@@ -55,47 +55,31 @@ namespace ColinChang.ArcFace
             }
         }
 
-        public static void AddFace(this ConcurrentDictionary<string, Face> faceLibrary, Face face) =>
-            faceLibrary[face.Id] = face;
-
-        public static bool TryAddFace(this ConcurrentDictionary<string, Face> faceLibrary, Face face) =>
-            faceLibrary.TryAdd(face.Id, face);
-
-        public static void AddFaces(this ConcurrentDictionary<string, Face> faceLibrary, IEnumerable<Face> faces)
+        public static void AddFace(this ConcurrentDictionary<string, Face> faceLibrary, IEnumerable<Face> faces)
         {
-            if (faces == null || !faces.Any())
-                return;
-
             foreach (var face in faces)
-                faceLibrary.AddFace(face);
+                faceLibrary[face.Id] = face;
         }
 
-        public static bool TryAddFaces(this ConcurrentDictionary<string, Face> faceLibrary, IEnumerable<Face> faces)
+        public static (bool Success, int SuccessCount) TryAddFace(this ConcurrentDictionary<string, Face> faceLibrary,
+            IEnumerable<Face> faces)
         {
-            if (faces == null || !faces.Any())
-                return true;
-
-            var success = true;
-            foreach (var face in faces)
-            {
-                if (!faceLibrary.TryAddFace(face))
-                    success = false;
-            }
-
-            return success;
+            var cnt = faces.Count(face => faceLibrary.TryAdd(face.Id, face));
+            return (cnt >= faces.Count(), cnt);
         }
 
         public static void InitFaceLibrary(this ConcurrentDictionary<string, Face> faceLibrary, IEnumerable<Face> faces)
         {
             faceLibrary.Clear();
-            faceLibrary.AddFaces(faces);
+            faceLibrary.AddFace(faces);
         }
 
-        public static bool TryInitFaceLibrary(this ConcurrentDictionary<string, Face> faceLibrary,
+        public static (bool Success, int SuccessCount) TryInitFaceLibrary(
+            this ConcurrentDictionary<string, Face> faceLibrary,
             IEnumerable<Face> faces)
         {
             faceLibrary.Clear();
-            return faceLibrary.TryAddFaces(faces);
+            return faceLibrary.TryAddFace(faces);
         }
 
 
