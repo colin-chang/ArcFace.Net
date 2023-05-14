@@ -20,7 +20,7 @@ namespace ColinChang.ArcFace.Models
     }
 
     /// <summary>
-    /// 年龄结果结构体FF
+    /// 年龄信息
     /// </summary>
     public struct AgeInfo
     {

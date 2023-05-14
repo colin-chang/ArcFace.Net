@@ -7,7 +7,7 @@ namespace ColinChang.ArcFace.Models
     {
         public IEnumerable<Recognition> RecognitionCollection { get; set; }
 
-        public Recognition Recognition => RecognitionCollection.OrderByDescending(r => r.Similarity).FirstOrDefault();
+        public Recognition Recognition => RecognitionCollection.MaxBy(r => r.Similarity);
 
         public Recognitions(IEnumerable<Recognition> recognitionCollection) =>
             RecognitionCollection = recognitionCollection;

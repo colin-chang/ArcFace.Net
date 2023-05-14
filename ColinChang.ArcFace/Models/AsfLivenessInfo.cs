@@ -20,6 +20,9 @@ namespace ColinChang.ArcFace.Models
         }
     }
 
+    /// <summary>
+    /// 活体信息
+    /// </summary>
     public struct LivenessInfo
     {
         /// <summary>

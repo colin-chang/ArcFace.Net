@@ -22,17 +22,62 @@ namespace ColinChang.ArcFace.Models
         }
     }
 
+    /// <summary>
+    /// 激活信息
+    /// </summary>
     public struct ActiveFileInfo
     {
-        public DateTime StartTime { get; set; } //开始时间
-        public DateTime EndTime { get; set; } //截止时间
-        public string Platform { get; set; } //平台
-        public string SdkType { get; set; } //sdk类型
-        public string AppId { get; set; } //APPID
-        public string SdkKey { get; set; } //SDKKEY
-        public string SdkVersion { get; set; } //SDK版本号
-        public string FileVersion { get; set; } //激活文件版本号
+        /// <summary>
+        /// 开始时间
+        /// </summary>
+        public DateTime StartTime { get; set; }
 
+        /// <summary>
+        /// 截止时间
+        /// </summary>
+        public DateTime EndTime { get; set; }
+
+        /// <summary>
+        /// 平台
+        /// </summary>
+        public string Platform { get; set; }
+
+        /// <summary>
+        /// sdk类型
+        /// </summary>
+        public string SdkType { get; set; }
+
+        /// <summary>
+        /// APP_ID
+        /// </summary>
+        public string AppId { get; set; }
+
+        /// <summary>
+        /// SDK_KEY
+        /// </summary>
+        public string SdkKey { get; set; }
+
+        /// <summary>
+        /// SDK版本号
+        /// </summary>
+        public string SdkVersion { get; set; }
+
+        /// <summary>
+        /// 激活文件版本号
+        /// </summary>
+        public string FileVersion { get; set; }
+
+        /// <summary>
+        /// 激活信息
+        /// </summary>
+        /// <param name="startTime"></param>
+        /// <param name="endTime"></param>
+        /// <param name="platform"></param>
+        /// <param name="sdkType"></param>
+        /// <param name="appId"></param>
+        /// <param name="sdkKey"></param>
+        /// <param name="sdkVersion"></param>
+        /// <param name="fileVersion"></param>
         public ActiveFileInfo(DateTime startTime, DateTime endTime, string platform, string sdkType, string appId,
             string sdkKey, string sdkVersion, string fileVersion)
         {

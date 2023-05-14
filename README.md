@@ -1,20 +1,15 @@
 # ArcFace.Net
-虹软人脸识别.NET工具库(.Net Standard 2.1)。基于ArcFace 3.x C++ SDK, 支持Windows x86/x64和Linux x64. 支持人脸库属性检测、人脸特征提取、人脸库维护、人脸搜索、活体检测等功能。
+虹软人脸识别.NET工具库(.Net 6)。基于ArcFace 3.x C++ SDK, 支持Windows x86/x64和Linux x64. 支持人脸库属性检测、人脸特征提取、人脸库维护、人脸搜索、活体检测等功能。
 
 ## Nuget
 [https://www.nuget.org/packages/ArcFace.Net/](https://www.nuget.org/packages/ArcFace.Net/)
 
-## 平台支持
+## 版本差异
+* 4.x 图像处理基于`System.Drawing`开发，微软在 .Net 6 及之后版本已不再维护
+* 5.x 图像处理基于[`ImageSharp`](https://github.com/SixLabors/ImageSharp)开发，仅支持.Net 6+
 
->.NET 6 兼容问题
->> 从 .NET 6 开始，当为非 Windows 操作系统编译引用代码时，平台分析器会发出编译时警告。 此外，除非设置了配置选项，否则将引发`System.PlatformNotSupportedException`异常，可通过将`runtimeconfig.json` 文件中的 `System.Drawing.EnableUnixSupportSystem.Drawing.EnableUnixSupport`设置为 `true` 来启用对 .NET 6 中非 Windows 平台的支持
-```json
-{
-   "configProperties": {
-      "System.Drawing.EnableUnixSupport": true
-   }
-}
-```
+
+## 平台支持
 
 1. Windows x86/x64
 2. Linux x64
@@ -24,41 +19,13 @@
         * `Debian 10 +`
         * `Ubuntu20.04 +`
         * `CentOS 8 +`
-    * Linux环境中图像处理依赖`libgdiplus`包，需要手动安装到系统中。需要特别注意的是，`libgdiplus`是基于Mono框架开发的，**系统中务必要安装 [Mono](https://www.mono-project.com/download/stable/) 框架，否则可能会导致 `Graphics` 等对象申请的内存无法被回收最终导致内存溢出。**
-        ```bash
-        # Debian 10
-        sudo apt install apt-transport-https dirmngr gnupg ca-certificates
-        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-        echo "deb https://download.mono-project.com/repo/debian stable-buster main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
-        sudo apt update
-        sudo apt install mono-devel
-        sudo apt install libgdiplus/stable-buster
-        
-        # Ubuntu 20.04
-        sudo apt install gnupg ca-certificates
-        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-        echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
-        sudo apt update
-        sudo apt install mono-devel
-        sudo apt install libgdiplus/focal
-        
-        # CentOS 8
-        rpmkeys --import "http://pool.sks-keyservers.net/pks/lookup?op=get&search=0x3fa7e0328081bff6a14da29aa6a19b38d3d831ef"
-        su -c 'curl https://download.mono-project.com/repo/centos8-stable.repo | tee /etc/yum.repos.d/mono-centos8-stable.repo'
-        sudo yum install mono-devel
-        sudo yum install libgdiplus-devel.x86_64
-        ```
 3. Docker
 
-   我们为本程序库的运行环境打包了Docker镜像，有需要的读者可以[点此获取](https://hub.docker.com/r/colinchang/arcface)，也可以使用 [Dockerfiles](https://github.com/colin-chang/ArcFace.Net/tree/main/Dockerfiles) 中的不同版本的 `Dockerfile` 文件自行编译。
+   我们为本程序库的运行环境打包了Docker镜像，有需要的读者可以[点此获取](https://hub.docker.com/r/colinchang/arcface5)，也可以使用 [Dockerfiles](https://github.com/colin-chang/ArcFace.Net/tree/main/Dockerfiles) 中的不同版本的 `Dockerfile` 文件自行编译。
 
 ```bash
-docker build -f Dockerfiles/aspnet-3.1/Dockerfile -t colinchang/arcface:aspnet-3.1 .
-docker build -f Dockerfiles/aspnet-5.0/Dockerfile -t colinchang/arcface:aspnet-5.0 .
-docker build -f Dockerfiles/aspnet-6.0/Dockerfile -t colinchang/arcface:aspnet-6.0 .
-docker build -f Dockerfiles/runtime-3.1/Dockerfile -t colinchang/arcface:runtime-3.1 .
-docker build -f Dockerfiles/runtime-5.0/Dockerfile -t colinchang/arcface:runtime-5.0 .
-docker build -f Dockerfiles/runtime-6.0/Dockerfile -t colinchang/arcface:runtime-6.0 .
+docker build -f Dockerfiles/aspnet-6.0/Dockerfile -t colinchang/arcface5:aspnet-6.0 .
+docker build -f Dockerfiles/runtime-6.0/Dockerfile -t colinchang/arcface5:runtime-6.0 .
 ```
 
 ## SDK

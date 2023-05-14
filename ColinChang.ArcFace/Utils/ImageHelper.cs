@@ -72,10 +72,10 @@ namespace ColinChang.ArcFace.Utils
         }
 
 
-        //public static Models.ImageInfo ReadBmp(string image)
+        //public static Models.ImageInfo ReadBmp(Image image)
         //{
         //    //将Image转换为Format24bppRgb格式的BMP
-        //    var bm = new Bitmap(System.Drawing.Image.FromFile(image));
+        //    var bm = new Bitmap(image);
         //    var data = bm.LockBits(new Rectangle(0, 0, bm.Width, bm.Height), ImageLockMode.ReadOnly,
         //        PixelFormat.Format24bppRgb);
         //    try
@@ -138,11 +138,10 @@ namespace ColinChang.ArcFace.Utils
             return ii;
         }
 
-        //public static Models.ImageInfo ReadBMP_IR(string src)
+        //public static Models.ImageInfo ReadBMP_IR(Image src)
         //{
         //    var imageInfo = new Models.ImageInfo();
-
-        //    using var image = new Bitmap(System.Drawing.Image.FromFile(src));
+        //    using var image = new Bitmap(src);
         //    var data = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadOnly,
         //        PixelFormat.Format24bppRgb);
         //    try
@@ -187,7 +186,7 @@ namespace ColinChang.ArcFace.Utils
         //    }
         //}
 
-        public async static Task<Models.ImageInfo> ReadBMP_IRAsync(Image image)
+        public static async Task<Models.ImageInfo> ReadBMP_IRAsync(this Image image)
         {
             using var stream = new MemoryStream();
             await image.SaveAsync(stream, image.Metadata.DecodedImageFormat);
@@ -220,37 +219,6 @@ namespace ColinChang.ArcFace.Utils
 
             Marshal.Copy(destBitArray, 0, imageInfo.ImgData, destBitArray.Length);
             return imageInfo;
-        }
-
-        /// <summary>
-        /// 剪裁图片
-        /// </summary>
-        /// <param name="image">原图片</param>
-        /// <param name="left">左坐标</param>
-        /// <param name="top">顶部坐标</param>
-        /// <param name="right">右坐标</param>
-        /// <param name="bottom">底部坐标</param>
-        /// <returns>剪裁后的图片</returns>
-        public static Image CutImage(Image image, int left, int top, int right, int bottom)
-        {
-            try
-            {
-                //using var image = SixLabors.ImageSharp.Image.Load(src);
-                var width = right - left;
-                var height = bottom - top;
-                using var destImage = new Image<Rgba32>(width, height);
-                destImage.Mutate(ctx => ctx.DrawImage(image, new Rectangle(0, 0, width, height), 1));
-
-                //var memoryStream = new MemoryStream();
-                //destImage.Save(memoryStream, new JpegEncoder());
-                //memoryStream.Seek(0, SeekOrigin.Begin);
-                //return Image.FromStream(memoryStream);
-                return destImage;
-            }
-            catch
-            {
-                return null;
-            }
         }
     }
 }

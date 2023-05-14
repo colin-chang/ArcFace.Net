@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
-using SixLabors.ImageSharp;
 using ColinChang.ArcFace.Models;
 
 namespace ColinChang.ArcFace
@@ -11,6 +11,8 @@ namespace ColinChang.ArcFace
     /// </summary>
     public interface IArcFace : IDisposable
     {
+        #region SDK信息 激活信息/版本信息
+        
         /// <summary>
         /// 获取激活文件信息
         /// </summary>
@@ -23,6 +25,9 @@ namespace ColinChang.ArcFace
         /// <returns></returns>
         Task<VersionInfo> GetSdkVersionAsync();
 
+        #endregion
+        
+        #region 人脸属性 3D角度/年龄/性别
         /// <summary>
         /// 获取3D角度信息
         /// </summary>
@@ -35,7 +40,7 @@ namespace ColinChang.ArcFace
         /// </summary>
         /// <param name="image"></param>
         /// <returns></returns>
-        Task<OperationResult<Face3DAngle>> GetFace3DAngleAsync(Image image);
+        Task<OperationResult<Face3DAngle>> GetFace3DAngleAsync(Stream image);
 
         /// <summary>
         /// 获取年龄信息
@@ -49,7 +54,7 @@ namespace ColinChang.ArcFace
         /// </summary>
         /// <param name="image"></param>
         /// <returns></returns>
-        Task<OperationResult<AgeInfo>> GetAgeAsync(Image image);
+        Task<OperationResult<AgeInfo>> GetAgeAsync(Stream image);
 
         /// <summary>
         /// 获取性别信息
@@ -63,8 +68,12 @@ namespace ColinChang.ArcFace
         /// </summary>
         /// <param name="image"></param>
         /// <returns></returns>
-        Task<OperationResult<GenderInfo>> GetGenderAsync(Image image);
+        Task<OperationResult<GenderInfo>> GetGenderAsync(Stream image);
 
+        #endregion
+        
+        #region 核心功能 人脸检测/特征提取/人脸比对
+        
         /// <summary>
         /// 人脸检测
         /// </summary>
@@ -73,7 +82,7 @@ namespace ColinChang.ArcFace
         /// <summary>
         /// 人脸检测
         /// </summary>
-        Task<OperationResult<MultiFaceInfo>> DetectFaceAsync(Image image);
+        Task<OperationResult<MultiFaceInfo>> DetectFaceAsync(Stream image);
 
         /// <summary>
         /// 人脸检测
@@ -95,7 +104,7 @@ namespace ColinChang.ArcFace
         /// <param name="image"></param>
         /// <param name="mode">检测模式,支持RGB、IR活体</param>
         /// <returns></returns>
-        Task<OperationResult<LivenessInfo>> GetLivenessInfoAsync(Image image, LivenessMode mode);
+        Task<OperationResult<LivenessInfo>> GetLivenessInfoAsync(Stream image, LivenessMode mode);
 
         /// <summary>
         /// 人脸特征提取
@@ -108,7 +117,7 @@ namespace ColinChang.ArcFace
         /// </summary>
         /// <param name="image"></param>
         /// <returns></returns>
-        Task<OperationResult<IEnumerable<byte[]>>> ExtractFaceFeatureAsync(Image image);
+        Task<OperationResult<IEnumerable<byte[]>>> ExtractFaceFeatureAsync(Stream image);
 
         /// <summary>
         /// 人脸特征比对，输出比对相似度
@@ -118,6 +127,10 @@ namespace ColinChang.ArcFace
         /// <returns></returns>
         Task<OperationResult<float>> CompareFaceFeatureAsync(byte[] feature1, byte[] feature2);
 
+        #endregion
+        
+        # region 人脸库管理 初始化/新增人脸/删除人脸/搜索人脸
+        
         /// <summary>
         /// 初始化人脸库(约定文件名为FaceId)
         /// </summary>
@@ -211,7 +224,7 @@ namespace ColinChang.ArcFace
         /// <param name="image">头像</param>
         /// <param name="predicate">人脸筛选条件</param>
         /// <returns>搜索结果</returns>
-        Task<OperationResult<Recognitions>> SearchFaceAsync(Image image, Predicate<Face> predicate = null);
+        Task<OperationResult<Recognitions>> SearchFaceAsync(Stream image, Predicate<Face> predicate = null);
 
         /// <summary>
         /// 人脸库中搜索人脸
@@ -220,7 +233,7 @@ namespace ColinChang.ArcFace
         /// <param name="minSimilarity">最小人脸相似度</param>
         /// <param name="predicate">人脸筛选条件</param>
         /// <returns>搜索结果</returns>
-        Task<OperationResult<Recognitions>> SearchFaceAsync(Image image, float minSimilarity,
+        Task<OperationResult<Recognitions>> SearchFaceAsync(Stream image, float minSimilarity,
             Predicate<Face> predicate = null);
 
         /// <summary>
@@ -240,5 +253,7 @@ namespace ColinChang.ArcFace
         /// <returns>搜索结果</returns>
         Task<OperationResult<Recognitions>> SearchFaceAsync(byte[] feature, float minSimilarity,
             Predicate<Face> predicate = null);
+        
+        #endregion
     }
 }

@@ -4,19 +4,24 @@
         <name>ColinChang.ArcFace</name>
     </assembly>
     <members>
-        <member name="F:ColinChang.ArcFace.ArcFace.ASF_MAX_IMAGE_SIZE">
+        <member name="T:ColinChang.ArcFace.ArcFace">
             <summary>
-            图像尺寸上限
+            核心功能 人脸检测/特征提取/人脸比对
             </summary>
-        </member>
-        <member name="F:ColinChang.ArcFace.ArcFace.ASF_MIN_IMAGE_SIZE">
             <summary>
-            图像尺寸下线
+            人脸属性 3D角度/年龄/性别
             </summary>
-        </member>
-        <member name="F:ColinChang.ArcFace.ArcFace._supportedImageExtensions">
             <summary>
-            支持的图片格式
+            人脸库管理 初始化/新增人脸/删除人脸/搜索人脸
+            </summary>
+            <summary>
+            资源管理 激活/引擎池管理/资源回收
+            </summary>
+            <summary>
+            SDK信息 激活信息/版本信息
+            </summary>
+            <summary>
+            工具方法
             </summary>
         </member>
         <member name="F:ColinChang.ArcFace.ArcFace._faceLibrary">
@@ -57,6 +62,21 @@
             销毁引擎
             </summary>
             <param name="engines"></param>
+        </member>
+        <member name="F:ColinChang.ArcFace.ArcFace.ASF_MAX_IMAGE_SIZE">
+            <summary>
+            图像尺寸上限
+            </summary>
+        </member>
+        <member name="F:ColinChang.ArcFace.ArcFace.ASF_MIN_IMAGE_SIZE">
+            <summary>
+            图像尺寸下线
+            </summary>
+        </member>
+        <member name="F:ColinChang.ArcFace.ArcFace._supportedImageExtensions">
+            <summary>
+            支持的图片格式
+            </summary>
         </member>
         <member name="M:ColinChang.ArcFace.ArcFaceExtension.ToFaceFeature(System.Byte[])">
             <summary>
@@ -140,7 +160,7 @@
             <param name="image"></param>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.GetFace3DAngleAsync(SixLabors.ImageSharp.Image)">
+        <member name="M:ColinChang.ArcFace.IArcFace.GetFace3DAngleAsync(System.IO.Stream)">
             <summary>
             获取3D角度信息
             </summary>
@@ -154,7 +174,7 @@
             <param name="image"></param>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.GetAgeAsync(SixLabors.ImageSharp.Image)">
+        <member name="M:ColinChang.ArcFace.IArcFace.GetAgeAsync(System.IO.Stream)">
             <summary>
             获取年龄信息
             </summary>
@@ -168,7 +188,7 @@
             <param name="image"></param>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.GetGenderAsync(SixLabors.ImageSharp.Image)">
+        <member name="M:ColinChang.ArcFace.IArcFace.GetGenderAsync(System.IO.Stream)">
             <summary>
             获取性别信息
             </summary>
@@ -180,7 +200,7 @@
             人脸检测
             </summary>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.DetectFaceAsync(SixLabors.ImageSharp.Image)">
+        <member name="M:ColinChang.ArcFace.IArcFace.DetectFaceAsync(System.IO.Stream)">
             <summary>
             人脸检测
             </summary>
@@ -199,7 +219,7 @@
             <param name="mode">检测模式,支持RGB、IR活体</param>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.GetLivenessInfoAsync(SixLabors.ImageSharp.Image,ColinChang.ArcFace.Models.LivenessMode)">
+        <member name="M:ColinChang.ArcFace.IArcFace.GetLivenessInfoAsync(System.IO.Stream,ColinChang.ArcFace.Models.LivenessMode)">
             <summary>
             活体检测
             </summary>
@@ -213,7 +233,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.ExtractFaceFeatureAsync(SixLabors.ImageSharp.Image)">
+        <member name="M:ColinChang.ArcFace.IArcFace.ExtractFaceFeatureAsync(System.IO.Stream)">
             <summary>
             人脸特征提取
             </summary>
@@ -314,7 +334,7 @@
             <param name="predicate">人脸筛选条件</param>
             <returns>搜索结果</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.SearchFaceAsync(SixLabors.ImageSharp.Image,System.Predicate{ColinChang.ArcFace.Face})">
+        <member name="M:ColinChang.ArcFace.IArcFace.SearchFaceAsync(System.IO.Stream,System.Predicate{ColinChang.ArcFace.Face})">
             <summary>
             人脸库中搜索人脸
             </summary>
@@ -322,7 +342,7 @@
             <param name="predicate">人脸筛选条件</param>
             <returns>搜索结果</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.SearchFaceAsync(SixLabors.ImageSharp.Image,System.Single,System.Predicate{ColinChang.ArcFace.Face})">
+        <member name="M:ColinChang.ArcFace.IArcFace.SearchFaceAsync(System.IO.Stream,System.Single,System.Predicate{ColinChang.ArcFace.Face})">
             <summary>
             人脸库中搜索人脸
             </summary>
@@ -348,9 +368,67 @@
             <param name="predicate">人脸筛选条件</param>
             <returns>搜索结果</returns>
         </member>
+        <member name="T:ColinChang.ArcFace.Models.ActiveFileInfo">
+            <summary>
+            激活信息
+            </summary>
+        </member>
+        <member name="P:ColinChang.ArcFace.Models.ActiveFileInfo.StartTime">
+            <summary>
+            开始时间
+            </summary>
+        </member>
+        <member name="P:ColinChang.ArcFace.Models.ActiveFileInfo.EndTime">
+            <summary>
+            截止时间
+            </summary>
+        </member>
+        <member name="P:ColinChang.ArcFace.Models.ActiveFileInfo.Platform">
+            <summary>
+            平台
+            </summary>
+        </member>
+        <member name="P:ColinChang.ArcFace.Models.ActiveFileInfo.SdkType">
+            <summary>
+            sdk类型
+            </summary>
+        </member>
+        <member name="P:ColinChang.ArcFace.Models.ActiveFileInfo.AppId">
+            <summary>
+            APP_ID
+            </summary>
+        </member>
+        <member name="P:ColinChang.ArcFace.Models.ActiveFileInfo.SdkKey">
+            <summary>
+            SDK_KEY
+            </summary>
+        </member>
+        <member name="P:ColinChang.ArcFace.Models.ActiveFileInfo.SdkVersion">
+            <summary>
+            SDK版本号
+            </summary>
+        </member>
+        <member name="P:ColinChang.ArcFace.Models.ActiveFileInfo.FileVersion">
+            <summary>
+            激活文件版本号
+            </summary>
+        </member>
+        <member name="M:ColinChang.ArcFace.Models.ActiveFileInfo.#ctor(System.DateTime,System.DateTime,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            激活信息
+            </summary>
+            <param name="startTime"></param>
+            <param name="endTime"></param>
+            <param name="platform"></param>
+            <param name="sdkType"></param>
+            <param name="appId"></param>
+            <param name="sdkKey"></param>
+            <param name="sdkVersion"></param>
+            <param name="fileVersion"></param>
+        </member>
         <member name="T:ColinChang.ArcFace.Models.AgeInfo">
             <summary>
-            年龄结果结构体FF
+            年龄信息
             </summary>
         </member>
         <member name="P:ColinChang.ArcFace.Models.AgeInfo.AgeArray">
@@ -386,6 +464,11 @@
         <member name="F:ColinChang.ArcFace.Models.AsfImagePixelFormat.ASVL_PAF_GRAY">
             <summary>
             GRAY图片格式
+            </summary>
+        </member>
+        <member name="T:ColinChang.ArcFace.Models.LivenessInfo">
+            <summary>
+            活体信息
             </summary>
         </member>
         <member name="P:ColinChang.ArcFace.Models.LivenessInfo.IsLive">
@@ -600,7 +683,7 @@
             SDK中与人脸识别相关函数封装类
             </summary>
         </member>
-        <member name="F:ColinChang.ArcFace.Utils.AsfHelper.Dll_PATH">
+        <member name="F:ColinChang.ArcFace.Utils.AsfHelper.ASF_LIB_PATH">
             <summary>
             SDK动态链接库路径
             </summary>
@@ -746,7 +829,7 @@
             <summary>
             获取版本信息
             </summary>
-            <param name="pEngine">引擎handle</param>
+            <param name="version"></param>
             <returns>调用结果</returns>
         </member>
         <member name="M:ColinChang.ArcFace.Utils.FaceHelper.DetectFaceAsync(System.IntPtr,SixLabors.ImageSharp.Image)">
@@ -854,17 +937,6 @@
             </summary>
             <param name="image">图片</param>
             <returns></returns>
-        </member>
-        <member name="M:ColinChang.ArcFace.Utils.ImageHelper.CutImage(SixLabors.ImageSharp.Image,System.Int32,System.Int32,System.Int32,System.Int32)">
-            <summary>
-            剪裁图片
-            </summary>
-            <param name="image">原图片</param>
-            <param name="left">左坐标</param>
-            <param name="top">顶部坐标</param>
-            <param name="right">右坐标</param>
-            <param name="bottom">底部坐标</param>
-            <returns>剪裁后的图片</returns>
         </member>
     </members>
 </doc>

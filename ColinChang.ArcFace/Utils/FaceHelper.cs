@@ -7,7 +7,7 @@ using ColinChang.ArcFace.Models;
 
 namespace ColinChang.ArcFace.Utils
 {
-    public static class FaceHelper
+    internal static class FaceHelper
     {
         /// <summary>
         /// 人脸检测(PS:检测RGB图像的人脸时，必须保证图像的宽度能被4整除，否则会失败)
@@ -178,7 +178,7 @@ namespace ColinChang.ArcFace.Utils
                     if (faces.Data.FaceNum <= 0)
                         return new OperationResult<AsfAgeInfo>(new AsfAgeInfo());
 
-                    imageInfo = await ImageHelper.ReadBmpAsync(image);
+                    imageInfo = await image.ReadBmpAsync();
                     pMultiFaceInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfMultiFaceInfo>());
                     Marshal.StructureToPtr(faces.Data, pMultiFaceInfo, false);
 
@@ -370,7 +370,7 @@ namespace ColinChang.ArcFace.Utils
                     }
                     else
                     {
-                        imageInfo = await ImageHelper.ReadBMP_IRAsync(image);
+                        imageInfo = await image.ReadBMP_IRAsync();
                         code = AsfHelper.ASFProcess_IR(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
                             imageInfo.ImgData, pMultiFaceInfo, FaceEngineMask.ASF_IR_LIVENESS);
                         if (code != 0)

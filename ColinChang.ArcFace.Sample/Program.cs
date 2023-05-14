@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ColinChang.ArcFace;
-using ColinChang.ArcFace.Models;
 
 //测试图片
 const string test = "Images/test.jpg";

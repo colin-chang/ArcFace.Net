@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using ColinChang.ArcFace.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SixLabors.ImageSharp;
 
 namespace ColinChang.ArcFace
 {
@@ -102,5 +105,9 @@ namespace ColinChang.ArcFace
                 Marshal.FreeHGlobal(faceFeature);
             }
         }
+
+        public static async Task<Image> ToImage(this Stream image) => await Image.LoadAsync(image);
+
+        public static async Task<Image> ToImage(this string image) => await Image.LoadAsync(image);
     }
 }
