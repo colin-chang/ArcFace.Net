@@ -1,9 +1,9 @@
-﻿//测试图片
-
-using ColinChang.ArcFace;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ColinChang.ArcFace;
+using ColinChang.ArcFace.Models;
 
+//测试图片
 const string test = "Images/test.jpg";
 const string zys = "Images/zys.jpg";
 const string xy = "Images/xy.jpg";
@@ -38,10 +38,11 @@ var result = await arcFace.CompareFaceFeatureAsync(features0.Data.Single(), feat
 
 // 活体检测实际应取视频帧图，此处仅作演示
 //RGB活体检测
-var livenessRgb= await arcFace.GetLivenessInfoAsync(Image.FromFile(zys), LivenessMode.RGB);
+var livenessRgb = await arcFace.GetLivenessInfoAsync(zys, LivenessMode.RGB);
 //IR活体检测
-var livenessIr= await arcFace.GetLivenessInfoAsync(Image.FromFile(zys), LivenessMode.IR);
+var livenessIr = await arcFace.GetLivenessInfoAsync(zys, LivenessMode.IR);
 */
+
 
 // 初始化人脸库
 await arcFace.InitFaceLibraryAsync(new[] { zys, xy });
@@ -52,5 +53,6 @@ if (res.Code == 0 && res.Data.RecognitionCollection.Any())
     var recognition = res.Data.Recognition;
     Console.WriteLine("FaceId:{0}\tSimilarity:{1}", recognition.FaceId, recognition.Similarity);
 }
+
 
 Console.ReadKey();

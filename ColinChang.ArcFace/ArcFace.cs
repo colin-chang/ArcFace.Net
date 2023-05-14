@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using ColinChang.ArcFace.Models;
-using ColinChang.ArcFace.Utils;
 using Microsoft.Extensions.Options;
 using Polly;
+using SixLabors.ImageSharp;
+
+using ColinChang.ArcFace.Models;
+using ColinChang.ArcFace.Utils;
+
+
 
 namespace ColinChang.ArcFace
 {
@@ -150,8 +153,14 @@ namespace ColinChang.ArcFace
             if (string.IsNullOrWhiteSpace(base64Image))
                 return new OperationResult<MultiFaceInfo>(default);
 
-            using var image = Image.FromStream(new MemoryStream(Convert.FromBase64String(base64Image)));
+            using var image = await Image.LoadAsync(new MemoryStream(Convert.FromBase64String(base64Image)));
             return await ProcessImageAsync<AsfMultiFaceInfo, MultiFaceInfo>(image, FaceHelper.DetectFaceAsync);
+        }
+
+        public async Task<OperationResult<LivenessInfo>> GetLivenessInfoAsync(string image, LivenessMode mode)
+        {
+            using var img = await Image.LoadAsync(image);
+            return await GetLivenessInfoAsync(img, mode);
         }
 
         public async Task<OperationResult<LivenessInfo>> GetLivenessInfoAsync(Image image, LivenessMode mode)
@@ -292,7 +301,7 @@ namespace ColinChang.ArcFace
             if (!File.Exists(image))
                 return new OperationResult<Recognitions>(null);
 
-            using var img = Image.FromFile(image);
+            using var img = await Image.LoadAsync(image);
             return await SearchFaceAsync(img, minSimilarity, predicate);
         }
 
@@ -545,7 +554,7 @@ namespace ColinChang.ArcFace
             if (!File.Exists(image))
                 return new OperationResult<TK>(default);
 
-            using var img = Image.FromFile(image);
+            using var img = await Image.LoadAsync(image);
             return await ProcessImageAsync<T, TK>(img, process, mode);
         }
 
@@ -555,7 +564,7 @@ namespace ColinChang.ArcFace
             var engine = IntPtr.Zero;
             try
             {
-                image = VerifyImage(image);
+                VerifyImage(image);
                 engine = GetEngine(mode);
                 return (await process(engine, image)).Cast<TK>();
             }
@@ -565,57 +574,32 @@ namespace ColinChang.ArcFace
             }
         }
 
-        private Image VerifyImage(string image)
-        {
-            if (!File.Exists(image))
-                throw new FileNotFoundException($"{image} doesn't exist.");
-
-            using var img = Image.FromFile(image);
-            return VerifyImage(img);
-        }
-
-        private Image VerifyImage(Image image)
+        private void VerifyImage(Image image)
         {
             if (image == null)
                 throw new FileNotFoundException("image cannot be null.");
 
             using var stream = new MemoryStream();
-            image.Save(stream, image.RawFormat);
+            image.Save(stream, image.Metadata.DecodedImageFormat);
             var length = stream.Length;
             if (length > ASF_MAX_IMAGE_SIZE)
                 throw new Exception($"image is oversize than {ASF_MAX_IMAGE_SIZE}B.");
             if (length < ASF_MIN_IMAGE_SIZE)
                 throw new Exception($"image is too small than {ASF_MIN_IMAGE_SIZE}B");
 
-            if (!_supportedImageExtensions.Contains($".{image.RawFormat.ToString().ToLower()}"))
+            if (!_supportedImageExtensions.Contains($".{image.Metadata.DecodedImageFormat.Name.ToLower()}"))
                 throw new Exception("unsupported image type.");
 
-            return ScaleImage(image);
+            ScaleImage(image);
         }
 
-        private static Image ScaleImage(Image image)
+        private static void ScaleImage(Image image)
         {
-            try
-            {
-                try
-                {
-                    //缩放
-                    if (image.Width > 1536 || image.Height > 1536)
-                        image = ImageHelper.ScaleImage(image, 1536, 1536);
-                    if (image.Width % 4 != 0)
-                        image = ImageHelper.ScaleImage(image, image.Width - image.Width % 4, image.Height);
-
-                    return ImageHelper.ScaleImage(image, image.Width, image.Height);
-                }
-                catch
-                {
-                    throw new Exception("unsupported image type.");
-                }
-            }
-            catch
-            {
-                throw new Exception("unsupported image type.");
-            }
+            //缩放
+            if (image.Width > 1536 || image.Height > 1536)
+                image.ScaleImage(1536, 1536);
+            if (image.Width % 4 != 0)
+                image.ScaleImage(image.Width - image.Width % 4, image.Height);
         }
 
         private async Task<(IEnumerable<Face> Faces, IEnumerable<NoFaceImageException> Exceptions)>
@@ -637,7 +621,11 @@ namespace ColinChang.ArcFace
                         throw new Exception("invalid images type");
                     if (image is string image0)
                     {
-                        using var img = VerifyImage(image0);
+                        if (!File.Exists(image0))
+                            throw new FileNotFoundException($"{image} doesn't exist.");
+
+                        using var img = await Image.LoadAsync(image0);
+                        VerifyImage(img);
                         var feature = await FaceHelper.ExtractSingleFeatureAsync(engine, img);
                         if (feature.Code != 0)
                         {
@@ -651,7 +639,8 @@ namespace ColinChang.ArcFace
                     }
                     else
                     {
-                        var img = VerifyImage(image as Image);
+                        var img = image as Image;
+                        VerifyImage(image as Image);
                         var feature = await FaceHelper.ExtractSingleFeatureAsync(engine, img);
                         if (feature.Code != 0)
                         {

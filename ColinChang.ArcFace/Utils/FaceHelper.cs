@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using SixLabors.ImageSharp;
 using ColinChang.ArcFace.Models;
 
 namespace ColinChang.ArcFace.Utils
@@ -16,13 +16,13 @@ namespace ColinChang.ArcFace.Utils
         /// <param name="image">图像数据</param>
         /// <returns>人脸检测结果</returns>
         public static async Task<OperationResult<AsfMultiFaceInfo>> DetectFaceAsync(IntPtr engine, Image image) =>
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
-                ImageInfo imageInfo = null;
+                Models.ImageInfo imageInfo = null;
                 var pointer = IntPtr.Zero;
                 try
                 {
-                    imageInfo = ImageHelper.ReadBmp(image);
+                    imageInfo = await image.ReadBmpAsync();
                     pointer = Marshal.AllocHGlobal(Marshal.SizeOf<AsfMultiFaceInfo>());
                     var code = AsfHelper.ASFDetectFaces(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
                         imageInfo.ImgData, pointer);
@@ -50,7 +50,7 @@ namespace ColinChang.ArcFace.Utils
             ExtractFeatureAsync(IntPtr engine, Image image) =>
             await Task.Run(async () =>
             {
-                ImageInfo imageInfo = null;
+                Models.ImageInfo imageInfo = null;
                 var pSingleFaceInfo = IntPtr.Zero;
                 var pFaceFeature = IntPtr.Zero;
                 try
@@ -70,7 +70,7 @@ namespace ColinChang.ArcFace.Utils
                         pSingleFaceInfo = Marshal.AllocHGlobal(Marshal.SizeOf<SingleFaceInfo>());
                         Marshal.StructureToPtr(singleFaceInfo, pSingleFaceInfo, false);
 
-                        imageInfo = ImageHelper.ReadBmp(image);
+                        imageInfo = await image.ReadBmpAsync();
                         pFaceFeature = Marshal.AllocHGlobal(Marshal.SizeOf<AsfFaceFeature>());
                         var code = AsfHelper.ASFFaceFeatureExtract(engine, imageInfo.Width, imageInfo.Height,
                             imageInfo.Format, imageInfo.ImgData, pSingleFaceInfo, pFaceFeature);
@@ -105,7 +105,7 @@ namespace ColinChang.ArcFace.Utils
         public static async Task<OperationResult<byte[]>> ExtractSingleFeatureAsync(IntPtr engine, Image image) =>
             await Task.Run(async () =>
             {
-                ImageInfo imageInfo = null;
+                Models.ImageInfo imageInfo = null;
                 var pSingleFaceInfo = IntPtr.Zero;
                 var pFaceFeature = IntPtr.Zero;
                 try
@@ -122,7 +122,7 @@ namespace ColinChang.ArcFace.Utils
                     pSingleFaceInfo = Marshal.AllocHGlobal(Marshal.SizeOf<SingleFaceInfo>());
                     Marshal.StructureToPtr(singleFaceInfo, pSingleFaceInfo, false);
 
-                    imageInfo = ImageHelper.ReadBmp(image);
+                    imageInfo = await image.ReadBmpAsync();
                     pFaceFeature = Marshal.AllocHGlobal(Marshal.SizeOf<AsfFaceFeature>());
                     var code = AsfHelper.ASFFaceFeatureExtract(engine, imageInfo.Width, imageInfo.Height,
                         imageInfo.Format, imageInfo.ImgData, pSingleFaceInfo, pFaceFeature);
@@ -167,7 +167,7 @@ namespace ColinChang.ArcFace.Utils
         public static async Task<OperationResult<AsfAgeInfo>> GetAgeAsync(IntPtr engine, Image image) =>
             await Task.Run(async () =>
             {
-                ImageInfo imageInfo = null;
+                Models.ImageInfo imageInfo = null;
                 var pMultiFaceInfo = IntPtr.Zero;
                 var pAgeInfo = IntPtr.Zero;
                 try
@@ -178,7 +178,7 @@ namespace ColinChang.ArcFace.Utils
                     if (faces.Data.FaceNum <= 0)
                         return new OperationResult<AsfAgeInfo>(new AsfAgeInfo());
 
-                    imageInfo = ImageHelper.ReadBmp(image);
+                    imageInfo = await ImageHelper.ReadBmpAsync(image);
                     pMultiFaceInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfMultiFaceInfo>());
                     Marshal.StructureToPtr(faces.Data, pMultiFaceInfo, false);
 
@@ -217,7 +217,7 @@ namespace ColinChang.ArcFace.Utils
         public static async Task<OperationResult<AsfGenderInfo>> GetGenderAsync(IntPtr engine, Image image) =>
             await Task.Run(async () =>
             {
-                ImageInfo imageInfo = null;
+                Models.ImageInfo imageInfo = null;
                 var pMultiFaceInfo = IntPtr.Zero;
                 var pGenderInfo = IntPtr.Zero;
                 try
@@ -228,7 +228,7 @@ namespace ColinChang.ArcFace.Utils
                     if (faces.Data.FaceNum <= 0)
                         return new OperationResult<AsfGenderInfo>(new AsfGenderInfo());
 
-                    imageInfo = ImageHelper.ReadBmp(image);
+                    imageInfo = await image.ReadBmpAsync();
                     pMultiFaceInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfMultiFaceInfo>());
                     Marshal.StructureToPtr(faces.Data, pMultiFaceInfo, false);
 
@@ -267,7 +267,7 @@ namespace ColinChang.ArcFace.Utils
         public static async Task<OperationResult<AsfFace3DAngle>> GetFace3DAngleAsync(IntPtr engine, Image image) =>
             await Task.Run(async () =>
             {
-                ImageInfo imageInfo = null;
+                Models.ImageInfo imageInfo = null;
                 var pMultiFaceInfo = IntPtr.Zero;
                 var pFace3DAngleInfo = IntPtr.Zero;
                 try
@@ -278,7 +278,7 @@ namespace ColinChang.ArcFace.Utils
                     if (faces.Data.FaceNum <= 0)
                         return new OperationResult<AsfFace3DAngle>(new AsfFace3DAngle());
 
-                    imageInfo = ImageHelper.ReadBmp(image);
+                    imageInfo = await image.ReadBmpAsync();
                     pMultiFaceInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfMultiFaceInfo>());
                     Marshal.StructureToPtr(faces.Data, pMultiFaceInfo, false);
 
@@ -339,7 +339,7 @@ namespace ColinChang.ArcFace.Utils
             LivenessMode mode) =>
             await Task.Run(async () =>
             {
-                ImageInfo imageInfo = null;
+                Models.ImageInfo imageInfo = null;
                 var pMultiFaceInfo = IntPtr.Zero;
                 var pLivenessInfo = IntPtr.Zero;
                 try
@@ -361,7 +361,7 @@ namespace ColinChang.ArcFace.Utils
                     pLivenessInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfLivenessInfo>());
                     if (mode == LivenessMode.RGB)
                     {
-                        imageInfo = ImageHelper.ReadBmp(image);
+                        imageInfo = await image.ReadBmpAsync();
                         code = AsfHelper.ASFProcess(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
                             imageInfo.ImgData, pMultiFaceInfo, FaceEngineMask.ASF_LIVENESS);
                         if (code != 0)
@@ -370,7 +370,7 @@ namespace ColinChang.ArcFace.Utils
                     }
                     else
                     {
-                        imageInfo = ImageHelper.ReadBMP_IR(new Bitmap(image));
+                        imageInfo = await ImageHelper.ReadBMP_IRAsync(image);
                         code = AsfHelper.ASFProcess_IR(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
                             imageInfo.ImgData, pMultiFaceInfo, FaceEngineMask.ASF_IR_LIVENESS);
                         if (code != 0)

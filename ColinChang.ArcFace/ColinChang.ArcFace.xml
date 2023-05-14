@@ -140,7 +140,7 @@
             <param name="image"></param>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.GetFace3DAngleAsync(System.Drawing.Image)">
+        <member name="M:ColinChang.ArcFace.IArcFace.GetFace3DAngleAsync(SixLabors.ImageSharp.Image)">
             <summary>
             获取3D角度信息
             </summary>
@@ -154,7 +154,7 @@
             <param name="image"></param>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.GetAgeAsync(System.Drawing.Image)">
+        <member name="M:ColinChang.ArcFace.IArcFace.GetAgeAsync(SixLabors.ImageSharp.Image)">
             <summary>
             获取年龄信息
             </summary>
@@ -168,7 +168,7 @@
             <param name="image"></param>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.GetGenderAsync(System.Drawing.Image)">
+        <member name="M:ColinChang.ArcFace.IArcFace.GetGenderAsync(SixLabors.ImageSharp.Image)">
             <summary>
             获取性别信息
             </summary>
@@ -180,7 +180,7 @@
             人脸检测
             </summary>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.DetectFaceAsync(System.Drawing.Image)">
+        <member name="M:ColinChang.ArcFace.IArcFace.DetectFaceAsync(SixLabors.ImageSharp.Image)">
             <summary>
             人脸检测
             </summary>
@@ -191,7 +191,15 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.GetLivenessInfoAsync(System.Drawing.Image,ColinChang.ArcFace.Models.LivenessMode)">
+        <member name="M:ColinChang.ArcFace.IArcFace.GetLivenessInfoAsync(System.String,ColinChang.ArcFace.Models.LivenessMode)">
+            <summary>
+            活体检测
+            </summary>
+            <param name="image"></param>
+            <param name="mode">检测模式,支持RGB、IR活体</param>
+            <returns></returns>
+        </member>
+        <member name="M:ColinChang.ArcFace.IArcFace.GetLivenessInfoAsync(SixLabors.ImageSharp.Image,ColinChang.ArcFace.Models.LivenessMode)">
             <summary>
             活体检测
             </summary>
@@ -205,7 +213,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.ExtractFaceFeatureAsync(System.Drawing.Image)">
+        <member name="M:ColinChang.ArcFace.IArcFace.ExtractFaceFeatureAsync(SixLabors.ImageSharp.Image)">
             <summary>
             人脸特征提取
             </summary>
@@ -306,7 +314,7 @@
             <param name="predicate">人脸筛选条件</param>
             <returns>搜索结果</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.SearchFaceAsync(System.Drawing.Image,System.Predicate{ColinChang.ArcFace.Face})">
+        <member name="M:ColinChang.ArcFace.IArcFace.SearchFaceAsync(SixLabors.ImageSharp.Image,System.Predicate{ColinChang.ArcFace.Face})">
             <summary>
             人脸库中搜索人脸
             </summary>
@@ -314,7 +322,7 @@
             <param name="predicate">人脸筛选条件</param>
             <returns>搜索结果</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.IArcFace.SearchFaceAsync(System.Drawing.Image,System.Single,System.Predicate{ColinChang.ArcFace.Face})">
+        <member name="M:ColinChang.ArcFace.IArcFace.SearchFaceAsync(SixLabors.ImageSharp.Image,System.Single,System.Predicate{ColinChang.ArcFace.Face})">
             <summary>
             人脸库中搜索人脸
             </summary>
@@ -741,7 +749,7 @@
             <param name="pEngine">引擎handle</param>
             <returns>调用结果</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.DetectFaceAsync(System.IntPtr,System.Drawing.Image)">
+        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.DetectFaceAsync(System.IntPtr,SixLabors.ImageSharp.Image)">
             <summary>
             人脸检测(PS:检测RGB图像的人脸时，必须保证图像的宽度能被4整除，否则会失败)
             </summary>
@@ -749,7 +757,7 @@
             <param name="image">图像数据</param>
             <returns>人脸检测结果</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.ExtractFeatureAsync(System.IntPtr,System.Drawing.Image)">
+        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.ExtractFeatureAsync(System.IntPtr,SixLabors.ImageSharp.Image)">
             <summary>
             提取人脸特征
             </summary>
@@ -757,7 +765,7 @@
             <param name="image"></param>
             <returns>保存人脸特征结构体指针</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.ExtractSingleFeatureAsync(System.IntPtr,System.Drawing.Image)">
+        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.ExtractSingleFeatureAsync(System.IntPtr,SixLabors.ImageSharp.Image)">
             <summary>
             提取最大人脸特征
             </summary>
@@ -765,7 +773,7 @@
             <param name="image"></param>
             <returns>保存人脸特征结构体指针</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.GetAgeAsync(System.IntPtr,System.Drawing.Image)">
+        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.GetAgeAsync(System.IntPtr,SixLabors.ImageSharp.Image)">
             <summary>
             年龄检测
             </summary>
@@ -773,7 +781,7 @@
             <param name="image"></param>
             <returns>年龄检测结构体</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.GetGenderAsync(System.IntPtr,System.Drawing.Image)">
+        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.GetGenderAsync(System.IntPtr,SixLabors.ImageSharp.Image)">
             <summary>
             性别检测
             </summary>
@@ -781,7 +789,7 @@
             <param name="image"></param>
             <returns>保存性别检测结果结构体</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.GetFace3DAngleAsync(System.IntPtr,System.Drawing.Image)">
+        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.GetFace3DAngleAsync(System.IntPtr,SixLabors.ImageSharp.Image)">
             <summary>
             人脸3D角度检测
             </summary>
@@ -789,7 +797,7 @@
             <param name="image"></param>
             <returns>保存人脸3D角度检测结果结构体</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.GetRgbLivenessInfoAsync(System.IntPtr,System.Drawing.Image)">
+        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.GetRgbLivenessInfoAsync(System.IntPtr,SixLabors.ImageSharp.Image)">
             <summary>
             RGB可见光活体检测
             </summary>
@@ -797,7 +805,7 @@
             <param name="image"></param>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.GetIrLivenessInfoAsync(System.IntPtr,System.Drawing.Image)">
+        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.GetIrLivenessInfoAsync(System.IntPtr,SixLabors.ImageSharp.Image)">
             <summary>
             IR红外活体检测
             </summary>
@@ -805,7 +813,7 @@
             <param name="image"></param>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.GetLivenessInfoAsync(System.IntPtr,System.Drawing.Image,ColinChang.ArcFace.Models.LivenessMode)">
+        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.GetLivenessInfoAsync(System.IntPtr,SixLabors.ImageSharp.Image,ColinChang.ArcFace.Models.LivenessMode)">
             <summary>
             活体检测
             </summary>
@@ -821,7 +829,7 @@
             <param name="multiFaceInfo">人脸检测结果</param>
             <returns>面积最大的人脸信息</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.ImageHelper.ScaleImage(System.Drawing.Image,System.Int32,System.Int32)">
+        <member name="M:ColinChang.ArcFace.Utils.ImageHelper.ScaleImage(SixLabors.ImageSharp.Image,System.Int32,System.Int32)">
             <summary>
             按指定宽高缩放图片
             </summary>
@@ -840,25 +848,18 @@
             <param name="newHeight">目标图片高</param>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.ImageHelper.ReadBmp(System.Drawing.Image)">
+        <member name="M:ColinChang.ArcFace.Utils.ImageHelper.ReadBmpAsync(SixLabors.ImageSharp.Image)">
             <summary>
             获取图片信息
             </summary>
             <param name="image">图片</param>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.ImageHelper.ReadBMP_IR(System.Drawing.Bitmap)">
-            <summary>
-            获取图片IR信息
-            </summary>
-            <param name="image">图片</param>
-            <returns>成功或失败</returns>
-        </member>
-        <member name="M:ColinChang.ArcFace.Utils.ImageHelper.CutImage(System.Drawing.Image,System.Int32,System.Int32,System.Int32,System.Int32)">
+        <member name="M:ColinChang.ArcFace.Utils.ImageHelper.CutImage(SixLabors.ImageSharp.Image,System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
             剪裁图片
             </summary>
-            <param name="src">原图片</param>
+            <param name="image">原图片</param>
             <param name="left">左坐标</param>
             <param name="top">顶部坐标</param>
             <param name="right">右坐标</param>

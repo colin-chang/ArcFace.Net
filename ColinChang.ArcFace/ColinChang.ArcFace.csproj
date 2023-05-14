@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+	<TargetFramework>net6.0</TargetFramework>
     <LangVersion>default</LangVersion>
     <Authors>Colin Chang</Authors>
-    <PackageVersion>4.1.2</PackageVersion>
+    <PackageVersion>5.0.0</PackageVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Description>虹软人脸识别.NET工具库(.Net Standard 2.1)。基于ArcFace 3.x C++ SDK, 支持Windows x86/x64和Linux x64. 支持人脸属性检测、人脸特征提取、人脸库维护、人脸搜索、活体检测等功能。</Description>
     <Copyright>https://a-nomad.com/</Copyright>
@@ -16,7 +16,7 @@
     <PackageId>ArcFace.Net</PackageId>
     <PackageIcon>icon.png</PackageIcon>
     <PackageIconUrl>https://raw.githubusercontent.com/colin-chang/ArcFace.Net/main/icon.png</PackageIconUrl>
-    <PackageReleaseNotes>更新依赖</PackageReleaseNotes>
+    <PackageReleaseNotes>使用ImageSharp替换System.Draw</PackageReleaseNotes>
     <Product>ArcFace.Net</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -32,7 +32,7 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="7.0.0" />
     <PackageReference Include="Polly" Version="7.2.3" />
-    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Threading.Tasks;
+using SixLabors.ImageSharp;
 using ColinChang.ArcFace.Models;
 
 namespace ColinChang.ArcFace
@@ -80,6 +80,14 @@ namespace ColinChang.ArcFace
         /// </summary>
         /// <returns></returns>
         Task<OperationResult<MultiFaceInfo>> DetectFaceFromBase64StringAsync(string base64Image);
+
+        /// <summary>
+        /// 活体检测
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="mode">检测模式,支持RGB、IR活体</param>
+        /// <returns></returns>
+        Task<OperationResult<LivenessInfo>> GetLivenessInfoAsync(string image, LivenessMode mode);
 
         /// <summary>
         /// 活体检测
