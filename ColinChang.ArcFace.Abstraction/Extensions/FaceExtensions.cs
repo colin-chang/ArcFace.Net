@@ -41,6 +41,6 @@ public static class FaceExtensions
         if (!File.Exists(image))
             throw new FileNotFoundException($"{image} doesn't exist.");
 
-        return File.OpenWrite(image);
+        return File.OpenRead(image);
     }
 }

@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using ColinChang.ArcFace;
 using ColinChang.ArcFace.Abstraction;
+using ColinChang.ArcFace.Abstraction.Models;
+//using ColinChang.ArcFace.SystemDrawing;
 using ColinChang.ArcFace.ImageSharp.Extensions;
 
 //测试图片
@@ -16,7 +18,7 @@ var services = new ServiceCollection().AddArcFace(configuration.GetSection(nameo
     .BuildServiceProvider();
 var arcFace = services.GetRequiredService<IArcFace>();
 
-/*
+
 //获取激活消息
 var info = await arcFace.GetActiveFileInfoAsync();
 // 获取SDK信息
@@ -42,7 +44,7 @@ var result = await arcFace.CompareFaceFeatureAsync(features0.Data.Single(), feat
 var livenessRgb = await arcFace.GetLivenessInfoAsync(zys, LivenessMode.RGB);
 //IR活体检测
 var livenessIr = await arcFace.GetLivenessInfoAsync(zys, LivenessMode.IR);
-*/
+
 
 
 // 初始化人脸库

@@ -39,6 +39,7 @@ public class ImageSharpProcessor : IImageProcessor
     public async Task<ImageInfo> GetImageInfoAsync(Stream image)
     {
         using var img = await Image.LoadAsync<Rgb24>(image);
+        image.Reset();
         var sourceBitArrayLength = img.Width * img.Height * 3;
         var sourceBitArray = new byte[sourceBitArrayLength];
 
