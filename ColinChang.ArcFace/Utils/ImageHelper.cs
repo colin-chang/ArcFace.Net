@@ -1,224 +1,109 @@
-﻿using SixLabors.ImageSharp;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using ColinChang.ArcFace.Models;
-using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using ColinChang.ArcFace.Abstraction;
+using ColinChang.ArcFace.Abstraction.Models;
 
 namespace ColinChang.ArcFace.Utils
 {
-    internal static class ImageHelper
+    static class ImageHelper
     {
+        #region 图像质量要求
+
         /// <summary>
-        /// 按指定宽高缩放图片
+        /// 图像尺寸上限
         /// </summary>
-        /// <param name="image">原图片</param>
-        /// <param name="dstWidth">目标图片宽</param>
-        /// <param name="dstHeight">目标图片高</param>
-        /// <returns></returns>
-        public static void ScaleImage(this Image image, int dstWidth, int dstHeight)
+        private const long ASF_MAX_IMAGE_SIZE = 10 * 1024 * 1024;
+
+        /// <summary>
+        /// 图像尺寸下线
+        /// </summary>
+        private const int ASF_MIN_IMAGE_SIZE = 2 * 1024;
+
+        /// <summary>
+        /// 图像最大宽高
+        /// </summary>
+        private const int ASF_MAX_IMAGE_WIDTH_HEIGHT = 1536;
+
+        /// <summary>
+        /// 支持的图片格式
+        /// </summary>
+        private static readonly string[] SupportedImageExtensions = { ".jpeg", ".jpg", ".png", ".bmp" };
+
+        #endregion
+
+        /// <summary>
+        /// 验证图片
+        /// 校验->缩放->获取信息
+        /// </summary>
+        /// <param name="processor">图片处理器</param>
+        /// <param name="image">图像</param>
+        /// <returns>图片信息</returns>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="Exception"></exception>
+        public static async Task<ImageInfo> VerifyAsync(this IImageProcessor processor, Stream image)
         {
-            //按比例缩放           
-            var scaleRate = GetWidthAndHeight(image.Width, image.Height, dstWidth, dstHeight);
-            var width = (int)(image.Width * scaleRate);
-            var height = (int)(image.Height * scaleRate);
+            await using var img = await processor.VerifyAndScaleAsync(image);
+            return await processor.GetImageInfoAsync(img);
+        }
 
-            //将宽度调整为4的整数倍
-            if (width % 4 != 0)
-                width -= width % 4;
-
-            image.Mutate(x => x.Resize(width, height));
+        public static async Task<(ImageInfo RGB,ImageInfo IR)> VerifyIrAsync(this IImageProcessor processor, Stream image)
+        {
+            await using var img = await processor.VerifyAndScaleAsync(image);
+            var rgb = await processor.GetImageInfoAsync(img);
+            var ir = await processor.GetIrImageInfoAsync(img);
+            return (rgb,ir);
         }
 
         /// <summary>
-        /// 获取图片缩放比例
+        /// 校验并缩放图片
         /// </summary>
-        /// <param name="oldWidth">原图片宽</param>
-        /// <param name="oldHeight">原图片高</param>
-        /// <param name="newWidth">目标图片宽</param>
-        /// <param name="newHeight">目标图片高</param>
+        /// <param name="processor"></param>
+        /// <param name="image"></param>
         /// <returns></returns>
-        private static float GetWidthAndHeight(int oldWidth, int oldHeight, int newWidth, int newHeight)
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="Exception"></exception>
+        private static async Task<Stream> VerifyAndScaleAsync(this IImageProcessor processor, Stream image)
         {
-            //按比例缩放           
-            float scaleRate;
-            if (oldWidth >= newWidth && oldHeight >= newHeight)
-            {
-                var widthDis = oldWidth - newWidth;
-                var heightDis = oldHeight - newHeight;
+            if (image is not { Length: > 0 })
+                throw new FileNotFoundException("image cannot be null.");
 
-                scaleRate = widthDis > heightDis ? newWidth * 1f / oldWidth : newHeight * 1f / oldHeight;
-            }
-            else if (oldWidth >= newWidth && oldHeight < newHeight)
-            {
-                scaleRate = newWidth * 1f / oldWidth;
-            }
-            else if (oldWidth < newWidth && oldHeight >= newHeight)
-            {
-                scaleRate = newHeight * 1f / oldHeight;
-            }
-            else
-            {
-                var widthDis = newWidth - oldWidth;
-                var heightDis = newHeight - oldHeight;
-                if (widthDis > heightDis)
-                    scaleRate = newHeight * 1f / oldHeight;
-                else
-                    scaleRate = newWidth * 1f / oldWidth;
-            }
+            if (image.Length > ASF_MAX_IMAGE_SIZE)
+                throw new Exception($"image is oversize than {ASF_MAX_IMAGE_SIZE}B.");
+            if (image.Length < ASF_MIN_IMAGE_SIZE)
+                throw new Exception($"image is too small than {ASF_MIN_IMAGE_SIZE}B");
 
-            return scaleRate;
+            var format = await processor.GetFormatAsync(image);
+            if (!SupportedImageExtensions.Contains($".{format}"))
+                throw new Exception("unsupported image type.");
+
+            return await ScaleAsync(image, processor);
         }
-
-
-        //public static Models.ImageInfo ReadBmp(Image image)
-        //{
-        //    //将Image转换为Format24bppRgb格式的BMP
-        //    var bm = new Bitmap(image);
-        //    var data = bm.LockBits(new Rectangle(0, 0, bm.Width, bm.Height), ImageLockMode.ReadOnly,
-        //        PixelFormat.Format24bppRgb);
-        //    try
-        //    {
-        //        //位图中第一个像素数据的地址。它也可以看成是位图中的第一个扫描行
-        //        var ptr = data.Scan0;
-
-        //        //定义数组长度
-        //        var sourceBitArrayLength = data.Height * Math.Abs(data.Stride);
-        //        var sourceBitArray = new byte[sourceBitArrayLength];
-
-        //        //将bitmap中的内容拷贝到ptr_bgr数组中
-        //        Marshal.Copy(ptr, sourceBitArray, 0, sourceBitArrayLength);
-
-        //        //填充引用对象字段值
-        //        var imageInfo = new Models.ImageInfo
-        //        {
-        //            Width = data.Width,
-        //            Height = data.Height,
-        //            Format = AsfImagePixelFormat.ASVL_PAF_RGB24_B8G8R8,
-        //            ImgData = Marshal.AllocHGlobal(sourceBitArray.Length)
-        //        };
-
-        //        Marshal.Copy(sourceBitArray, 0, imageInfo.ImgData, sourceBitArray.Length);
-        //        return imageInfo;
-        //    }
-        //    finally
-        //    {
-        //        bm.UnlockBits(data);
-        //        bm.Dispose();
-        //    }
-        //}
-
 
         /// <summary>
-        /// 获取图片信息
+        /// 缩放图片
         /// </summary>
-        /// <param name="image">图片</param>
+        /// <param name="image"></param>
+        /// <param name="processor"></param>
         /// <returns></returns>
-        public static async Task<Models.ImageInfo> ReadBmpAsync(this Image image)
+        private static async Task<Stream> ScaleAsync(Stream image, IImageProcessor processor)
         {
-            using var stream = new MemoryStream();
-            await image.SaveAsync(stream, image.Metadata.DecodedImageFormat);
-            stream.Seek(0, SeekOrigin.Begin);
-            using var img = await Image.LoadAsync<Rgb24>(stream);
+            await using var imageInfo = await processor.GetImageInfoAsync(image);
 
-            var sourceBitArrayLength = img.Width * img.Height * 3;
-            var sourceBitArray = new byte[sourceBitArrayLength];
+            var img = image;
+            if (imageInfo.Width > ASF_MAX_IMAGE_WIDTH_HEIGHT || imageInfo.Height > ASF_MAX_IMAGE_WIDTH_HEIGHT)
+                img = await processor.ScaleAsync(image, ASF_MAX_IMAGE_WIDTH_HEIGHT, ASF_MAX_IMAGE_WIDTH_HEIGHT);
+            if (imageInfo.Width % 4 == 0)
+                return img;
 
-            img.CopyPixelDataTo(sourceBitArray);
-
-            var ii = new Models.ImageInfo
+            await using (img)
             {
-                Width = img.Width,
-                Height = img.Height,
-                Format = AsfImagePixelFormat.ASVL_PAF_RGB24_B8G8R8,
-                ImgData = Marshal.AllocHGlobal(sourceBitArrayLength)
-            };
-            Marshal.Copy(sourceBitArray, 0, ii.ImgData, sourceBitArrayLength);
-            return ii;
-        }
-
-        //public static Models.ImageInfo ReadBMP_IR(Image src)
-        //{
-        //    var imageInfo = new Models.ImageInfo();
-        //    using var image = new Bitmap(src);
-        //    var data = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadOnly,
-        //        PixelFormat.Format24bppRgb);
-        //    try
-        //    {
-        //        //位图中第一个像素数据的地址。它也可以看成是位图中的第一个扫描行
-        //        var ptr = data.Scan0;
-
-        //        //定义数组长度
-        //        var sourceBitArrayLength = data.Height * Math.Abs(data.Stride);
-        //        var sourceBitArray = new byte[sourceBitArrayLength];
-
-        //        //将bitmap中的内容拷贝到ptr_bgr数组中
-        //        Marshal.Copy(ptr, sourceBitArray, 0, sourceBitArrayLength);
-
-        //        //填充引用对象字段值
-        //        imageInfo.Width = data.Width;
-        //        imageInfo.Height = data.Height;
-        //        imageInfo.Format = AsfImagePixelFormat.ASVL_PAF_GRAY;
-
-        //        //获取去除对齐位后度图像数据
-        //        var line = imageInfo.Width;
-        //        var irLen = line * imageInfo.Height;
-        //        var destBitArray = new byte[irLen];
-
-        //        //灰度化
-        //        var j = 0;
-        //        for (var i = 0; i < sourceBitArray.Length; i += 3)
-        //        {
-        //            var colorTemp = sourceBitArray[i + 2] * 0.299 + sourceBitArray[i + 1] * 0.587 +
-        //                            sourceBitArray[i] * 0.114;
-        //            destBitArray[j++] = (byte)colorTemp;
-        //        }
-
-        //        imageInfo.ImgData = Marshal.AllocHGlobal(destBitArray.Length);
-        //        Marshal.Copy(destBitArray, 0, imageInfo.ImgData, destBitArray.Length);
-
-        //        return imageInfo;
-        //    }
-        //    finally
-        //    {
-        //        image.UnlockBits(data);
-        //    }
-        //}
-
-        public static async Task<Models.ImageInfo> ReadBMP_IRAsync(this Image image)
-        {
-            using var stream = new MemoryStream();
-            await image.SaveAsync(stream, image.Metadata.DecodedImageFormat);
-            stream.Seek(0, SeekOrigin.Begin);
-            using var img = await Image.LoadAsync<Rgb24>(stream);
-
-            var destBitArrayLength = img.Width * img.Height;
-            var destBitArray = new byte[destBitArrayLength];
-            var sourceBitArrayLength = destBitArrayLength * 3;
-            var sourceBitArray = new byte[sourceBitArrayLength];
-            img.CopyPixelDataTo(sourceBitArray);
-
-            var imageInfo = new Models.ImageInfo
-            {
-                Width = img.Width,
-                Height = img.Height,
-                Format = AsfImagePixelFormat.ASVL_PAF_GRAY,
-                ImgData = Marshal.AllocHGlobal(destBitArrayLength)
-            };
-
-
-            //灰度化
-            var j = 0;
-            for (var i = 0; i < sourceBitArray.Length; i += 3)
-            {
-                var colorTemp = sourceBitArray[i + 2] * 0.299 + sourceBitArray[i + 1] * 0.587 +
-                                sourceBitArray[i] * 0.114;
-                destBitArray[j++] = (byte)colorTemp;
+                return await processor.ScaleAsync(img, imageInfo.Width - imageInfo.Width % 4, imageInfo.Height);
             }
-
-            Marshal.Copy(destBitArray, 0, imageInfo.ImgData, destBitArray.Length);
-            return imageInfo;
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ColinChang.ArcFace;
+using ColinChang.ArcFace.Abstraction;
+using ColinChang.ArcFace.ImageSharp.Extensions;
 
 //测试图片
 const string test = "Images/test.jpg";

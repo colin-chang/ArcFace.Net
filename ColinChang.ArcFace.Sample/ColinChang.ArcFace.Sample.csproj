@@ -15,10 +15,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\ColinChang.ArcFace\ColinChang.ArcFace.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<None Update="appsettings.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
@@ -27,5 +23,9 @@
 		</None>
 		<None Include="bin\Release\net6.0\libarcsoft_face.so" />
 		<None Include="bin\Release\net6.0\libarcsoft_face_engine.so" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\ColinChang.ArcFace.ImageSharp\ColinChang.ArcFace.ImageSharp.csproj" />
 	</ItemGroup>
 </Project>

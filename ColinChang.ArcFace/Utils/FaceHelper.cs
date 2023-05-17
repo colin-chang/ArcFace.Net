@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using SixLabors.ImageSharp;
-using ColinChang.ArcFace.Models;
+using ColinChang.ArcFace.Abstraction.Models;
 
 namespace ColinChang.ArcFace.Utils
 {
@@ -13,16 +12,15 @@ namespace ColinChang.ArcFace.Utils
         /// 人脸检测(PS:检测RGB图像的人脸时，必须保证图像的宽度能被4整除，否则会失败)
         /// </summary>
         /// <param name="engine">引擎Handle</param>
-        /// <param name="image">图像数据</param>
+        /// <param name="imageInfo">图像信息</param>
         /// <returns>人脸检测结果</returns>
-        public static async Task<OperationResult<AsfMultiFaceInfo>> DetectFaceAsync(IntPtr engine, Image image) =>
-            await Task.Run(async () =>
+        public static async Task<OperationResult<AsfMultiFaceInfo>> DetectFaceAsync(IntPtr engine,
+            ImageInfo imageInfo) =>
+            await Task.Run(() =>
             {
-                Models.ImageInfo imageInfo = null;
                 var pointer = IntPtr.Zero;
                 try
                 {
-                    imageInfo = await image.ReadBmpAsync();
                     pointer = Marshal.AllocHGlobal(Marshal.SizeOf<AsfMultiFaceInfo>());
                     var code = AsfHelper.ASFDetectFaces(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
                         imageInfo.ImgData, pointer);
@@ -33,8 +31,8 @@ namespace ColinChang.ArcFace.Utils
                 }
                 finally
                 {
-                    if (imageInfo != null)
-                        Marshal.FreeHGlobal(imageInfo.ImgData);
+                    // if (imageInfo != null)
+                    //     Marshal.FreeHGlobal(imageInfo.ImgData);
                     if (pointer != IntPtr.Zero)
                         Marshal.FreeHGlobal(pointer);
                 }
@@ -44,18 +42,17 @@ namespace ColinChang.ArcFace.Utils
         /// 提取人脸特征
         /// </summary>
         /// <param name="engine">引擎Handle</param>
-        /// <param name="image"></param>
+        /// <param name="imageInfo">图像信息</param>
         /// <returns>保存人脸特征结构体指针</returns>
         public static async Task<OperationResult<IEnumerable<byte[]>>>
-            ExtractFeatureAsync(IntPtr engine, Image image) =>
+            ExtractFeatureAsync(IntPtr engine, ImageInfo imageInfo) =>
             await Task.Run(async () =>
             {
-                Models.ImageInfo imageInfo = null;
                 var pSingleFaceInfo = IntPtr.Zero;
                 var pFaceFeature = IntPtr.Zero;
                 try
                 {
-                    var asfFaces = await DetectFaceAsync(engine, image);
+                    var asfFaces = await DetectFaceAsync(engine, imageInfo);
                     if (asfFaces.Code != 0)
                         return new OperationResult<IEnumerable<byte[]>>(asfFaces.Code);
 
@@ -70,7 +67,6 @@ namespace ColinChang.ArcFace.Utils
                         pSingleFaceInfo = Marshal.AllocHGlobal(Marshal.SizeOf<SingleFaceInfo>());
                         Marshal.StructureToPtr(singleFaceInfo, pSingleFaceInfo, false);
 
-                        imageInfo = await image.ReadBmpAsync();
                         pFaceFeature = Marshal.AllocHGlobal(Marshal.SizeOf<AsfFaceFeature>());
                         var code = AsfHelper.ASFFaceFeatureExtract(engine, imageInfo.Width, imageInfo.Height,
                             imageInfo.Format, imageInfo.ImgData, pSingleFaceInfo, pFaceFeature);
@@ -87,8 +83,8 @@ namespace ColinChang.ArcFace.Utils
                 }
                 finally
                 {
-                    if (imageInfo != null)
-                        Marshal.FreeHGlobal(imageInfo.ImgData);
+                    // if (imageInfo != null)
+                    //     Marshal.FreeHGlobal(imageInfo.ImgData);
                     if (pSingleFaceInfo != IntPtr.Zero)
                         Marshal.FreeHGlobal(pSingleFaceInfo);
                     if (pFaceFeature != IntPtr.Zero)
@@ -100,17 +96,17 @@ namespace ColinChang.ArcFace.Utils
         /// 提取最大人脸特征
         /// </summary>
         /// <param name="engine">引擎Handle</param>
-        /// <param name="image"></param>
+        /// <param name="imageInfo">图像信息</param>
         /// <returns>保存人脸特征结构体指针</returns>
-        public static async Task<OperationResult<byte[]>> ExtractSingleFeatureAsync(IntPtr engine, Image image) =>
+        public static async Task<OperationResult<byte[]>> ExtractSingleFeatureAsync(IntPtr engine,
+            ImageInfo imageInfo) =>
             await Task.Run(async () =>
             {
-                Models.ImageInfo imageInfo = null;
                 var pSingleFaceInfo = IntPtr.Zero;
                 var pFaceFeature = IntPtr.Zero;
                 try
                 {
-                    var asfFaces = await DetectFaceAsync(engine, image);
+                    var asfFaces = await DetectFaceAsync(engine, imageInfo);
                     if (asfFaces.Code != 0)
                         return new OperationResult<byte[]>(asfFaces.Code);
 
@@ -122,13 +118,12 @@ namespace ColinChang.ArcFace.Utils
                     pSingleFaceInfo = Marshal.AllocHGlobal(Marshal.SizeOf<SingleFaceInfo>());
                     Marshal.StructureToPtr(singleFaceInfo, pSingleFaceInfo, false);
 
-                    imageInfo = await image.ReadBmpAsync();
                     pFaceFeature = Marshal.AllocHGlobal(Marshal.SizeOf<AsfFaceFeature>());
                     var code = AsfHelper.ASFFaceFeatureExtract(engine, imageInfo.Width, imageInfo.Height,
                         imageInfo.Format, imageInfo.ImgData, pSingleFaceInfo, pFaceFeature);
                     if (code != 0)
                         return new OperationResult<byte[]>(code);
-                    
+
                     var faceFeature = Marshal.PtrToStructure<AsfFaceFeature>(pFaceFeature);
                     var feature = new byte[faceFeature.FeatureSize];
                     Marshal.Copy(faceFeature.Feature, feature, 0, faceFeature.FeatureSize);
@@ -149,8 +144,8 @@ namespace ColinChang.ArcFace.Utils
                 }
                 finally
                 {
-                    if (imageInfo != null)
-                        Marshal.FreeHGlobal(imageInfo.ImgData);
+                    // if (imageInfo != null)
+                    //     Marshal.FreeHGlobal(imageInfo.ImgData);
                     if (pSingleFaceInfo != IntPtr.Zero)
                         Marshal.FreeHGlobal(pSingleFaceInfo);
                     if (pFaceFeature != IntPtr.Zero)
@@ -162,23 +157,21 @@ namespace ColinChang.ArcFace.Utils
         /// 年龄检测
         /// </summary>
         /// <param name="engine">引擎Handle</param>
-        /// <param name="image"></param>
+        /// <param name="imageInfo">图像信息</param>
         /// <returns>年龄检测结构体</returns>
-        public static async Task<OperationResult<AsfAgeInfo>> GetAgeAsync(IntPtr engine, Image image) =>
+        public static async Task<OperationResult<AsfAgeInfo>> GetAgeAsync(IntPtr engine, ImageInfo imageInfo) =>
             await Task.Run(async () =>
             {
-                Models.ImageInfo imageInfo = null;
                 var pMultiFaceInfo = IntPtr.Zero;
                 var pAgeInfo = IntPtr.Zero;
                 try
                 {
-                    var faces = await DetectFaceAsync(engine, image);
+                    var faces = await DetectFaceAsync(engine, imageInfo);
                     if (faces.Code != 0)
                         return new OperationResult<AsfAgeInfo>(faces.Code);
                     if (faces.Data.FaceNum <= 0)
                         return new OperationResult<AsfAgeInfo>(new AsfAgeInfo());
 
-                    imageInfo = await image.ReadBmpAsync();
                     pMultiFaceInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfMultiFaceInfo>());
                     Marshal.StructureToPtr(faces.Data, pMultiFaceInfo, false);
 
@@ -199,8 +192,8 @@ namespace ColinChang.ArcFace.Utils
                 }
                 finally
                 {
-                    if (imageInfo != null)
-                        Marshal.FreeHGlobal(imageInfo.ImgData);
+                    // if (imageInfo != null)
+                    //     Marshal.FreeHGlobal(imageInfo.ImgData);
                     if (pMultiFaceInfo != IntPtr.Zero)
                         Marshal.FreeHGlobal(pMultiFaceInfo);
                     if (pAgeInfo != IntPtr.Zero)
@@ -212,23 +205,22 @@ namespace ColinChang.ArcFace.Utils
         /// 性别检测
         /// </summary>
         /// <param name="engine">引擎Handle</param>
-        /// <param name="image"></param>
+        /// <param name="imageInfo">图像信息</param>
         /// <returns>保存性别检测结果结构体</returns>
-        public static async Task<OperationResult<AsfGenderInfo>> GetGenderAsync(IntPtr engine, Image image) =>
+        public static async Task<OperationResult<AsfGenderInfo>> GetGenderAsync(IntPtr engine,
+            ImageInfo imageInfo) =>
             await Task.Run(async () =>
             {
-                Models.ImageInfo imageInfo = null;
                 var pMultiFaceInfo = IntPtr.Zero;
                 var pGenderInfo = IntPtr.Zero;
                 try
                 {
-                    var faces = await DetectFaceAsync(engine, image);
+                    var faces = await DetectFaceAsync(engine, imageInfo);
                     if (faces.Code != 0)
                         return new OperationResult<AsfGenderInfo>(faces.Code);
                     if (faces.Data.FaceNum <= 0)
                         return new OperationResult<AsfGenderInfo>(new AsfGenderInfo());
 
-                    imageInfo = await image.ReadBmpAsync();
                     pMultiFaceInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfMultiFaceInfo>());
                     Marshal.StructureToPtr(faces.Data, pMultiFaceInfo, false);
 
@@ -249,8 +241,8 @@ namespace ColinChang.ArcFace.Utils
                 }
                 finally
                 {
-                    if (imageInfo != null)
-                        Marshal.FreeHGlobal(imageInfo.ImgData);
+                    // if (imageInfo != null)
+                    //     Marshal.FreeHGlobal(imageInfo.ImgData);
                     if (pMultiFaceInfo != IntPtr.Zero)
                         Marshal.FreeHGlobal(pMultiFaceInfo);
                     if (pGenderInfo != IntPtr.Zero)
@@ -262,23 +254,23 @@ namespace ColinChang.ArcFace.Utils
         /// 人脸3D角度检测
         /// </summary>
         /// <param name="engine">引擎Handle</param>
-        /// <param name="image"></param>
+        /// <param name="imageInfo">图像信息</param>
         /// <returns>保存人脸3D角度检测结果结构体</returns>
-        public static async Task<OperationResult<AsfFace3DAngle>> GetFace3DAngleAsync(IntPtr engine, Image image) =>
+        public static async Task<OperationResult<AsfFace3DAngle>> GetFace3DAngleAsync(IntPtr engine,
+            ImageInfo imageInfo) =>
             await Task.Run(async () =>
             {
-                Models.ImageInfo imageInfo = null;
                 var pMultiFaceInfo = IntPtr.Zero;
                 var pFace3DAngleInfo = IntPtr.Zero;
                 try
                 {
-                    var faces = await DetectFaceAsync(engine, image);
+                    var faces = await DetectFaceAsync(engine, imageInfo);
                     if (faces.Code != 0)
                         return new OperationResult<AsfFace3DAngle>(faces.Code);
                     if (faces.Data.FaceNum <= 0)
                         return new OperationResult<AsfFace3DAngle>(new AsfFace3DAngle());
 
-                    imageInfo = await image.ReadBmpAsync();
+                    // imageInfo = await image.ReadBmpAsync();
                     pMultiFaceInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfMultiFaceInfo>());
                     Marshal.StructureToPtr(faces.Data, pMultiFaceInfo, false);
 
@@ -299,8 +291,8 @@ namespace ColinChang.ArcFace.Utils
                 }
                 finally
                 {
-                    if (imageInfo != null)
-                        Marshal.FreeHGlobal(imageInfo.ImgData);
+                    // if (imageInfo != null)
+                    //     Marshal.FreeHGlobal(imageInfo.ImgData);
                     if (pMultiFaceInfo != IntPtr.Zero)
                         Marshal.FreeHGlobal(pMultiFaceInfo);
                     if (pFace3DAngleInfo != IntPtr.Zero)
@@ -312,39 +304,42 @@ namespace ColinChang.ArcFace.Utils
         /// <summary>
         /// RGB可见光活体检测
         /// </summary>
-        /// <param name="engine"></param>
-        /// <param name="image"></param>
+        /// <param name="engine">引擎Handle</param>
+        /// <param name="imageInfo">图像信息</param>
         /// <returns></returns>
-        public static Task<OperationResult<AsfLivenessInfo>> GetRgbLivenessInfoAsync(IntPtr engine, Image image)
-            => GetLivenessInfoAsync(engine, image, LivenessMode.RGB);
+        public static Task<OperationResult<AsfLivenessInfo>> GetRgbLivenessInfoAsync(IntPtr engine,
+            ImageInfo imageInfo)
+            => GetLivenessInfoAsync(engine, LivenessMode.RGB, (imageInfo, null));
 
         /// <summary>
         /// IR红外活体检测
         /// </summary>
-        /// <param name="engine"></param>
-        /// <param name="image"></param>
+        /// <param name="engine">引擎Handle</param>
+        /// <param name="rgbImageInfo">RGB图像信息</param>
+        /// <param name="irImageInfo">IR图像信息</param>
         /// <returns></returns>
-        public static Task<OperationResult<AsfLivenessInfo>> GetIrLivenessInfoAsync(IntPtr engine, Image image)
-            => GetLivenessInfoAsync(engine, image, LivenessMode.IR);
+        public static Task<OperationResult<AsfLivenessInfo>> GetIrLivenessInfoAsync(IntPtr engine,
+            (ImageInfo RGB, ImageInfo IR) imageInfos)
+            => GetLivenessInfoAsync(engine, LivenessMode.IR, imageInfos);
 
 
         /// <summary>
         /// 活体检测
         /// </summary>
         /// <param name="engine">引擎Handle</param>
-        /// <param name="image">图像数据</param>
         /// <param name="mode"></param>
+        /// <param name="rgbImageInfo">RGB图像信息</param>
+        /// <param name="irImageInfo">IR图像信息</param>
         /// <returns>保存活体检测结果结构体</returns>
-        private static async Task<OperationResult<AsfLivenessInfo>> GetLivenessInfoAsync(IntPtr engine, Image image,
-            LivenessMode mode) =>
+        private static async Task<OperationResult<AsfLivenessInfo>> GetLivenessInfoAsync(IntPtr engine,
+            LivenessMode mode, (ImageInfo RGB, ImageInfo IR) imageInfos) =>
             await Task.Run(async () =>
             {
-                Models.ImageInfo imageInfo = null;
                 var pMultiFaceInfo = IntPtr.Zero;
                 var pLivenessInfo = IntPtr.Zero;
                 try
                 {
-                    var asfFaces = await DetectFaceAsync(engine, image);
+                    var asfFaces = await DetectFaceAsync(engine, imageInfos.RGB);
                     if (asfFaces.Code != 0)
                         return new OperationResult<AsfLivenessInfo>(asfFaces.Code);
 
@@ -361,18 +356,18 @@ namespace ColinChang.ArcFace.Utils
                     pLivenessInfo = Marshal.AllocHGlobal(Marshal.SizeOf<AsfLivenessInfo>());
                     if (mode == LivenessMode.RGB)
                     {
-                        imageInfo = await image.ReadBmpAsync();
-                        code = AsfHelper.ASFProcess(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
-                            imageInfo.ImgData, pMultiFaceInfo, FaceEngineMask.ASF_LIVENESS);
+                        code = AsfHelper.ASFProcess(engine, imageInfos.RGB.Width, imageInfos.RGB.Height,
+                            imageInfos.RGB.Format,
+                            imageInfos.RGB.ImgData, pMultiFaceInfo, FaceEngineMask.ASF_LIVENESS);
                         if (code != 0)
                             return new OperationResult<AsfLivenessInfo>(code);
                         code = AsfHelper.ASFGetLivenessScore(engine, pLivenessInfo);
                     }
                     else
                     {
-                        imageInfo = await image.ReadBMP_IRAsync();
-                        code = AsfHelper.ASFProcess_IR(engine, imageInfo.Width, imageInfo.Height, imageInfo.Format,
-                            imageInfo.ImgData, pMultiFaceInfo, FaceEngineMask.ASF_IR_LIVENESS);
+                        code = AsfHelper.ASFProcess_IR(engine, imageInfos.IR.Width, imageInfos.IR.Height,
+                            imageInfos.IR.Format,
+                            imageInfos.IR.ImgData, pMultiFaceInfo, FaceEngineMask.ASF_IR_LIVENESS);
                         if (code != 0)
                             return new OperationResult<AsfLivenessInfo>(code);
                         code = AsfHelper.ASFGetLivenessScore_IR(engine, pLivenessInfo);
@@ -384,8 +379,8 @@ namespace ColinChang.ArcFace.Utils
                 }
                 finally
                 {
-                    if (imageInfo != null)
-                        Marshal.FreeHGlobal(imageInfo.ImgData);
+                    // if (imageInfo != null)
+                    //     Marshal.FreeHGlobal(imageInfo.ImgData);
                     if (pMultiFaceInfo != IntPtr.Zero)
                         Marshal.FreeHGlobal(pMultiFaceInfo);
                     if (pLivenessInfo != IntPtr.Zero)

@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using ColinChang.ArcFace.Models;
+using ColinChang.ArcFace.Abstraction.Models;
 
 namespace ColinChang.ArcFace
 {

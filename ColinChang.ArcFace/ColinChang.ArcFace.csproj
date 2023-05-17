@@ -45,4 +45,8 @@
       <PackagePath></PackagePath>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ColinChang.ArcFace.Abstraction\ColinChang.ArcFace.Abstraction.csproj" />
+  </ItemGroup>
 </Project>
