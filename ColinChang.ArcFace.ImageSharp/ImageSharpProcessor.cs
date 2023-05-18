@@ -1,12 +1,12 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using ColinChang.ArcFace.Abstraction;
-using ColinChang.ArcFace.Abstraction.Models;
-using ColinChang.ArcFace.ImageSharp.Extensions;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using ColinChang.ArcFace.Abstraction;
+using ColinChang.ArcFace.Abstraction.Models;
+using ColinChang.ArcFace.ImageSharp.Extensions;
 using ImageInfo = ColinChang.ArcFace.Abstraction.Models.ImageInfo;
 
 namespace ColinChang.ArcFace.ImageSharp;

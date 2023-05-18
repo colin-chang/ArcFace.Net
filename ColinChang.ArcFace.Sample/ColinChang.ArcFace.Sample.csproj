@@ -9,17 +9,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="ArcFace.Net" Version="5.1.2" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
 		<PackageReference Include="System.Drawing.Common" Version="7.0.0" />
 	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\ColinChang.ArcFace.ImageSharp\ColinChang.ArcFace.ImageSharp.csproj" />
-		<ProjectReference Include="..\ColinChang.ArcFace.SystemDrawing\ColinChang.ArcFace.SystemDrawing.csproj" />
-	</ItemGroup>
-
+	
 	<ItemGroup>
 		<None Update="appsettings.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>

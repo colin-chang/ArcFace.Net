@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ColinChang.ArcFace.Core;
 using ColinChang.ArcFace.Abstraction;
 using ColinChang.ArcFace.Abstraction.Models;
-//using ColinChang.ArcFace.SystemDrawing;
+using ColinChang.ArcFace.Core;
 using ColinChang.ArcFace.ImageSharp.Extensions;
 
 //测试图片
@@ -45,7 +44,6 @@ var livenessRgb = await arcFace.GetLivenessInfoAsync(zys, LivenessMode.RGB);
 //IR活体检测
 var livenessIr = await arcFace.GetLivenessInfoAsync(zys, LivenessMode.IR);
 */
-
 
 // 初始化人脸库
 await arcFace.InitFaceLibraryAsync(new[] { xy });

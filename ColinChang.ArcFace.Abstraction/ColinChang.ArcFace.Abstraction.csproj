@@ -4,6 +4,37 @@
         <TargetFramework>net6.0</TargetFramework>
         <Nullable>disable</Nullable>
         <LangVersion>default</LangVersion>
+        <PackageId>ArcFace.Net.Abstraction</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>Colin Chang</Authors>
+        <Owners>Colin Chang</Owners>
+        <Product>ArcFace.Net.Abstraction</Product>
+        <Title>虹软人脸识别数据抽象</Title>
+        <Description>虹软人脸识别数据抽象</Description>
+        <PackageTags>arcface face recognition compare detect liveness feature AI arcsoft</PackageTags>
+        <PackageReleaseNotes>接口和模型数据抽象</PackageReleaseNotes>
+        <PackageIcon>icon.png</PackageIcon>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <RepositoryType>Git</RepositoryType>
+        <RepositoryUrl>https://github.com/colin-chang/ArcFace.Net</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/colin-chang/ArcFace.Net</PackageProjectUrl>
+        <Copyright>https://a-nomad.com/</Copyright>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
-
+    <ItemGroup>
+        <None Include="..\icon.png">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+        <None Include="..\LICENSE">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+        <None Include="..\README.md">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+    </ItemGroup>
 </Project>
