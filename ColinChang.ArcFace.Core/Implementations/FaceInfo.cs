@@ -2,9 +2,9 @@ using System.IO;
 using System.Threading.Tasks;
 using ColinChang.ArcFace.Abstraction.Extensions;
 using ColinChang.ArcFace.Abstraction.Models;
-using ColinChang.ArcFace.Utils;
+using ColinChang.ArcFace.Core.Utils;
 
-namespace ColinChang.ArcFace;
+namespace ColinChang.ArcFace.Core;
 
 /// <summary>
 /// 人脸属性 3D角度/年龄/性别

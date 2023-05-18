@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColinChang.ArcFace", "ColinChang.ArcFace\ColinChang.ArcFace.csproj", "{B2D49A47-48CA-4814-9356-E70B8C9716FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColinChang.ArcFace.Core", "ColinChang.ArcFace.Core\ColinChang.ArcFace.Core.csproj", "{B2D49A47-48CA-4814-9356-E70B8C9716FA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColinChang.ArcFace.Sample", "ColinChang.ArcFace.Sample\ColinChang.ArcFace.Sample.csproj", "{CA868DE6-C1E0-484C-9AFD-B4026A32AF4C}"
 EndProject

@@ -2,9 +2,9 @@ using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using ColinChang.ArcFace.Abstraction.Models;
-using ColinChang.ArcFace.Utils;
+using ColinChang.ArcFace.Core.Utils;
 
-namespace ColinChang.ArcFace;
+namespace ColinChang.ArcFace.Core;
 
 /// <summary>
 /// SDK信息 激活信息/版本信息

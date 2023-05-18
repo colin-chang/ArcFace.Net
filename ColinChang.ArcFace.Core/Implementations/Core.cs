@@ -4,10 +4,10 @@ using System.IO;
 using System.Threading.Tasks;
 using ColinChang.ArcFace.Abstraction.Extensions;
 using ColinChang.ArcFace.Abstraction.Models;
-using ColinChang.ArcFace.Extensions;
-using ColinChang.ArcFace.Utils;
+using ColinChang.ArcFace.Core.Utils;
+using ColinChang.ArcFace.Core.Extensions;
 
-namespace ColinChang.ArcFace;
+namespace ColinChang.ArcFace.Core;
 
 /// <summary>
 /// 核心功能 人脸检测/特征提取/人脸比对

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using ColinChang.ArcFace.Abstraction;
 using ColinChang.ArcFace.Abstraction.Models;
 
-namespace ColinChang.ArcFace.Utils
+namespace ColinChang.ArcFace.Core.Utils
 {
     static class ImageHelper
     {

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using ColinChang.ArcFace.Abstraction.Models;
 
-namespace ColinChang.ArcFace
+namespace ColinChang.ArcFace.Core
 {
     public class ArcFaceOptions
     {

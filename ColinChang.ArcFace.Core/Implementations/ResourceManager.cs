@@ -4,10 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Polly;
 using ColinChang.ArcFace.Abstraction.Models;
-using ColinChang.ArcFace.Extensions;
-using ColinChang.ArcFace.Utils;
+using ColinChang.ArcFace.Core.Utils;
+using ColinChang.ArcFace.Core.Extensions;
 
-namespace ColinChang.ArcFace;
+namespace ColinChang.ArcFace.Core;
 
 /// <summary>
 /// 资源管理 激活/引擎池管理/资源回收
@@ -137,7 +137,7 @@ public partial class ArcFace
 
         var (engines, enginesCount, waitHandle) = GetEngineStuff(mode);
         engines.Enqueue(engine);
-        //尽当引擎池已满时 回收后才需要开门，未满时在创建引擎后就立即开门
+        //仅当引擎池已满时 回收后才需要开门，未满时在创建引擎后就立即开门
         if (enginesCount >= _options.MaxSingleTypeEngineCount)
             waitHandle.Set();
     }

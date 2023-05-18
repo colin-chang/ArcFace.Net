@@ -1,7 +1,8 @@
 using System;
-using ColinChang.ArcFace.Abstraction;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ColinChang.ArcFace.Abstraction;
+using ColinChang.ArcFace.Core;
 
 namespace ColinChang.ArcFace.SystemDrawing
 {
@@ -13,7 +14,7 @@ namespace ColinChang.ArcFace.SystemDrawing
                 .Configure(configuration.Bind)
                 .ValidateDataAnnotations();
 
-            services.AddSingleton<IArcFace, ArcFace>();
+            services.AddSingleton<IArcFace, Core.ArcFace>();
             services.AddSingleton<IImageProcessor, SystemDrawingProcessor>();
             return services;
         }
@@ -25,7 +26,7 @@ namespace ColinChang.ArcFace.SystemDrawing
                 .Configure(configureOptions)
                 .ValidateDataAnnotations();
 
-            services.AddSingleton<IArcFace, ArcFace>();
+            services.AddSingleton<IArcFace, Core.ArcFace>();
             services.AddSingleton<IImageProcessor, SystemDrawingProcessor>();
             return services;
         }

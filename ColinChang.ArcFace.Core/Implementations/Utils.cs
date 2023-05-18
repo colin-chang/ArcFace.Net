@@ -7,9 +7,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using ColinChang.ArcFace.Abstraction.Extensions;
 using ColinChang.ArcFace.Abstraction.Models;
-using ColinChang.ArcFace.Utils;
+using ColinChang.ArcFace.Core.Utils;
 
-namespace ColinChang.ArcFace
+namespace ColinChang.ArcFace.Core
 {
     /// <summary>
     /// 工具方法

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace ColinChang.ArcFace.Utils
+namespace ColinChang.ArcFace.Core.Utils
 {
     /// <summary>
     /// SDK中与人脸识别相关函数封装类

@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using ColinChang.ArcFace.Abstraction.Models;
 
-namespace ColinChang.ArcFace.Utils
+namespace ColinChang.ArcFace.Core.Utils
 {
     internal static class FaceHelper
     {

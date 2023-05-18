@@ -1,51 +1,51 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>ColinChang.ArcFace</name>
+        <name>ColinChang.ArcFace.Core</name>
     </assembly>
     <members>
-        <member name="P:ColinChang.ArcFace.ArcFaceOptions.MinSimilarity">
+        <member name="P:ColinChang.ArcFace.Core.ArcFaceOptions.MinSimilarity">
             <summary>
             人脸识别成功的最小相似度
             </summary>
         </member>
-        <member name="P:ColinChang.ArcFace.ArcFaceOptions.MaxDetectFaceNum">
+        <member name="P:ColinChang.ArcFace.Core.ArcFaceOptions.MaxDetectFaceNum">
             <summary>
             单图片最大检测的人脸数 [1,50]
             </summary>
         </member>
-        <member name="P:ColinChang.ArcFace.ArcFaceOptions.MaxSingleTypeEngineCount">
+        <member name="P:ColinChang.ArcFace.Core.ArcFaceOptions.MaxSingleTypeEngineCount">
             <summary>
             引擎池单类引擎数上限(过大会增加内存开支)
             </summary>
         </member>
-        <member name="P:ColinChang.ArcFace.ArcFaceOptions.ImageDetectFaceOrientPriority">
+        <member name="P:ColinChang.ArcFace.Core.ArcFaceOptions.ImageDetectFaceOrientPriority">
             <summary>
             图像模式 检测脸部的角度优先值
             </summary>
         </member>
-        <member name="P:ColinChang.ArcFace.ArcFaceOptions.VideoDetectFaceOrientPriority">
+        <member name="P:ColinChang.ArcFace.Core.ArcFaceOptions.VideoDetectFaceOrientPriority">
             <summary>
             视频模式 检测脸部的角度优先值
             </summary>
         </member>
-        <member name="P:ColinChang.ArcFace.ArcFaceOptions.ImageDetectFaceScaleVal">
+        <member name="P:ColinChang.ArcFace.Core.ArcFaceOptions.ImageDetectFaceScaleVal">
             <summary>
             图像模式 可识别最小人脸比例（图片长边与人脸框长边的比值）[2-32]
             </summary>
         </member>
-        <member name="P:ColinChang.ArcFace.ArcFaceOptions.VideoDetectFaceScaleVal">
+        <member name="P:ColinChang.ArcFace.Core.ArcFaceOptions.VideoDetectFaceScaleVal">
             <summary>
             视频模式 可识别最小人脸比例（图片长边与人脸框长边的比值）[2-32]
             </summary>
         </member>
-        <member name="M:ColinChang.ArcFace.Extensions.ArcFaceExtension.DisposeFaceFeature(System.IntPtr)">
+        <member name="M:ColinChang.ArcFace.Core.Extensions.ArcFaceExtension.DisposeFaceFeature(System.IntPtr)">
             <summary>
             释放人脸指针及其指向的对象内存
             </summary>
             <param name="faceFeature"></param>
         </member>
-        <member name="T:ColinChang.ArcFace.ArcFace">
+        <member name="T:ColinChang.ArcFace.Core.ArcFace">
             <summary>
             核心功能 人脸检测/特征提取/人脸比对
             </summary>
@@ -65,25 +65,25 @@
             工具方法
             </summary>
         </member>
-        <member name="F:ColinChang.ArcFace.ArcFace._faceLibrary">
+        <member name="F:ColinChang.ArcFace.Core.ArcFace._faceLibrary">
             <summary>
             人脸库
             </summary>
         </member>
-        <member name="M:ColinChang.ArcFace.ArcFace.OnlineActiveAsync">
+        <member name="M:ColinChang.ArcFace.Core.ArcFace.OnlineActiveAsync">
             <summary>
             在线激活
             </summary>
             <exception cref="T:System.Exception"></exception>
         </member>
-        <member name="M:ColinChang.ArcFace.ArcFace.GetEngine(ColinChang.ArcFace.Abstraction.Models.DetectionModeEnum)">
+        <member name="M:ColinChang.ArcFace.Core.ArcFace.GetEngine(ColinChang.ArcFace.Core.Abstraction.Models.DetectionModeEnum)">
             <summary>
             从引擎池中获取引擎
             </summary>
             <param name="mode"></param>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.ArcFace.InitEngine(ColinChang.ArcFace.Abstraction.Models.DetectionModeEnum)">
+        <member name="M:ColinChang.ArcFace.Core.ArcFace.InitEngine(ColinChang.ArcFace.Core.Abstraction.Models.DetectionModeEnum)">
             <summary>
             初始化引擎
             </summary>
@@ -91,36 +91,36 @@
             <returns></returns>
             <exception cref="T:System.Exception"></exception>
         </member>
-        <member name="M:ColinChang.ArcFace.ArcFace.RecycleEngine(System.IntPtr,ColinChang.ArcFace.Abstraction.Models.DetectionModeEnum)">
+        <member name="M:ColinChang.ArcFace.Core.ArcFace.RecycleEngine(System.IntPtr,ColinChang.ArcFace.Core.Abstraction.Models.DetectionModeEnum)">
             <summary>
             回收引擎
             </summary>
             <param name="engine"></param>
             <param name="mode"></param>
         </member>
-        <member name="M:ColinChang.ArcFace.ArcFace.UninitEngine(System.Collections.Concurrent.ConcurrentQueue{System.IntPtr})">
+        <member name="M:ColinChang.ArcFace.Core.ArcFace.UninitEngine(System.Collections.Concurrent.ConcurrentQueue{System.IntPtr})">
             <summary>
             销毁引擎
             </summary>
             <param name="engines"></param>
         </member>
-        <member name="T:ColinChang.ArcFace.Utils.AsfHelper">
+        <member name="T:ColinChang.ArcFace.Core.Utils.AsfHelper">
             <summary>
             SDK中与人脸识别相关函数封装类
             </summary>
         </member>
-        <member name="F:ColinChang.ArcFace.Utils.AsfHelper.ASF_LIB_PATH">
+        <member name="F:ColinChang.ArcFace.Core.Utils.AsfHelper.ASF_LIB_PATH">
             <summary>
             SDK动态链接库路径
             </summary>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.AsfHelper.ASFGetActiveFileInfo(System.IntPtr)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.AsfHelper.ASFGetActiveFileInfo(System.IntPtr)">
             <summary>
             获取激活文件信息
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.AsfHelper.ASFOnlineActivation(System.String,System.String)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.AsfHelper.ASFOnlineActivation(System.String,System.String)">
             <summary>
             激活人脸识别SDK引擎函数
             </summary>
@@ -128,7 +128,7 @@
             <param name="sdkKey">SDK对应的SDKKey</param>
             <returns>调用结果</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.AsfHelper.ASFInitEngine(System.UInt32,System.Int32,System.Int32,System.Int32,System.Int32,System.IntPtr@)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.AsfHelper.ASFInitEngine(System.UInt32,System.Int32,System.Int32,System.Int32,System.Int32,System.IntPtr@)">
             <summary>
             初始化引擎
             </summary>
@@ -140,7 +140,7 @@
             <param name="pEngine">初始化返回的引擎handle</param>
             <returns>调用结果</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.AsfHelper.ASFDetectFaces(System.IntPtr,System.Int32,System.Int32,System.Int32,System.IntPtr,System.IntPtr)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.AsfHelper.ASFDetectFaces(System.IntPtr,System.Int32,System.Int32,System.Int32,System.IntPtr,System.IntPtr)">
             <summary>
             人脸检测
             </summary>
@@ -152,7 +152,7 @@
             <param name="detectedFaces">人脸检测结果</param>
             <returns>调用结果</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.AsfHelper.ASFProcess(System.IntPtr,System.Int32,System.Int32,System.Int32,System.IntPtr,System.IntPtr,System.Int32)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.AsfHelper.ASFProcess(System.IntPtr,System.Int32,System.Int32,System.Int32,System.IntPtr,System.IntPtr,System.Int32)">
             <summary>
             人脸信息检测（年龄/性别/人脸3D角度）
             </summary>
@@ -168,7 +168,7 @@
             </param>
             <returns>调用结果</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.AsfHelper.ASFFaceFeatureExtract(System.IntPtr,System.Int32,System.Int32,System.Int32,System.IntPtr,System.IntPtr,System.IntPtr)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.AsfHelper.ASFFaceFeatureExtract(System.IntPtr,System.Int32,System.Int32,System.Int32,System.IntPtr,System.IntPtr,System.IntPtr)">
             <summary>
             单人脸特征提取
             </summary>
@@ -181,7 +181,7 @@
             <param name="faceFeature">人脸特征</param>
             <returns>调用结果</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.AsfHelper.ASFFaceFeatureCompare(System.IntPtr,System.IntPtr,System.IntPtr,System.Single@)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.AsfHelper.ASFFaceFeatureCompare(System.IntPtr,System.IntPtr,System.IntPtr,System.Single@)">
             <summary>
             人脸特征比对
             </summary>
@@ -191,7 +191,7 @@
             <param name="similarity">相似度(0~1)</param>
             <returns>调用结果</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.AsfHelper.ASFGetAge(System.IntPtr,System.IntPtr)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.AsfHelper.ASFGetAge(System.IntPtr,System.IntPtr)">
             <summary>
             获取年龄信息
             </summary>
@@ -199,7 +199,7 @@
             <param name="ageInfo">检测到的年龄信息</param>
             <returns>调用结果</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.AsfHelper.ASFGetGender(System.IntPtr,System.IntPtr)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.AsfHelper.ASFGetGender(System.IntPtr,System.IntPtr)">
             <summary>
             获取性别信息
             </summary>
@@ -207,7 +207,7 @@
             <param name="genderInfo">检测到的性别信息</param>
             <returns>调用结果</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.AsfHelper.ASFGetFace3DAngle(System.IntPtr,System.IntPtr)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.AsfHelper.ASFGetFace3DAngle(System.IntPtr,System.IntPtr)">
             <summary>
             获取3D角度信息
             </summary>
@@ -215,7 +215,7 @@
             <param name="p3DAngleInfo">检测到脸部3D角度信息</param>
             <returns>调用结果</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.AsfHelper.ASFGetLivenessScore(System.IntPtr,System.IntPtr)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.AsfHelper.ASFGetLivenessScore(System.IntPtr,System.IntPtr)">
             <summary>
             获取RGB活体结果
             </summary>
@@ -223,7 +223,7 @@
             <param name="livenessInfo">活体检测信息</param>
             <returns>调用结果</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.AsfHelper.ASFProcess_IR(System.IntPtr,System.Int32,System.Int32,System.Int32,System.IntPtr,System.IntPtr,System.Int32)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.AsfHelper.ASFProcess_IR(System.IntPtr,System.Int32,System.Int32,System.Int32,System.IntPtr,System.IntPtr,System.Int32)">
             <summary>
             该接口目前仅支持单人脸IR活体检测（不支持年龄、性别、3D角度的检测），默认取第一张人脸
             </summary>
@@ -236,7 +236,7 @@
             <param name="combinedMask">目前只支持传入ASF_IR_LIVENESS属性的传入，且初始化接口需要传入 </param>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.AsfHelper.ASFGetLivenessScore_IR(System.IntPtr,System.IntPtr)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.AsfHelper.ASFGetLivenessScore_IR(System.IntPtr,System.IntPtr)">
             <summary>
             获取IR活体结果
             </summary>
@@ -244,21 +244,21 @@
             <param name="irLivenessInfo">检测到IR活体结果</param>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.AsfHelper.ASFUninitEngine(System.IntPtr)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.AsfHelper.ASFUninitEngine(System.IntPtr)">
             <summary>
             销毁引擎
             </summary>
             <param name="pEngine">引擎handle</param>
             <returns>调用结果</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.AsfHelper.ASFGetVersion(System.IntPtr)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.AsfHelper.ASFGetVersion(System.IntPtr)">
             <summary>
             获取版本信息
             </summary>
             <param name="version"></param>
             <returns>调用结果</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.DetectFaceAsync(System.IntPtr,ColinChang.ArcFace.Abstraction.Models.ImageInfo)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.DetectFaceAsync(System.IntPtr,ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo)">
             <summary>
             人脸检测(PS:检测RGB图像的人脸时，必须保证图像的宽度能被4整除，否则会失败)
             </summary>
@@ -266,7 +266,7 @@
             <param name="imageInfo">图像信息</param>
             <returns>人脸检测结果</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.ExtractFeatureAsync(System.IntPtr,ColinChang.ArcFace.Abstraction.Models.ImageInfo)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.ExtractFeatureAsync(System.IntPtr,ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo)">
             <summary>
             提取人脸特征
             </summary>
@@ -274,7 +274,7 @@
             <param name="imageInfo">图像信息</param>
             <returns>保存人脸特征结构体指针</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.ExtractSingleFeatureAsync(System.IntPtr,ColinChang.ArcFace.Abstraction.Models.ImageInfo)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.ExtractSingleFeatureAsync(System.IntPtr,ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo)">
             <summary>
             提取最大人脸特征
             </summary>
@@ -282,7 +282,7 @@
             <param name="imageInfo">图像信息</param>
             <returns>保存人脸特征结构体指针</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.GetAgeAsync(System.IntPtr,ColinChang.ArcFace.Abstraction.Models.ImageInfo)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.GetAgeAsync(System.IntPtr,ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo)">
             <summary>
             年龄检测
             </summary>
@@ -290,7 +290,7 @@
             <param name="imageInfo">图像信息</param>
             <returns>年龄检测结构体</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.GetGenderAsync(System.IntPtr,ColinChang.ArcFace.Abstraction.Models.ImageInfo)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.GetGenderAsync(System.IntPtr,ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo)">
             <summary>
             性别检测
             </summary>
@@ -298,7 +298,7 @@
             <param name="imageInfo">图像信息</param>
             <returns>保存性别检测结果结构体</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.GetFace3DAngleAsync(System.IntPtr,ColinChang.ArcFace.Abstraction.Models.ImageInfo)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.GetFace3DAngleAsync(System.IntPtr,ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo)">
             <summary>
             人脸3D角度检测
             </summary>
@@ -306,7 +306,7 @@
             <param name="imageInfo">图像信息</param>
             <returns>保存人脸3D角度检测结果结构体</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.GetRgbLivenessInfoAsync(System.IntPtr,ColinChang.ArcFace.Abstraction.Models.ImageInfo)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.GetRgbLivenessInfoAsync(System.IntPtr,ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo)">
             <summary>
             RGB可见光活体检测
             </summary>
@@ -314,7 +314,7 @@
             <param name="imageInfo">图像信息</param>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.GetIrLivenessInfoAsync(System.IntPtr,System.ValueTuple{ColinChang.ArcFace.Abstraction.Models.ImageInfo,ColinChang.ArcFace.Abstraction.Models.ImageInfo})">
+        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.GetIrLivenessInfoAsync(System.IntPtr,System.ValueTuple{ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo,ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo})">
             <summary>
             IR红外活体检测
             </summary>
@@ -323,7 +323,7 @@
             <param name="irImageInfo">IR图像信息</param>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.GetLivenessInfoAsync(System.IntPtr,ColinChang.ArcFace.Abstraction.Models.LivenessMode,System.ValueTuple{ColinChang.ArcFace.Abstraction.Models.ImageInfo,ColinChang.ArcFace.Abstraction.Models.ImageInfo})">
+        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.GetLivenessInfoAsync(System.IntPtr,ColinChang.ArcFace.Core.Abstraction.Models.LivenessMode,System.ValueTuple{ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo,ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo})">
             <summary>
             活体检测
             </summary>
@@ -333,34 +333,34 @@
             <param name="irImageInfo">IR图像信息</param>
             <returns>保存活体检测结果结构体</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.FaceHelper.GetBiggestFaceAsync(ColinChang.ArcFace.Abstraction.Models.MultiFaceInfo)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.GetBiggestFaceAsync(ColinChang.ArcFace.Core.Abstraction.Models.MultiFaceInfo)">
             <summary>
             获取多个人脸检测结果中面积最大的人脸
             </summary>
             <param name="multiFaceInfo">人脸检测结果</param>
             <returns>面积最大的人脸信息</returns>
         </member>
-        <member name="F:ColinChang.ArcFace.Utils.ImageHelper.ASF_MAX_IMAGE_SIZE">
+        <member name="F:ColinChang.ArcFace.Core.Utils.ImageHelper.ASF_MAX_IMAGE_SIZE">
             <summary>
             图像尺寸上限
             </summary>
         </member>
-        <member name="F:ColinChang.ArcFace.Utils.ImageHelper.ASF_MIN_IMAGE_SIZE">
+        <member name="F:ColinChang.ArcFace.Core.Utils.ImageHelper.ASF_MIN_IMAGE_SIZE">
             <summary>
             图像尺寸下线
             </summary>
         </member>
-        <member name="F:ColinChang.ArcFace.Utils.ImageHelper.ASF_MAX_IMAGE_WIDTH_HEIGHT">
+        <member name="F:ColinChang.ArcFace.Core.Utils.ImageHelper.ASF_MAX_IMAGE_WIDTH_HEIGHT">
             <summary>
             图像最大宽高
             </summary>
         </member>
-        <member name="F:ColinChang.ArcFace.Utils.ImageHelper.SupportedImageExtensions">
+        <member name="F:ColinChang.ArcFace.Core.Utils.ImageHelper.SupportedImageExtensions">
             <summary>
             支持的图片格式
             </summary>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.ImageHelper.VerifyAsync(ColinChang.ArcFace.Abstraction.IImageProcessor,System.IO.Stream)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.ImageHelper.VerifyAsync(ColinChang.ArcFace.Core.Abstraction.IImageProcessor,System.IO.Stream)">
             <summary>
             验证图片
             校验->缩放->获取信息
@@ -371,7 +371,7 @@
             <exception cref="T:System.IO.FileNotFoundException"></exception>
             <exception cref="T:System.Exception"></exception>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.ImageHelper.VerifyAndScaleAsync(ColinChang.ArcFace.Abstraction.IImageProcessor,System.IO.Stream)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.ImageHelper.VerifyAndScaleAsync(ColinChang.ArcFace.Core.Abstraction.IImageProcessor,System.IO.Stream)">
             <summary>
             校验并缩放图片
             </summary>
@@ -381,7 +381,7 @@
             <exception cref="T:System.IO.FileNotFoundException"></exception>
             <exception cref="T:System.Exception"></exception>
         </member>
-        <member name="M:ColinChang.ArcFace.Utils.ImageHelper.ScaleAsync(System.IO.Stream,ColinChang.ArcFace.Abstraction.IImageProcessor)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.ImageHelper.ScaleAsync(System.IO.Stream,ColinChang.ArcFace.Core.Abstraction.IImageProcessor)">
             <summary>
             缩放图片
             </summary>

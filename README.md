@@ -1,13 +1,17 @@
 # ArcFace.Net
-虹软人脸识别.NET工具库(.Net 6)。基于ArcFace 3.x C++ SDK, 支持Windows x86/x64和Linux x64. 支持人脸库属性检测、人脸特征提取、人脸库维护、人脸搜索、活体检测等功能。
+虹软人脸识别.NET(.Net 6)工具库。基于ArcFace 3.x C++ SDK, 支持Windows x86/x64和Linux x64. 支持人脸库属性检测、人脸特征提取、人脸库维护、人脸搜索、活体检测等功能。
 
-## Nuget
-[https://www.nuget.org/packages/ArcFace.Net/](https://www.nuget.org/packages/ArcFace.Net/)
+## 项目结构
+* ArcFace.Core 人脸识别核心库，需要注入图像处理工具库后才可使用。
+* ArcFace.ImageSharp 基于[ImageSharp](https://github.com/SixLabors/ImageSharp)图像处理的人脸识别库。
+* ArcFace.SystemDrawing 基于[System.Drawing.Common](https://www.nuget.org/packages/System.Drawing.Common/)的图像处理的人脸识别库。
+
 
 ## 版本差异
-* 4.x 图像处理基于`System.Drawing`开发，微软在 .Net 6 及之后版本已不再维护
-* 5.x 图像处理基于[`ImageSharp`](https://github.com/SixLabors/ImageSharp)开发，仅支持.Net 6+
-
+* 4.x 图像处理基于`System.Drawing.Common`开发，微软在 .Net 6 及之后版本已不再维护
+* 5.x 图像处理基`ImageSharp`开发，仅支持.Net 6+
+* 自定义实现。用户使用任意图像处理库（如`
+  SkiaSharp`）实现`IImageProcessor`接口来自定义版本实现，此时仅需引用`ArcFace.Core`核心库即可。定制版本实现可以参照 4.x/5.x 版本代码。
 
 ## 平台支持
 
@@ -24,9 +28,18 @@
    我们为本程序库的运行环境打包了Docker镜像，有需要的读者可以[点此获取](https://hub.docker.com/r/colinchang/arcface5)，也可以使用 [Dockerfiles](https://github.com/colin-chang/ArcFace.Net/tree/main/Dockerfiles) 中的不同版本的 `Dockerfile` 文件自行编译。
 
 ```bash
-docker build -f Dockerfiles/aspnet-6.0/Dockerfile -t colinchang/arcface5:aspnet-6.0 .
-docker build -f Dockerfiles/runtime-6.0/Dockerfile -t colinchang/arcface5:runtime-6.0 .
+# 5.x ImageSharp
+docker build -f ColinChang.ArcFace.ImageSharp/Dockerfiles/aspnet-6.0/Dockerfile -t colinchang/arcface5:aspnet-6.0 .
+docker build -f ColinChang.ArcFace.ImageSharp/Dockerfiles/runtime-6.0/Dockerfile -t colinchang/arcface5:runtime-6.0 .
+
+# 4.x SystemDrawing
+docker build -f ColinChang.ArcFace.SystemDrawing/Dockerfiles/aspnet-6.0/Dockerfile -t colinchang/arcface5:aspnet-6.0 .
+docker build -f ColinChang.ArcFace.SystemDrawing/Dockerfiles/runtime-6.0/Dockerfile -t colinchang/arcface5:runtime-6.0 .
 ```
+
+## Nuget
+* [ArcFace.Net.Core](https://www.nuget.org/packages/ArcFace.Net.Core/)
+* [ArcFace.Net](https://www.nuget.org/packages/ArcFace.Net/)
 
 ## SDK
 从 [虹软开发者中心](https://ai.arcsoft.com.cn/ucenter/resource/build/index.html#/application)或[此处](https://github.com/colin-chang/ArcFace.Net/tree/main/ColinChang.ArcFace/Sdks)下载需要的SDK 3.x文件并放置同特定目录。

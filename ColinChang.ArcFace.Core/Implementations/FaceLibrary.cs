@@ -6,10 +6,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using ColinChang.ArcFace.Abstraction.Extensions;
 using ColinChang.ArcFace.Abstraction.Models;
-using ColinChang.ArcFace.Extensions;
-using ColinChang.ArcFace.Utils;
+using ColinChang.ArcFace.Core.Utils;
+using ColinChang.ArcFace.Core.Extensions;
 
-namespace ColinChang.ArcFace;
+namespace ColinChang.ArcFace.Core;
 
 /// <summary>
 /// 人脸库管理 初始化/新增人脸/删除人脸/搜索人脸

@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using ColinChang.ArcFace.Abstraction.Models;
 
 
-namespace ColinChang.ArcFace.Extensions
+namespace ColinChang.ArcFace.Core.Extensions
 {
     public static class ArcFaceExtension
     {
