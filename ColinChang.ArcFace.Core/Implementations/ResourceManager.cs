@@ -4,8 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Polly;
 using ColinChang.ArcFace.Abstraction.Models;
-using ColinChang.ArcFace.Core.Utils;
 using ColinChang.ArcFace.Core.Extensions;
+using ColinChang.ArcFace.Core.Utils;
 
 namespace ColinChang.ArcFace.Core;
 
@@ -175,7 +175,10 @@ public partial class ArcFace
         UninitEngine(_irEngines);
 
         //释放 人脸库资源
-        foreach (var face in _faceLibrary.Values)
-            face.Feature.DisposeFaceFeature();
+        foreach (var library in _faceLibraries.Values)
+        {
+            foreach (var face in library.Values)
+                face.Feature.DisposeFaceFeature();
+        }
     }
 }

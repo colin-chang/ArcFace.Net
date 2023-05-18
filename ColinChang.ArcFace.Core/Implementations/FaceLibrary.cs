@@ -19,48 +19,53 @@ public partial class ArcFace
     /// <summary>
     /// 人脸库
     /// </summary>
-    private readonly ConcurrentDictionary<string, Face> _faceLibrary = new();
+    private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, Face>> _faceLibraries =
+        new() { ["default"] = new ConcurrentDictionary<string, Face>() };
 
-    public async Task InitFaceLibraryAsync(IEnumerable<string> images)
+    public async Task InitFaceLibraryAsync(IEnumerable<string> images, string libraryKey = "default")
     {
         var (faces, exceptions) = await ExtractFaceFeaturesAsync(images.ToArray());
         if (exceptions.Any())
             throw new AggregateException(exceptions);
 
-        await InitFaceLibraryAsync(faces);
+        await InitFaceLibraryAsync(faces, libraryKey);
     }
 
-    public async Task<(bool Success, int SuccessCount)> TryInitFaceLibraryAsync(IEnumerable<string> images) =>
-        await TryInitFaceLibraryAsync((await ExtractFaceFeaturesAsync(images.ToArray())).Faces);
+    public async Task<(bool Success, int SuccessCount)> TryInitFaceLibraryAsync(IEnumerable<string> images,
+        string libraryKey = "default") =>
+        await TryInitFaceLibraryAsync((await ExtractFaceFeaturesAsync(images.ToArray())).Faces, libraryKey);
 
-    public async Task InitFaceLibraryAsync(IEnumerable<Face> faces) =>
-        await Task.Run(() => _faceLibrary.InitFaceLibrary(faces));
+    public async Task InitFaceLibraryAsync(IEnumerable<Face> faces, string libraryKey = "default") =>
+        await Task.Run(() => _faceLibraries.GetLibrary(libraryKey).InitFaceLibrary(faces));
 
 
-    public async Task<(bool Success, int SuccessCount)> TryInitFaceLibraryAsync(IEnumerable<Face> faces) =>
-        await Task.FromResult(_faceLibrary.TryInitFaceLibrary(faces));
+    public async Task<(bool Success, int SuccessCount)> TryInitFaceLibraryAsync(IEnumerable<Face> faces,
+        string libraryKey = "default") =>
+        await Task.FromResult(_faceLibraries.GetLibrary(libraryKey).TryInitFaceLibrary(faces));
 
-    public async Task AddFaceAsync(params string[] images)
+    public async Task AddFaceAsync(string libraryKey = "default", params string[] images)
     {
         var (faces, exceptions) = await ExtractFaceFeaturesAsync(images);
         if (exceptions.Any())
             throw exceptions.FirstOrDefault();
-        _faceLibrary.AddFace(faces);
+        _faceLibraries.GetLibrary(libraryKey).AddFace(faces);
     }
 
-    public async Task<(bool Success, int SuccessCount)> TryAddFaceAsync(params string[] images)
+    public async Task<(bool Success, int SuccessCount)> TryAddFaceAsync(string libraryKey = "default",
+        params string[] images)
     {
         var (faces, exceptions) = await ExtractFaceFeaturesAsync(images);
-        return _faceLibrary.TryAddFace(faces);
+        return _faceLibraries.GetLibrary(libraryKey).TryAddFace(faces);
     }
 
-    public async Task AddFaceAsync(params Face[] faces) =>
-        await Task.Run(() => _faceLibrary.AddFace(faces));
+    public async Task AddFaceAsync(string libraryKey = "default", params Face[] faces) =>
+        await Task.Run(() => _faceLibraries.GetLibrary(libraryKey).AddFace(faces));
 
-    public async Task<(bool Success, int SuccessCount)> TryAddFaceAsync(params Face[] faces) =>
-        await Task.Run(() => _faceLibrary.TryAddFace(faces));
+    public async Task<(bool Success, int SuccessCount)>
+        TryAddFaceAsync(string libraryKey = "default", params Face[] faces) =>
+        await Task.Run(() => _faceLibraries.GetLibrary(libraryKey).TryAddFace(faces));
 
-    public async Task<int> RemoveFaceAsync(params string[] faceIds) =>
+    public async Task<int> RemoveFaceAsync(string libraryKey = "default", params string[] faceIds) =>
         await Task.Run(() =>
         {
             var cnt = 0;
@@ -69,10 +74,10 @@ public partial class ArcFace
 
             foreach (var faceId in faceIds)
             {
-                if (string.IsNullOrWhiteSpace(faceId) || !_faceLibrary.ContainsKey(faceId))
+                if (string.IsNullOrWhiteSpace(faceId) || !_faceLibraries.GetLibrary(libraryKey).ContainsKey(faceId))
                     continue;
 
-                _faceLibrary.Remove(faceId, out var face);
+                _faceLibraries.GetLibrary(libraryKey).Remove(faceId, out var face);
                 face.Dispose();
                 cnt++;
             }
@@ -80,7 +85,8 @@ public partial class ArcFace
             return cnt;
         });
 
-    public async Task<(bool Success, int SuccessCount)> TryRemoveFaceAsync(params string[] faceIds) =>
+    public async Task<(bool Success, int SuccessCount)> TryRemoveFaceAsync(string libraryKey = "default",
+        params string[] faceIds) =>
         await Task.Run(() =>
         {
             var cnt = 0;
@@ -89,10 +95,10 @@ public partial class ArcFace
 
             foreach (var faceId in faceIds)
             {
-                if (string.IsNullOrWhiteSpace(faceId) || !_faceLibrary.ContainsKey(faceId))
+                if (string.IsNullOrWhiteSpace(faceId) || !_faceLibraries.GetLibrary(libraryKey).ContainsKey(faceId))
                     continue;
 
-                var success = _faceLibrary.TryRemove(faceId, out var face);
+                var success = _faceLibraries.GetLibrary(libraryKey).TryRemove(faceId, out var face);
                 if (!success)
                     continue;
 
@@ -104,47 +110,47 @@ public partial class ArcFace
         });
 
     public async Task<OperationResult<Recognitions>>
-        SearchFaceAsync(string image, Predicate<Face> predicate = null) =>
-        await SearchFaceAsync(image, _options.MinSimilarity, predicate);
+        SearchFaceAsync(string image, Predicate<Face> predicate = null, string libraryKey = "default") =>
+        await SearchFaceAsync(image, _options.MinSimilarity, predicate, libraryKey);
 
     public async Task<OperationResult<Recognitions>> SearchFaceAsync(string image, float minSimilarity,
-        Predicate<Face> predicate = null)
+        Predicate<Face> predicate = null, string libraryKey = "default")
     {
         if (!File.Exists(image))
             return new OperationResult<Recognitions>(null);
 
         await using var img = image.ToStream();
-        return await SearchFaceAsync(img, minSimilarity, predicate);
+        return await SearchFaceAsync(img, minSimilarity, predicate, libraryKey);
     }
 
     public async Task<OperationResult<Recognitions>>
-        SearchFaceAsync(Stream image, Predicate<Face> predicate = null) =>
-        await SearchFaceAsync(image, _options.MinSimilarity, predicate);
+        SearchFaceAsync(Stream image, Predicate<Face> predicate = null, string libraryKey = "default") =>
+        await SearchFaceAsync(image, _options.MinSimilarity, predicate, libraryKey);
 
     public async Task<OperationResult<Recognitions>> SearchFaceAsync(Stream image, float minSimilarity,
-        Predicate<Face> predicate = null)
+        Predicate<Face> predicate = null, string libraryKey = "default")
     {
         var (faces, exceptions) = await ExtractFaceFeaturesAsync(image);
         if (exceptions.Any())
             return new OperationResult<Recognitions>(exceptions.SingleOrDefault().Code);
 
-        return await SearchFaceAsync(faces.SingleOrDefault().FeatureBytes, minSimilarity, predicate);
+        return await SearchFaceAsync(faces.SingleOrDefault().FeatureBytes, minSimilarity, predicate, libraryKey);
     }
 
 
     public async Task<OperationResult<Recognitions>> SearchFaceAsync(byte[] feature,
-        Predicate<Face> predicate = null) =>
-        await SearchFaceAsync(feature, _options.MinSimilarity, predicate);
+        Predicate<Face> predicate = null, string libraryKey = "default") =>
+        await SearchFaceAsync(feature, _options.MinSimilarity, predicate, libraryKey);
 
 
     public async Task<OperationResult<Recognitions>> SearchFaceAsync(byte[] feature, float minSimilarity,
-        Predicate<Face> predicate = null) =>
+        Predicate<Face> predicate = null, string libraryKey = "default") =>
         await Task.Run(async () =>
         {
             var featureInfo = IntPtr.Zero;
             var library = predicate == null
-                ? _faceLibrary
-                : _faceLibrary.Where(kv => predicate.Invoke(kv.Value));
+                ? _faceLibraries.GetLibrary(libraryKey)
+                : _faceLibraries.GetLibrary(libraryKey).Where(kv => predicate.Invoke(kv.Value));
             var recognitions = new ConcurrentBag<Recognition>();
 
             try
