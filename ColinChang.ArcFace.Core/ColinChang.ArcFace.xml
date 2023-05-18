@@ -65,7 +65,7 @@
             工具方法
             </summary>
         </member>
-        <member name="F:ColinChang.ArcFace.Core.ArcFace._faceLibrary">
+        <member name="F:ColinChang.ArcFace.Core.ArcFace._faceLibraries">
             <summary>
             人脸库
             </summary>

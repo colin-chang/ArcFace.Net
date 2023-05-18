@@ -5,14 +5,14 @@
         <Nullable>disable</Nullable>
         <LangVersion>default</LangVersion>
         <PackageId>ArcFace.Net</PackageId>
-		<Version>5.1.0</Version>
+		<Version>5.1.1</Version>
         <Authors>Colin Chang</Authors>
 		<Owners>Colin Chang</Owners>
 		<Product>ArcFace.Net</Product>
         <Title>虹软人脸识别库(基于ImageSharp)</Title>
         <Description>虹软人脸识别.NET核心工具库(.Net Standard 2.1)。基于ArcFace 3.x C++ SDK, 支持Windows x86/x64和Linux x64. 支持人脸属性检测、人脸特征提取、人脸库维护、人脸搜索、活体检测等功能。</Description>
 		<PackageTags>arcface face recognition compare detect liveness feature AI arcsoft</PackageTags>
-		<PackageReleaseNotes>抽象ImageSharpProcessor</PackageReleaseNotes>
+		<PackageReleaseNotes>新增多人脸库支持</PackageReleaseNotes>
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>

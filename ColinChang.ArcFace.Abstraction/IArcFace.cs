@@ -12,7 +12,7 @@ namespace ColinChang.ArcFace.Abstraction
     public interface IArcFace : IDisposable
     {
         #region SDK信息 激活信息/版本信息
-        
+
         /// <summary>
         /// 获取激活文件信息
         /// </summary>
@@ -26,8 +26,9 @@ namespace ColinChang.ArcFace.Abstraction
         Task<VersionInfo> GetSdkVersionAsync();
 
         #endregion
-        
+
         #region 人脸属性 3D角度/年龄/性别
+
         /// <summary>
         /// 获取3D角度信息
         /// </summary>
@@ -71,9 +72,9 @@ namespace ColinChang.ArcFace.Abstraction
         Task<OperationResult<GenderInfo>> GetGenderAsync(Stream image);
 
         #endregion
-        
+
         #region 核心功能 人脸检测/特征提取/人脸比对
-        
+
         /// <summary>
         /// 人脸检测
         /// </summary>
@@ -128,85 +129,99 @@ namespace ColinChang.ArcFace.Abstraction
         Task<OperationResult<float>> CompareFaceFeatureAsync(byte[] feature1, byte[] feature2);
 
         #endregion
-        
+
         # region 人脸库管理 初始化/新增人脸/删除人脸/搜索人脸
         
         /// <summary>
         /// 初始化人脸库(约定文件名为FaceId)
         /// </summary>
         /// <param name="images">人脸图片。多人脸图自动选比例最大的人脸</param>
+        /// <param name="libraryKey">人脸库Key</param>
         /// <returns></returns>
-        Task InitFaceLibraryAsync(IEnumerable<string> images);
+        Task InitFaceLibraryAsync(IEnumerable<string> images, string libraryKey = "default");
 
         /// <summary>
         /// 尝试初始化人脸库(约定文件名为FaceId)
         /// </summary>
         /// <param name="images">人脸图片。多人脸图自动选比例最大的人脸</param>
+        /// <param name="libraryKey">人脸库Key</param>
         /// <returns>(是否全部成功,成功记录数)</returns>
-        Task<(bool Success, int SuccessCount)> TryInitFaceLibraryAsync(IEnumerable<string> images);
+        Task<(bool Success, int SuccessCount)> TryInitFaceLibraryAsync(IEnumerable<string> images,
+            string libraryKey = "default");
 
         /// <summary>
         /// 初始化人脸库
         /// </summary>
         /// <param name="faces"></param>
+        /// <param name="libraryKey">人脸库Key</param>
         /// <returns></returns>
-        Task InitFaceLibraryAsync(IEnumerable<Face> faces);
+        Task InitFaceLibraryAsync(IEnumerable<Face> faces, string libraryKey = "default");
 
         /// <summary>
         /// 尝试初始化人脸库
         /// </summary>
         /// <param name="faces"></param>
+        /// <param name="libraryKey">人脸库Key</param>
         /// <returns>(是否全部成功,成功记录数)</returns>
-        Task<(bool Success, int SuccessCount)> TryInitFaceLibraryAsync(IEnumerable<Face> faces);
+        Task<(bool Success, int SuccessCount)> TryInitFaceLibraryAsync(IEnumerable<Face> faces,
+            string libraryKey = "default");
 
         /// <summary>
         /// 人脸库新增人脸(约定文件名为FaceId)
         /// </summary>
+        /// <param name="libraryKey">人脸库Key</param>
         /// <param name="images">人脸图片。多人脸图自动选比例最大的人脸</param>
-        Task AddFaceAsync(params string[] images);
+        Task AddFaceAsync(string libraryKey = "default", params string[] images);
 
         /// <summary>
         /// 尝试在人脸库中新增人脸(约定文件名为FaceId)
         /// </summary>
         /// <param name="images">人脸图片。多人脸图自动选比例最大的人脸</param>
+        /// <param name="libraryKey">人脸库Key</param>
         /// <returns>(是否全部新增成功,新增成功人脸数量)</returns>
-        Task<(bool Success, int SuccessCount)> TryAddFaceAsync(params string[] images);
+        Task<(bool Success, int SuccessCount)> TryAddFaceAsync(string libraryKey = "default", params string[] images);
 
         /// <summary>
         /// 人脸库新增人脸
         /// </summary>
         /// <param name="faces"></param>
+        /// <param name="libraryKey">人脸库Key</param>
         /// <returns></returns>
-        Task AddFaceAsync(params Face[] faces);
+        Task AddFaceAsync(string libraryKey = "default", params Face[] faces);
 
         /// <summary>
         /// 尝试在人脸库中新增人脸
         /// </summary>
         /// <param name="faces"></param>
+        /// <param name="libraryKey">人脸库Key</param>
         /// <returns>(是否全部新增成功,新增成功人脸数量)</returns>
-        Task<(bool Success, int SuccessCount)> TryAddFaceAsync(params Face[] faces);
+        Task<(bool Success, int SuccessCount)> TryAddFaceAsync(string libraryKey = "default", params Face[] faces);
 
         /// <summary>
         /// 人脸库删除人脸
         /// </summary>
         /// <param name="faceIds"></param>
+        /// <param name="libraryKey">人脸库Key</param>
         /// <returns>成功删除人脸数量</returns>
-        Task<int> RemoveFaceAsync(params string[] faceIds);
+        Task<int> RemoveFaceAsync(string libraryKey = "default", params string[] faceIds);
 
         /// <summary>
         /// 尝试人脸库删除人脸
         /// </summary>
         /// <param name="faceIds"></param>
+        /// <param name="libraryKey">人脸库Key</param>
         /// <returns>(人脸是否全部删除成功,成功删除人脸数)</returns>
-        Task<(bool Success, int SuccessCount)> TryRemoveFaceAsync(params string[] faceIds);
+        Task<(bool Success, int SuccessCount)> TryRemoveFaceAsync(string libraryKey = "default", params string[] faceIds);
 
         /// <summary>
         /// 人脸库中搜索人脸
         /// </summary>
         /// <param name="image">头像路径</param>
         /// <param name="predicate">人脸筛选条件</param>
+        /// <param name="libraryKey">人脸库Key</param>
         /// <returns>搜索结果</returns>
-        Task<OperationResult<Recognitions>> SearchFaceAsync(string image, Predicate<Face> predicate = null);
+        Task<OperationResult<Recognitions>> SearchFaceAsync(string image, Predicate<Face> predicate = null,
+            string libraryKey = "default");
 
         /// <summary>
         /// 人脸库中搜索人脸
@@ -214,17 +229,20 @@ namespace ColinChang.ArcFace.Abstraction
         /// <param name="image">头像路径</param>
         /// <param name="minSimilarity">最小人脸相似度</param>
         /// <param name="predicate">人脸筛选条件</param>
+        /// <param name="libraryKey">人脸库Key</param>
         /// <returns>搜索结果</returns>
         Task<OperationResult<Recognitions>> SearchFaceAsync(string image, float minSimilarity,
-            Predicate<Face> predicate = null);
+            Predicate<Face> predicate = null, string libraryKey = "default");
 
         /// <summary>
         /// 人脸库中搜索人脸
         /// </summary>
         /// <param name="image">头像</param>
         /// <param name="predicate">人脸筛选条件</param>
+        /// <param name="libraryKey">人脸库Key</param>
         /// <returns>搜索结果</returns>
-        Task<OperationResult<Recognitions>> SearchFaceAsync(Stream image, Predicate<Face> predicate = null);
+        Task<OperationResult<Recognitions>> SearchFaceAsync(Stream image, Predicate<Face> predicate = null,
+            string libraryKey = "default");
 
         /// <summary>
         /// 人脸库中搜索人脸
@@ -232,17 +250,20 @@ namespace ColinChang.ArcFace.Abstraction
         /// <param name="image">头像</param>
         /// <param name="minSimilarity">最小人脸相似度</param>
         /// <param name="predicate">人脸筛选条件</param>
+        /// <param name="libraryKey">人脸库Key</param>
         /// <returns>搜索结果</returns>
         Task<OperationResult<Recognitions>> SearchFaceAsync(Stream image, float minSimilarity,
-            Predicate<Face> predicate = null);
+            Predicate<Face> predicate = null, string libraryKey = "default");
 
         /// <summary>
         /// 人脸库中搜索人脸
         /// </summary>
         /// <param name="feature">人脸特征</param>
         /// <param name="predicate">人脸筛选条件</param>
+        /// <param name="libraryKey">人脸库Key</param>
         /// <returns>搜索结果</returns>
-        Task<OperationResult<Recognitions>> SearchFaceAsync(byte[] feature, Predicate<Face> predicate = null);
+        Task<OperationResult<Recognitions>> SearchFaceAsync(byte[] feature, Predicate<Face> predicate = null,
+            string libraryKey = "default");
 
         /// <summary>
         /// 人脸库中搜索人脸
@@ -250,10 +271,11 @@ namespace ColinChang.ArcFace.Abstraction
         /// <param name="feature">人脸特征</param>
         /// <param name="minSimilarity">最小人脸相似度</param>
         /// <param name="predicate">人脸筛选条件</param>
+        /// <param name="libraryKey">人脸库Key</param>
         /// <returns>搜索结果</returns>
         Task<OperationResult<Recognitions>> SearchFaceAsync(byte[] feature, float minSimilarity,
-            Predicate<Face> predicate = null);
-        
+            Predicate<Face> predicate = null, string libraryKey = "default");
+
         #endregion
     }
 }
