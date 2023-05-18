@@ -1,25 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <LangVersion>default</LangVersion>
-        <Authors>Colin Chang</Authors>
-        <PackageVersion>4.2.0</PackageVersion>
-        <PackageLicenseFile>LICENSE</PackageLicenseFile>
-        <Description>虹软人脸识别.NET核心工具库(.Net Standard 2.1)。基于ArcFace 3.x C++ SDK, 支持Windows x86/x64和Linux x64. 支持人脸属性检测、人脸特征提取、人脸库维护、人脸搜索、活体检测等功能。</Description>
-        <Copyright>https://a-nomad.com/</Copyright>
-        <PackageProjectUrl>https://github.com/colin-chang/ArcFace.Net</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/colin-chang/ArcFace.Net</RepositoryUrl>
-        <RepositoryType>Git</RepositoryType>
-        <PackageTags>arcface face recognition compare detect liveness feature AI arcsoft</PackageTags>
-        <Owners>Colin Chang</Owners>
-        <PackageId>ArcFace.Net</PackageId>
-        <PackageIcon>icon.png</PackageIcon>
-        <PackageIconUrl>https://raw.githubusercontent.com/colin-chang/ArcFace.Net/main/icon.png</PackageIconUrl>
-        <PackageReleaseNotes>人脸识别库</PackageReleaseNotes>
-        <Product>ArcFace.Net</Product>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>disable</Nullable>
+		<LangVersion>default</LangVersion>
+		<PackageId>ArcFace.Net</PackageId>
+		<Version>4.2.0</Version>
+		<Authors>Colin Chang</Authors>
+		<Owners>Colin Chang</Owners>
+		<Product>ArcFace.Net</Product>
+		<Title>虹软人脸识别库(基于System.Drawing.Common)</Title>
+		<Description>虹软人脸识别.NET核心工具库(.Net Standard 2.1)。基于ArcFace 3.x C++ SDK, 支持Windows x86/x64和Linux x64. 支持人脸属性检测、人脸特征提取、人脸库维护、人脸搜索、活体检测等功能。</Description>
+		<PackageTags>arcface face recognition compare detect liveness feature AI arcsoft</PackageTags>
+		<PackageReleaseNotes>抽象SystemDrawingProcessor</PackageReleaseNotes>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<RepositoryType>Git</RepositoryType>
+		<RepositoryUrl>https://github.com/colin-chang/ArcFace.Net</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/colin-chang/ArcFace.Net</PackageProjectUrl>
+		<Copyright>https://a-nomad.com/</Copyright>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -32,11 +34,15 @@
     <ItemGroup>
         <None Include="..\icon.png">
             <Pack>True</Pack>
-            <PackagePath></PackagePath>
+            <PackagePath>\</PackagePath>
         </None>
         <None Include="..\LICENSE">
             <Pack>True</Pack>
-            <PackagePath></PackagePath>
+            <PackagePath>\</PackagePath>
+        </None>
+        <None Include="..\README.md">
+          <Pack>True</Pack>
+          <PackagePath>\</PackagePath>
         </None>
     </ItemGroup>
     <ItemGroup>
