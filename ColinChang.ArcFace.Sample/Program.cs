@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ColinChang.ArcFace.Core;
 using ColinChang.ArcFace.Abstraction;
 using ColinChang.ArcFace.Abstraction.Models;
-//using ColinChang.ArcFace.Core.SystemDrawing;
+//using ColinChang.ArcFace.SystemDrawing;
 using ColinChang.ArcFace.ImageSharp.Extensions;
 
 //测试图片

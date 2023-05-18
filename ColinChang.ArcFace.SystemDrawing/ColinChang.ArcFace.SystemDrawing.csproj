@@ -40,6 +40,6 @@
         </None>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\ColinChang.ArcFace.Core\ColinChang.ArcFace.Core.csproj" />
+      <ProjectReference Include="..\ColinChang.ArcFace.Core\ColinChang.ArcFace.Core.csproj" />
     </ItemGroup>
 </Project>

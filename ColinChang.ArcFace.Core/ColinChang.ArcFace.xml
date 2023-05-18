@@ -76,14 +76,14 @@
             </summary>
             <exception cref="T:System.Exception"></exception>
         </member>
-        <member name="M:ColinChang.ArcFace.Core.ArcFace.GetEngine(ColinChang.ArcFace.Core.Abstraction.Models.DetectionModeEnum)">
+        <member name="M:ColinChang.ArcFace.Core.ArcFace.GetEngine(ColinChang.ArcFace.Abstraction.Models.DetectionModeEnum)">
             <summary>
             从引擎池中获取引擎
             </summary>
             <param name="mode"></param>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Core.ArcFace.InitEngine(ColinChang.ArcFace.Core.Abstraction.Models.DetectionModeEnum)">
+        <member name="M:ColinChang.ArcFace.Core.ArcFace.InitEngine(ColinChang.ArcFace.Abstraction.Models.DetectionModeEnum)">
             <summary>
             初始化引擎
             </summary>
@@ -91,7 +91,7 @@
             <returns></returns>
             <exception cref="T:System.Exception"></exception>
         </member>
-        <member name="M:ColinChang.ArcFace.Core.ArcFace.RecycleEngine(System.IntPtr,ColinChang.ArcFace.Core.Abstraction.Models.DetectionModeEnum)">
+        <member name="M:ColinChang.ArcFace.Core.ArcFace.RecycleEngine(System.IntPtr,ColinChang.ArcFace.Abstraction.Models.DetectionModeEnum)">
             <summary>
             回收引擎
             </summary>
@@ -258,7 +258,7 @@
             <param name="version"></param>
             <returns>调用结果</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.DetectFaceAsync(System.IntPtr,ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.DetectFaceAsync(System.IntPtr,ColinChang.ArcFace.Abstraction.Models.ImageInfo)">
             <summary>
             人脸检测(PS:检测RGB图像的人脸时，必须保证图像的宽度能被4整除，否则会失败)
             </summary>
@@ -266,7 +266,7 @@
             <param name="imageInfo">图像信息</param>
             <returns>人脸检测结果</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.ExtractFeatureAsync(System.IntPtr,ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.ExtractFeatureAsync(System.IntPtr,ColinChang.ArcFace.Abstraction.Models.ImageInfo)">
             <summary>
             提取人脸特征
             </summary>
@@ -274,7 +274,7 @@
             <param name="imageInfo">图像信息</param>
             <returns>保存人脸特征结构体指针</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.ExtractSingleFeatureAsync(System.IntPtr,ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.ExtractSingleFeatureAsync(System.IntPtr,ColinChang.ArcFace.Abstraction.Models.ImageInfo)">
             <summary>
             提取最大人脸特征
             </summary>
@@ -282,7 +282,7 @@
             <param name="imageInfo">图像信息</param>
             <returns>保存人脸特征结构体指针</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.GetAgeAsync(System.IntPtr,ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.GetAgeAsync(System.IntPtr,ColinChang.ArcFace.Abstraction.Models.ImageInfo)">
             <summary>
             年龄检测
             </summary>
@@ -290,7 +290,7 @@
             <param name="imageInfo">图像信息</param>
             <returns>年龄检测结构体</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.GetGenderAsync(System.IntPtr,ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.GetGenderAsync(System.IntPtr,ColinChang.ArcFace.Abstraction.Models.ImageInfo)">
             <summary>
             性别检测
             </summary>
@@ -298,7 +298,7 @@
             <param name="imageInfo">图像信息</param>
             <returns>保存性别检测结果结构体</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.GetFace3DAngleAsync(System.IntPtr,ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.GetFace3DAngleAsync(System.IntPtr,ColinChang.ArcFace.Abstraction.Models.ImageInfo)">
             <summary>
             人脸3D角度检测
             </summary>
@@ -306,7 +306,7 @@
             <param name="imageInfo">图像信息</param>
             <returns>保存人脸3D角度检测结果结构体</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.GetRgbLivenessInfoAsync(System.IntPtr,ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.GetRgbLivenessInfoAsync(System.IntPtr,ColinChang.ArcFace.Abstraction.Models.ImageInfo)">
             <summary>
             RGB可见光活体检测
             </summary>
@@ -314,7 +314,7 @@
             <param name="imageInfo">图像信息</param>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.GetIrLivenessInfoAsync(System.IntPtr,System.ValueTuple{ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo,ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo})">
+        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.GetIrLivenessInfoAsync(System.IntPtr,System.ValueTuple{ColinChang.ArcFace.Abstraction.Models.ImageInfo,ColinChang.ArcFace.Abstraction.Models.ImageInfo})">
             <summary>
             IR红外活体检测
             </summary>
@@ -323,7 +323,7 @@
             <param name="irImageInfo">IR图像信息</param>
             <returns></returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.GetLivenessInfoAsync(System.IntPtr,ColinChang.ArcFace.Core.Abstraction.Models.LivenessMode,System.ValueTuple{ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo,ColinChang.ArcFace.Core.Abstraction.Models.ImageInfo})">
+        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.GetLivenessInfoAsync(System.IntPtr,ColinChang.ArcFace.Abstraction.Models.LivenessMode,System.ValueTuple{ColinChang.ArcFace.Abstraction.Models.ImageInfo,ColinChang.ArcFace.Abstraction.Models.ImageInfo})">
             <summary>
             活体检测
             </summary>
@@ -333,7 +333,7 @@
             <param name="irImageInfo">IR图像信息</param>
             <returns>保存活体检测结果结构体</returns>
         </member>
-        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.GetBiggestFaceAsync(ColinChang.ArcFace.Core.Abstraction.Models.MultiFaceInfo)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.FaceHelper.GetBiggestFaceAsync(ColinChang.ArcFace.Abstraction.Models.MultiFaceInfo)">
             <summary>
             获取多个人脸检测结果中面积最大的人脸
             </summary>
@@ -360,7 +360,7 @@
             支持的图片格式
             </summary>
         </member>
-        <member name="M:ColinChang.ArcFace.Core.Utils.ImageHelper.VerifyAsync(ColinChang.ArcFace.Core.Abstraction.IImageProcessor,System.IO.Stream)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.ImageHelper.VerifyAsync(ColinChang.ArcFace.Abstraction.IImageProcessor,System.IO.Stream)">
             <summary>
             验证图片
             校验->缩放->获取信息
@@ -371,7 +371,7 @@
             <exception cref="T:System.IO.FileNotFoundException"></exception>
             <exception cref="T:System.Exception"></exception>
         </member>
-        <member name="M:ColinChang.ArcFace.Core.Utils.ImageHelper.VerifyAndScaleAsync(ColinChang.ArcFace.Core.Abstraction.IImageProcessor,System.IO.Stream)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.ImageHelper.VerifyAndScaleAsync(ColinChang.ArcFace.Abstraction.IImageProcessor,System.IO.Stream)">
             <summary>
             校验并缩放图片
             </summary>
@@ -381,7 +381,7 @@
             <exception cref="T:System.IO.FileNotFoundException"></exception>
             <exception cref="T:System.Exception"></exception>
         </member>
-        <member name="M:ColinChang.ArcFace.Core.Utils.ImageHelper.ScaleAsync(System.IO.Stream,ColinChang.ArcFace.Core.Abstraction.IImageProcessor)">
+        <member name="M:ColinChang.ArcFace.Core.Utils.ImageHelper.ScaleAsync(System.IO.Stream,ColinChang.ArcFace.Abstraction.IImageProcessor)">
             <summary>
             缩放图片
             </summary>
