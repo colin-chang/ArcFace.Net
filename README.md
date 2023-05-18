@@ -63,7 +63,7 @@ docker build -f ColinChang.ArcFace.SystemDrawing/Dockerfiles/runtime-6.0/Dockerf
 ## 人脸3D角度 
 俯仰角（pitch）， 横滚角（roll）， 偏航角（yaw）
 
-![人脸3D角度](3DAngle.png)
+![人脸3D角度](https://raw.githubusercontent.com/colin-chang/ArcFace.Net/main/3DAngle.png)
 
 ## 错误码
 
