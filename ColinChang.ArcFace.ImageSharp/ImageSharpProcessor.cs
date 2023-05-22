@@ -5,6 +5,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using ColinChang.ArcFace.Abstraction;
+using ColinChang.ArcFace.Abstraction.Extensions;
 using ColinChang.ArcFace.Abstraction.Models;
 using ColinChang.ArcFace.ImageSharp.Extensions;
 using ImageInfo = ColinChang.ArcFace.Abstraction.Models.ImageInfo;

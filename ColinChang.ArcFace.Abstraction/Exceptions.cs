@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ColinChang.ArcFace.Abstraction.Extensions
+namespace ColinChang.ArcFace.Abstraction
 {
     public class InvalidFaceFeatureException : Exception
     {

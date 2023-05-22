@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ColinChang.ArcFace.Abstraction;
+using ColinChang.ArcFace.Abstraction.Extensions;
 using ColinChang.ArcFace.Abstraction.Models;
 
 namespace ColinChang.ArcFace.Core.Utils
@@ -48,12 +49,13 @@ namespace ColinChang.ArcFace.Core.Utils
             return await processor.GetImageInfoAsync(img);
         }
 
-        public static async Task<(ImageInfo RGB,ImageInfo IR)> VerifyIrAsync(this IImageProcessor processor, Stream image)
+        public static async Task<(ImageInfo RGB, ImageInfo IR)> VerifyIrAsync(this IImageProcessor processor,
+            Stream image)
         {
             await using var img = await processor.VerifyAndScaleAsync(image);
             var rgb = await processor.GetImageInfoAsync(img);
             var ir = await processor.GetIrImageInfoAsync(img);
-            return (rgb,ir);
+            return (rgb, ir);
         }
 
         /// <summary>
@@ -91,12 +93,24 @@ namespace ColinChang.ArcFace.Core.Utils
         {
             await using var imageInfo = await processor.GetImageInfoAsync(image);
 
-            var img = image;
+            Stream img = null;
             if (imageInfo.Width > ASF_MAX_IMAGE_WIDTH_HEIGHT || imageInfo.Height > ASF_MAX_IMAGE_WIDTH_HEIGHT)
                 img = await processor.ScaleAsync(image, ASF_MAX_IMAGE_WIDTH_HEIGHT, ASF_MAX_IMAGE_WIDTH_HEIGHT);
             if (imageInfo.Width % 4 == 0)
-                return img;
+            {
+                if (img != null)
+                    return img;
+                        
+                var stream = new MemoryStream();
+                await image.CopyToAsync(stream);
+                image.Reset();
+                stream.Reset();
+                return stream;
+            }
 
+            if (img==null)
+                return await processor.ScaleAsync(image, imageInfo.Width - imageInfo.Width % 4, imageInfo.Height);
+            
             await using (img)
             {
                 return await processor.ScaleAsync(img, imageInfo.Width - imageInfo.Width % 4, imageInfo.Height);

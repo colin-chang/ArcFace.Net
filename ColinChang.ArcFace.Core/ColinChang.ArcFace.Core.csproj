@@ -5,14 +5,14 @@
     <Nullable>disable</Nullable>
     <LangVersion>default</LangVersion>
     <PackageId>ArcFace.Net.Core</PackageId>
-    <Version>1.0.2</Version>
+    <Version>1.0.4</Version>
     <Authors>Colin Chang</Authors>
     <Owners>Colin Chang</Owners>
     <Product>ArcFace.Net.Core</Product>
     <Title>虹软人脸识别核心库(需提供图像处理程序)</Title>
     <Description>虹软人脸识别.NET核心工具库(.Net Standard 2.1)。基于ArcFace 3.x C++ SDK, 支持Windows x86/x64和Linux x64. 支持人脸属性检测、人脸特征提取、人脸库维护、人脸搜索、活体检测等功能。</Description>
     <PackageTags>arcface face recognition compare detect liveness feature AI arcsoft</PackageTags>
-    <PackageReleaseNotes>精简依赖库</PackageReleaseNotes>
+    <PackageReleaseNotes>修复流异常关闭的问题</PackageReleaseNotes>
     <PackageIcon>icon.png</PackageIcon>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -33,7 +33,7 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="7.0.0" />
-    <PackageReference Include="ArcFace.Net.Abstraction" Version="1.0.0" />
+    <PackageReference Include="ArcFace.Net.Abstraction" Version="1.0.1" />
     <PackageReference Include="Polly" Version="7.2.3" />
   </ItemGroup>
 
@@ -50,9 +50,5 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\ColinChang.ArcFace.Abstraction\ColinChang.ArcFace.Abstraction.csproj" />
   </ItemGroup>
 </Project>

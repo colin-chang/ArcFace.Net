@@ -43,4 +43,12 @@ public static class FaceExtensions
 
         return File.OpenRead(image);
     }
+    
+    public static void Reset(this Stream stream)
+    {
+        if (stream == null)
+            return;
+        if (stream.Position > 0)
+            stream.Seek(0, SeekOrigin.Begin);
+    }
 }
