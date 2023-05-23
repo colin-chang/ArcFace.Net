@@ -76,6 +76,7 @@ namespace ColinChang.ArcFace.Core.Utils
             if (image.Length < ASF_MIN_IMAGE_SIZE)
                 throw new Exception($"image is too small than {ASF_MIN_IMAGE_SIZE}B");
 
+            image.Reset();
             var format = await processor.GetFormatAsync(image);
             if (!SupportedImageExtensions.Contains($".{format}"))
                 throw new Exception("unsupported image type.");
