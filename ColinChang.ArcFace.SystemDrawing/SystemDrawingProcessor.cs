@@ -7,6 +7,7 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using ColinChang.ArcFace.Abstraction;
 using ColinChang.ArcFace.Abstraction.Models;
+using ColinChang.ArcFace.Abstraction.Extensions;
 
 namespace ColinChang.ArcFace.SystemDrawing;
 
@@ -15,6 +16,7 @@ public class SystemDrawingProcessor : IImageProcessor
     public async Task<Stream> ScaleAsync(Stream image, int dstWidth, int dstHeight)
     {
         using var img = Image.FromStream(image);
+        image.Reset();
 
         //按比例缩放           
         var scaleRate = GetWidthAndHeight(img.Width, img.Height, dstWidth, dstHeight);
@@ -38,12 +40,14 @@ public class SystemDrawingProcessor : IImageProcessor
 
         var stream = new MemoryStream();
         bitmap.Save(stream, img.RawFormat);
+        stream.Reset();
         return await Task.FromResult(stream);
     }
 
     public Task<string> GetFormatAsync(Stream image)
     {
         using var img = Image.FromStream(image);
+        image.Reset();
         return Task.FromResult(img.RawFormat.ToString().ToLower());
     }
 
@@ -51,6 +55,7 @@ public class SystemDrawingProcessor : IImageProcessor
     {
         //将Image转换为Format24bppRgb格式的BMP
         var bm = new Bitmap(image);
+        image.Reset();
         var data = bm.LockBits(new Rectangle(0, 0, bm.Width, bm.Height), ImageLockMode.ReadOnly,
             PixelFormat.Format24bppRgb);
         try
