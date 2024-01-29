@@ -1,18 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
     <Nullable>disable</Nullable>
     <LangVersion>default</LangVersion>
     <PackageId>ArcFace.Net.Core</PackageId>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
     <Authors>Colin Chang</Authors>
     <Owners>Colin Chang</Owners>
     <Product>ArcFace.Net.Core</Product>
     <Title>虹软人脸识别核心库(需提供图像处理程序)</Title>
     <Description>虹软人脸识别.NET核心工具库。基于ArcFace 3.x C++ SDK, 支持Windows x86/x64和Linux x64. 支持人脸属性检测、人脸特征提取、人脸库维护、人脸搜索、活体检测等功能。</Description>
     <PackageTags>arcface face recognition compare detect liveness feature AI arcsoft</PackageTags>
-    <PackageReleaseNotes>修复初始流不在开头的问题</PackageReleaseNotes>
+    <PackageReleaseNotes>Update dependencies</PackageReleaseNotes>
     <PackageIcon>icon.png</PackageIcon>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -22,6 +21,7 @@
     <Copyright>https://a-nomad.com/</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -29,12 +29,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="8.0.0" />
     <PackageReference Include="ArcFace.Net.Abstraction" Version="1.0.1" />
-    <PackageReference Include="Polly" Version="7.2.3" />
+    <PackageReference Include="Polly" Version="8.5.2" />
   </ItemGroup>
 
   <ItemGroup>
