@@ -25,7 +25,7 @@
         * `CentOS 8 +`
 3. Docker
 
-   我们为本程序库的运行环境打包了Docker镜像，有需要的读者可以[点此获取](https://hub.docker.com/r/colinchang/arcface5)，也可以使用 [Dockerfiles](https://github.com/colin-chang/ArcFace.Net/tree/main/Dockerfiles) 中的不同版本的 `Dockerfile` 文件自行编译。
+   我们为本程序库的运行环境打包了Docker镜像，有需要的读者可以[点此获取](https://hub.docker.com/r/colinchang/arcface5)，也可以使用 [Dockerfiles](https://github.com/colin-chang/ArcFace.Net/tree/main/ColinChang.ArcFace.ImageSharp/Dockerfiles) 中的不同版本的 `Dockerfile` 文件自行编译。
 
 ```bash
 # 5.x ImageSharp
@@ -33,8 +33,8 @@ docker build -f ColinChang.ArcFace.ImageSharp/Dockerfiles/aspnet-6.0/Dockerfile 
 docker build -f ColinChang.ArcFace.ImageSharp/Dockerfiles/runtime-6.0/Dockerfile -t colinchang/arcface5:runtime-6.0 .
 
 # 4.x SystemDrawing
-docker build -f ColinChang.ArcFace.SystemDrawing/Dockerfiles/aspnet-6.0/Dockerfile -t colinchang/arcface5:aspnet-6.0 .
-docker build -f ColinChang.ArcFace.SystemDrawing/Dockerfiles/runtime-6.0/Dockerfile -t colinchang/arcface5:runtime-6.0 .
+docker build -f ColinChang.ArcFace.SystemDrawing/Dockerfiles/aspnet-6.0/Dockerfile -t colinchang/arcface4:aspnet-6.0 .
+docker build -f ColinChang.ArcFace.SystemDrawing/Dockerfiles/runtime-6.0/Dockerfile -t colinchang/arcface4:runtime-6.0 .
 ```
 
 ## Nuget
@@ -118,6 +118,7 @@ docker build -f ColinChang.ArcFace.SystemDrawing/Dockerfiles/runtime-6.0/Dockerf
 * 人脸检测和特性提取目前进识别到的人脸角度不准确，目前识别到的角度均为0度。
 * 视频模式人脸追踪未开发
 * 活体检测未开发
+* 如图运行提示激活失败或SDK已过期，尝试自行下载并更新替换C++ SDK对应`.so/.dll`动态库
 
 ## 参考文档
 https://github.com/colin-chang/ArcFace.Net/blob/main/sdk_3.0.pdf
