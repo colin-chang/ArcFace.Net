@@ -5,7 +5,7 @@
         <Nullable>disable</Nullable>
         <LangVersion>default</LangVersion>
         <PackageId>ArcFace.Net.Abstraction</PackageId>
-        <Version>1.0.1</Version>
+        <Version>1.0.2</Version>
         <Authors>Colin Chang</Authors>
         <Owners>Colin Chang</Owners>
         <Product>ArcFace.Net.Abstraction</Product>

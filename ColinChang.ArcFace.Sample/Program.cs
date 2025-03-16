@@ -6,11 +6,6 @@ using ColinChang.ArcFace.Core;
 using ColinChang.ArcFace.ImageSharp.Extensions;
 
 //测试图片
-// const string test = "Images/test.jpg";
-// const string zys = "Images/zys.jpg";
-// const string xy = "Images/xy.jpg";
-// const string xy1 = "Images/xy1.jpg";
-
 await using var test = File.OpenRead("Images/test.jpg");
 await using var zys = File.OpenRead("Images/zys.jpg");
 await using var xy = File.OpenRead("Images/xy.jpg");
