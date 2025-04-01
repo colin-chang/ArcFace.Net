@@ -1,6 +1,9 @@
 # ArcFace.Net
 虹软人脸识别.NET(.Net 8)工具库。基于ArcFace 3.x C++ SDK, 支持Windows x86/x64和Linux x64. 支持人脸库属性检测、人脸特征提取、人脸库维护、人脸搜索、活体检测等功能。
 
+## 视频教程
+[![虹软人脸识别SDK视频教程](tutorial.png)](https://www.youtube.com/watch?v=p6Yk_B1cmmo)
+
 ## 项目结构
 * ArcFace.Core 人脸识别核心库，需要注入图像处理工具库后才可使用。
 * ArcFace.ImageSharp 基于[ImageSharp](https://github.com/SixLabors/ImageSharp)图像处理的人脸识别库。
